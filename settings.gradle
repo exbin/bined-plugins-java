@@ -1,0 +1,24 @@
+rootProject.name = 'deltahex-plugins'
+
+include ":deps"
+
+include ":plugins:xbup-plugin-audio"
+include ":plugins:xbup-plugin-basic"
+include ":plugins:xbup-plugin-picture"
+include ":plugins:xbup-plugin-time"
+
+File placeholder = file("deps/_placeholder")
+if (placeholder.exists()) {
+    placeholder.delete()
+}
+
+if (!gradle.startParameter.taskNames.contains("clean") || gradle.startParameter.projectProperties.containsKey("moduleDep")) {
+    File depsDir = file("deps")
+    // Include all downloaded dependency modules
+    depsDir.listFiles().each() { childFile ->
+        if (childFile.isDirectory()) {
+            include ':deps:' + childFile.name
+        }
+    }
+}
+
