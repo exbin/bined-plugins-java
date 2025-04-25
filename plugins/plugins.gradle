@@ -1,6 +1,6 @@
 // Shared plugins build
 
-version = '0.2.0-SNAPSHOT'
+version = '0.2.4-SNAPSHOT'
 def repositoryName = "xbup-plugins-java"
 def libraryUrl = 'http://xbup.exbin.org'
 
@@ -49,10 +49,9 @@ tasks.withType(JavaCompile) {
         options.fork = true
         if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
             if (VersionNumber.parse(gradle.gradleVersion) >= VersionNumber.parse('5.0')) {
-                options.bootstrapClasspath = files("${System.properties['java.home']}/lib/rt.jar", "$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar")
+                options.bootstrapClasspath = files("${System.properties['java.home']}/lib/rt.jar", "${System.properties['java.home']}/jre/lib/jsse.jar")
             } else {
-                options.bootClasspath = "${System.properties['java.home']}/lib/rt.jar"
-                options.bootClasspath += "$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar"
+                options.bootClasspath = "${System.properties['java.home']}/lib/rt.jar$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar"
             }
         }
     }
