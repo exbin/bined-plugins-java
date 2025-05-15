@@ -1,13 +1,13 @@
 // Shared plugins build
 
-version = '0.2.4-SNAPSHOT'
+version = '0.3.0-SNAPSHOT'
 def repositoryName = "xbup-plugins-java"
 def libraryUrl = 'http://xbup.exbin.org'
 
 ext.depsExbinAuxiliaryJava = [
     githubProfile: 'exbin',
     githubRepo: 'exbin-auxiliary-java',
-    version: '0.2.0-SNAPSHOT'
+    version: '0.3.0-SNAPSHOT'
 ]
 
 ext.depsXbupDataJava = [
