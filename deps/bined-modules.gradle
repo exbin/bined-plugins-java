@@ -1,22 +1,34 @@
 // Shared modules build
 
-version = '0.2.2'
-def repositoryName = "xbup-java"
+version = '0.3.0-SNAPSHOT'
+def repositoryName = "bined"
 def githubProfile = 'exbin'
-def libraryUrl = 'https://xbup.exbin.org'
+def libraryUrl = 'https://bined.exbin.org/editor'
 
-ext.depsThis = 'XbupJava'
+ext.depsThis = 'Bined'
 
-ext.depsXbupJava = [
+ext.depsBined = [
     githubProfile: githubProfile,
     githubRepo   : repositoryName,
     version      : version
 ]
 
+ext.depsExbinFrameworkJava = [
+    githubProfile: 'exbin',
+    githubRepo: 'exbin-framework-java',
+    version: '0.3.0-SNAPSHOT'
+]
+
 ext.depsExbinAuxiliaryJava = [
     githubProfile: 'exbin',
-    githubRepo   : 'exbin-auxiliary-java',
-    version      : '0.2.1'
+    githubRepo: 'exbin-auxiliary-java',
+    version: '0.3.0-SNAPSHOT'
+]
+
+ext.depsBinedLibJava = [
+    githubProfile: 'exbin',
+    githubRepo: 'bined-lib-java',
+    version: '0.3.0-SNAPSHOT'
 ]
 
 import org.gradle.util.VersionNumber
@@ -44,8 +56,8 @@ tasks.withType(JavaCompile) {
 }
 
 // Disable tests on build
-if (!gradle.startParameter.taskNames.any { it.endsWith("test") }) {
-    tasks.withType(Test) { enabled = false }
+if (!gradle.startParameter.taskNames.any {it.endsWith("test")}) {
+    tasks.withType(Test) {enabled = false}
 }
 
 task testJar(type: Jar, dependsOn: testClasses) {
@@ -67,13 +79,7 @@ task sourceJar(type: Jar) {
     from sourceSets.main.java
 }
 
-javadoc {
-    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar (type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
@@ -82,12 +88,12 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourceJar {
-                archiveClassifier = 'sources'
-            }
-            artifact(javadocJar) {
-                classifier = 'javadoc'
-            }
+            //            artifact sourceJar {
+            //                archiveClassifier = 'sources'
+            //            }
+            //            artifact (javadocJar) {
+            //                classifier = 'javadoc'
+            //            }
 
             pom.withXml {
                 asNode().children().last() + {
@@ -124,57 +130,3 @@ publishing {
     }
 }
 
-if (gradle.startParameter.taskNames.contains("uploadArchives") && !version.endsWith('-SNAPSHOT')) {
-    artifacts {
-        archives javadocJar, sourceJar
-    }
-
-    signing {
-        sign configurations.archives
-    }
-
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-//                beforeDeployment {
-//                    MavenDeployment deployment -> signing.signPom(deployment)
-//                }
-
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: ossrhUsername, password: ossrhPassword)
-                }
-
-                pom.project {
-                    name libraryName
-                    packaging 'jar'
-                    description libraryDescription
-                    url libraryUrl
-
-                    scm {
-                        url "https://github.com/${githubProfile}/${repositoryName}"
-                        connection "cm:git:git://github.com/${githubProfile}/${repositoryName}.git"
-                        developerConnection "scm:git:git@github.com:${githubProfile}/${repositoryName}.git"
-                    }
-                    licenses {
-                        license {
-                            name 'Apache License, Version 2.0'
-                            url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'HajdaM'
-                            name 'Miroslav Hajda'
-                            email 'hajdam@users.sf.net'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<module>
+  <id>org.exbin.framework.bined.kaitai.BinedKaitaiModule</id>
+  <name>BinEd Kaitai Module</name>
+  <provider>ExBin Project</provider>
+  <homepage>https://bined.exbin.org</homepage>
+  <description>Binary editor plugin supporting Kaitai decompilers</description>
+  <dependency>
+    <library maven="io.kaitai:kaitai-struct-compiler_2.12:0.10" />
+    <library maven="org.scala-lang:scala-library:2.12.12" />
+    <library maven="com.github.scopt:scopt_2.12:3.6.0" />
+    <library maven="com.lihaoyi:fastparse_2.12:1.0.0" />
+    <library maven="org.yaml:snakeyaml:1.28" />
+  </dependency>
+</module>

@@ -1,8 +1,29 @@
 // Shared plugins build
 
 version = '0.3.0-SNAPSHOT'
-def repositoryName = "xbup-plugins-java"
-def libraryUrl = 'http://xbup.exbin.org'
+def repositoryName = "bined-plugins-java"
+def githubProfile = 'exbin'
+def libraryUrl = 'https://bined.exbin.org/'
+
+ext.depsThis = 'BinedPluginsJava'
+
+ext.depsPluginsJava = [
+    githubProfile: githubProfile,
+    githubRepo   : repositoryName,
+    version      : version
+]
+
+ext.depsBined = [
+    githubProfile: 'exbin',
+    githubRepo: 'bined',
+    version: '0.3.0-SNAPSHOT'
+]
+
+ext.depsExbinFrameworkJava = [
+    githubProfile: 'exbin',
+    githubRepo: 'exbin-framework-java',
+    version: '0.3.0-SNAPSHOT'
+]
 
 ext.depsExbinAuxiliaryJava = [
     githubProfile: 'exbin',
@@ -10,36 +31,19 @@ ext.depsExbinAuxiliaryJava = [
     version: '0.3.0-SNAPSHOT'
 ]
 
-ext.depsXbupDataJava = [
+ext.depsBinedLibJava = [
     githubProfile: 'exbin',
-    githubRepo: 'xbup-data-java',
-    version: '0.2.1-SNAPSHOT'
+    githubRepo: 'bined-lib-java',
+    version: '0.3.0-SNAPSHOT'
 ]
 
-ext.depsXbupJava = [
-    githubProfile: 'exbin',
-    githubRepo: 'xbup-java',
-    version: '0.2.0-SNAPSHOT'
-]
-
-ext.depsThis = 'XbupPluginsJava'
-
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-    dependencies {
-        classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
-    }
-}
-
-['java', 'maven', 'at.bxm.svntools'].each {
-    apply plugin: it
-}
 import org.gradle.util.VersionNumber
 
+apply from: '../deps_processing.gradle'
+
 sourceCompatibility = '1.8'
+
+targetCompatibility = '1.8'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -63,7 +67,7 @@ if (!gradle.startParameter.taskNames.any {it.endsWith("test")}) {
 }
 
 task testJar(type: Jar, dependsOn: testClasses) {
-    classifier "tests"
+    archiveClassifier = 'tests'
     archiveBaseName = "test-${project.archivesBaseName}"
     from sourceSets.test.output
 }
@@ -77,75 +81,58 @@ artifacts {
 }
 
 task sourceJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.java
 }
 
-javadoc {
-    if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
 task javadocJar (type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
 
-def createSvnDownloadTask(def moduleName, def svnUrlValue, def targetDirValue) {
-    return tasks.create("svnDownload${moduleName}", at.bxm.gradleplugins.svntools.tasks.SvnExport) {
-        svnUrl = svnUrlValue
-        targetDir = targetDirValue
-    }
-}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            //            artifact sourceJar {
+            //                archiveClassifier = 'sources'
+            //            }
+            //            artifact (javadocJar) {
+            //                classifier = 'javadoc'
+            //            }
 
-// Module dependency processing
-// - local maven repository module will be used if available
-// - otherwise module will be download to deps folder
-project.dependencies.ext.moduleDep = { depsName, packageName, moduleName ->
-    if (depsName == ext.depsThis) {
-        return project(":modules:" + moduleName)
-    }
-
-    def mavenModuleDir = repositories.mavenLocal().url.path + packageName.replace('.', '/') + '/' + moduleName + '/' + ext['deps' + depsName].version
-    if (new File(mavenModuleDir).isDirectory()) {
-        // Use maven package if available
-        return packageName + ':' + moduleName + ':' + ext['deps' + depsName].version
-    }
-
-    def depsDir = rootProject.buildDir.parent + '/deps/'
-    if (gradle.startParameter.taskNames == ['clean']) {
-        return project(':deps')
-    }
-
-    def depModuleDir = depsDir + moduleName
-    if (!new File(depModuleDir).isDirectory()) {
-        // Download module
-        def githubModulePath = 'https://github.com/' + ext['deps' + depsName].githubProfile + '/' + ext['deps' + depsName].githubRepo + '/trunk/modules/' + moduleName
-        println 'Downloading ' + githubModulePath
-
-        createSvnDownloadTask(moduleName, githubModulePath, depModuleDir)
-        tasks["svnDownload${moduleName}"].execute()
-        
-        // Report as placeholder dependency
-        if (!new File(depsDir + "_placeholder").exists()) {
-            new File(depsDir + "_placeholder").mkdir()
+            pom.withXml {
+                asNode().children().last() + {
+                    resolveStrategy = Closure.DELEGATE_FIRST
+                    name libraryName
+                    description libraryDescription
+                    url libraryUrl
+                    scm {
+                        url "https://github.com/${githubProfile}/${repositoryName}"
+                        connection "cm:git:git://github.com/${githubProfile}/${repositoryName}.git"
+                        developerConnection "scm:git:git@github.com:${githubProfile}/${repositoryName}.git"
+                    }
+                    licenses {
+                        license {
+                            name 'Apache License, Version 2.0'
+                            url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id 'HajdaM'
+                            name 'Miroslav Hajda'
+                            email 'hajdam@users.sf.net'
+                        }
+                    }
+                }
+            }
         }
-        return project(':deps')
     }
 
-    if (new File(depsDir + "_placeholder").exists()) {
-        return project(':deps')
+    repositories {
+        mavenLocal()
     }
-
-    return project(':deps:' + moduleName)
-}
-
-project.dependencies.ext.moduleDepPath = { depsName, moduleName ->
-    if (depsName == ext.depsThis) {
-        return ":modules:${moduleName}"
-    }
-
-    return ":deps:${moduleName}"
 }
 

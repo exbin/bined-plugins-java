@@ -1,4 +1,4 @@
-// Shared modules build settings
+// Shared core build settings
 
 def modifyPath(project) {
     def rootProjectDir = rootProject.projectDir.parentFile.parent

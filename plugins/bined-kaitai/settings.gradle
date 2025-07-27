@@ -1,0 +1,6 @@
+rootProject.name = 'bined-kaitai'
+
+if (rootProject.path == ':') {
+}
+
+apply from: '../plugins-settings.gradle'

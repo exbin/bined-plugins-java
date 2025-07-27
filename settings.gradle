@@ -1,13 +1,10 @@
-rootProject.name = 'deltahex-plugins'
+rootProject.name = 'bined-plugins-java'
 
 include ":deps"
 
-include ":plugins:xbup-plugin-audio"
-include ":plugins:xbup-plugin-basic"
-include ":plugins:xbup-plugin-picture"
-include ":plugins:xbup-plugin-time"
+include ":plugins:bined-inspector-kaitai"
 
-File placeholder = file("deps/_placeholder")
+File placeholder = file("deps/.downloaded")
 if (placeholder.exists()) {
     placeholder.delete()
 }
@@ -16,9 +13,14 @@ if (!gradle.startParameter.taskNames.contains("clean") || gradle.startParameter.
     File depsDir = file("deps")
     // Include all downloaded dependency modules
     depsDir.listFiles().each() { childFile ->
-        if (childFile.isDirectory()) {
+        if (childFile.isDirectory() && childFile.name != ".gradle") {
             include ':deps:' + childFile.name
         }
     }
 }
 
+gradle.allprojects {
+  ext {
+    depsRoot = 'BinedPluginsJava'
+  }
+}

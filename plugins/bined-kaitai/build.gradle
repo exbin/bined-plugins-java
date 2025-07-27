@@ -8,7 +8,7 @@ group = 'org.exbin.framework'
 ext.libraryName = 'BinEd KaiTai Support Hexadecimal Editor Framework Library'
 ext.libraryDescription = 'BinEd KaiTai support hexadecimal editor framework library'
 
-apply from: '../bined-plugins.gradle'
+apply from: '../plugins.gradle'
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = ''
@@ -23,10 +23,14 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'io.kaitai', name: 'kaitai-struct-compiler_2.12', version: '0.10'
+    implementation group: 'org.scala-lang', name: 'scala-library', version: '2.12.12'
+    implementation group: 'com.github.scopt', name: 'scopt_2.12', version: '3.6.0'
+    implementation group: 'com.lihaoyi', name: 'fastparse_2.12', version: '1.0.0'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: '1.28'
     implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-core')
     implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-swing')
-    implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-extended')
-    implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-swing-extended')
+    implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-operation')
     implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-operation-swing')
     implementation moduleDep('BinedLibJava', 'org.exbin.bined', 'modules', 'bined-highlight-swing')
     implementation moduleDep('ExbinAuxiliaryJava', 'org.exbin.auxiliary', 'modules', 'binary_data')
@@ -45,6 +49,7 @@ dependencies {
     implementation moduleDep('ExbinFrameworkJava', 'org.exbin.framework', 'modules', 'exbin-framework-editor-text')
     implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined')
     implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined-search')
+    implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined-inspector')
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     testImplementation group : 'junit', name: 'junit', version: '4.13.2'
 }

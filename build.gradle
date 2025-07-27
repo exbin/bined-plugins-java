@@ -2,8 +2,7 @@ version = '0.3.0-SNAPSHOT'
 
 buildscript {
     repositories {
-        mavenLocal()
-        jcenter()
+        mavenCentral()
     }
 }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.exbin.framework.bined.inspector.kaitai;
+package org.exbin.framework.bined.kaitai;
 
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
@@ -26,20 +26,20 @@ import org.exbin.framework.editor.api.EditorProviderVariant;
 import org.exbin.framework.language.api.LanguageModuleApi;
 
 /**
- * Binary editor inspector using Kaitai module.
+ * Binary editor plugin supporting Kaitai decompilers.
  *
  * @author ExBin Project (https://exbin.org)
  */
 @ParametersAreNonnullByDefault
-public class BinedInspectorKaitaiModule implements Module {
+public class BinedKaitaiModule implements Module {
 
-    public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedInspectorKaitaiModule.class);
+    public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedKaitaiModule.class);
 
     private java.util.ResourceBundle resourceBundle = null;
 
     private EditorProvider editorProvider;
 
-    public BinedInspectorKaitaiModule() {
+    public BinedKaitaiModule() {
     }
 
     public void initEditorProvider(EditorProviderVariant variant) {
@@ -52,7 +52,7 @@ public class BinedInspectorKaitaiModule implements Module {
     @Nonnull
     public ResourceBundle getResourceBundle() {
         if (resourceBundle == null) {
-            resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(BinedInspectorKaitaiModule.class);
+            resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(BinedKaitaiModule.class);
         }
 
         return resourceBundle;

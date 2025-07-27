@@ -1,13 +1,13 @@
-// Shared modules build
+// Shared core build
 
-version = '0.2.2'
-def repositoryName = "xbup-data-java"
+version = '0.3.0-SNAPSHOT'
+def repositoryName = "exbin-framework-java"
 def githubProfile = 'exbin'
-def libraryUrl = 'https://xbup.exbin.org'
+def libraryUrl = 'https://framework.exbin.org'
 
-ext.depsThis = 'XbupDataJava'
+ext.depsThis = 'ExbinFrameworkJava'
 
-ext.depsXbupDataJava = [
+ext.depsExbinFrameworkJava = [
     githubProfile: githubProfile,
     githubRepo   : repositoryName,
     version      : version
@@ -16,13 +16,7 @@ ext.depsXbupDataJava = [
 ext.depsExbinAuxiliaryJava = [
     githubProfile: 'exbin',
     githubRepo: 'exbin-auxiliary-java',
-    version: '0.2.1'
-]
-
-ext.depsXbupJava = [
-    githubProfile: 'exbin',
-    githubRepo: 'xbup-java',
-    version: '0.2.2'
+    version: '0.3.0-SNAPSHOT'
 ]
 
 import org.gradle.util.VersionNumber
@@ -82,18 +76,18 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            artifact sourceJar {
-                archiveClassifier = 'sources'
-            }
-            artifact (javadocJar) {
-                classifier = 'javadoc'
-            }
+            //            artifact sourceJar {
+            //                archiveClassifier = 'sources'
+            //            }
+            //            artifact (javadocJar) {
+            //                classifier = 'javadoc'
+            //            }
 
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name libraryName
-                    description libraryDescription
+                    name 'ExBin Framework'
+                    description 'Library for ExBin Framework'
                     url libraryUrl
                     scm {
                         url "https://github.com/${githubProfile}/${repositoryName}"
@@ -102,8 +96,8 @@ publishing {
                     }
                     licenses {
                         license {
-                            name 'LGPL license, Version 3.0'
-                            url 'https://www.gnu.org/licenses/lgpl.txt'
+                            name 'Apache License, Version 2.0'
+                            url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                             distribution 'repo'
                         }
                     }
