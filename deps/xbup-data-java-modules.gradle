@@ -1,13 +1,13 @@
 // Shared modules build
 
 version = '0.3.0-SNAPSHOT'
-def repositoryName = "exbin-framework-java"
+def repositoryName = "xbup-data-java"
 def githubProfile = 'exbin'
-def libraryUrl = 'https://framework.exbin.org'
+def libraryUrl = 'https://xbup.exbin.org'
 
-ext.depsThis = 'ExbinFrameworkJava'
+ext.depsThis = 'XbupDataJava'
 
-ext.depsExbinFrameworkJava = [
+ext.depsXbupDataJava = [
     githubProfile: githubProfile,
     githubRepo   : repositoryName,
     version      : version
@@ -16,15 +16,22 @@ ext.depsExbinFrameworkJava = [
 ext.depsExbinAuxiliaryJava = [
     githubProfile: 'exbin',
     githubRepo: 'exbin-auxiliary-java',
+    version: '0.2.2-SNAPSHOT'
+]
+
+ext.depsXbupJava = [
+    githubProfile: 'exbin',
+    githubRepo: 'xbup-java',
     version: '0.3.0-SNAPSHOT'
 ]
 
+import org.gradle.util.VersionNumber
+
 apply from: '../deps_processing.gradle'
 
-java {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-}
+sourceCompatibility = '1.8'
+
+targetCompatibility = '1.8'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
@@ -32,6 +39,13 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     doFirst {
         options.fork = true
+        if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+            if (VersionNumber.parse(gradle.gradleVersion) >= VersionNumber.parse('5.0')) {
+                options.bootstrapClasspath = files("${System.properties['java.home']}/lib/rt.jar", "${System.properties['java.home']}/jre/lib/jsse.jar")
+            } else {
+                options.bootClasspath = "${System.properties['java.home']}/lib/rt.jar$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar"
+            }
+        }
     }
 }
 
@@ -42,9 +56,7 @@ if (!gradle.startParameter.taskNames.any {it.endsWith("test")}) {
 
 task testJar(type: Jar, dependsOn: testClasses) {
     archiveClassifier = 'tests'
-    base {
-        archivesName = "test-${project.name}"
-    }
+    archiveBaseName = "test-${project.archivesBaseName}"
     from sourceSets.test.output
 }
 
@@ -70,12 +82,12 @@ publishing {
     publications {
         maven(MavenPublication) {
             from components.java
-            //            artifact sourceJar {
-            //                archiveClassifier = 'sources'
-            //            }
-            //            artifact (javadocJar) {
-            //                classifier = 'javadoc'
-            //            }
+            artifact sourceJar {
+                archiveClassifier = 'sources'
+            }
+            artifact (javadocJar) {
+                classifier = 'javadoc'
+            }
 
             pom.withXml {
                 asNode().children().last() + {
@@ -90,8 +102,8 @@ publishing {
                     }
                     licenses {
                         license {
-                            name 'Apache License, Version 2.0'
-                            url 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name 'LGPL license, Version 3.0'
+                            url 'https://www.gnu.org/licenses/lgpl.txt'
                             distribution 'repo'
                         }
                     }
