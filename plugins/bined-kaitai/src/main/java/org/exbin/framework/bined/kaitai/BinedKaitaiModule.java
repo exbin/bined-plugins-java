@@ -18,12 +18,17 @@ package org.exbin.framework.bined.kaitai;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import org.exbin.framework.App;
-import org.exbin.framework.Module;
 import org.exbin.framework.ModuleUtils;
-import org.exbin.framework.editor.api.EditorProvider;
-import org.exbin.framework.editor.api.EditorProviderVariant;
+import org.exbin.framework.PluginModule;
 import org.exbin.framework.language.api.LanguageModuleApi;
+import org.exbin.framework.sidebar.api.AbstractSideBarComponent;
+import org.exbin.framework.sidebar.api.SideBarComponent;
+import org.exbin.framework.sidebar.api.SideBarDefinitionManagement;
+import org.exbin.framework.sidebar.api.SideBarModuleApi;
+import org.exbin.framework.ui.api.UiModuleApi;
 
 /**
  * Binary editor plugin supporting Kaitai decompilers.
@@ -31,22 +36,23 @@ import org.exbin.framework.language.api.LanguageModuleApi;
  * @author ExBin Project (https://exbin.org)
  */
 @ParametersAreNonnullByDefault
-public class BinedKaitaiModule implements Module {
+public class BinedKaitaiModule implements PluginModule {
 
     public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedKaitaiModule.class);
 
     private java.util.ResourceBundle resourceBundle = null;
 
-    private EditorProvider editorProvider;
-
     public BinedKaitaiModule() {
     }
 
-    public void initEditorProvider(EditorProviderVariant variant) {
-    }
-
-    public void setEditorProvider(EditorProvider editorProvider) {
-        this.editorProvider = editorProvider;
+    @Override
+    public void register() {
+        UiModuleApi uiModule = App.getModule(UiModuleApi.class);
+        uiModule.addPostInitAction(() -> {
+            registerSideBar();
+            // registerMenuActions();
+            // registerPopupMenuActions();
+        });
     }
 
     @Nonnull
@@ -56,5 +62,28 @@ public class BinedKaitaiModule implements Module {
         }
 
         return resourceBundle;
+    }
+
+    public void registerSideBar() {
+        SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
+        SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarManager(SideBarModuleApi.MODULE_ID);
+        AbstractSideBarComponent sideBarComponent = new AbstractSideBarComponent() {
+            @Override
+            public JComponent createComponent() {
+                return new JLabel("TEST1");
+            }
+        };
+        sideBarComponent.putValue(SideBarComponent.KEY_ID, "test1");
+        sideBarComponent.putValue(SideBarComponent.KEY_NAME, "TEST1");
+        sideBarManager.registerSideBarComponent(sideBarComponent);
+        sideBarComponent = new AbstractSideBarComponent() {
+            @Override
+            public JComponent createComponent() {
+                return new JLabel("TEST2");
+            }
+        };
+        sideBarComponent.putValue(SideBarComponent.KEY_ID, "test2");
+        sideBarComponent.putValue(SideBarComponent.KEY_NAME, "TEST2");
+        sideBarManager.registerSideBarComponent(sideBarComponent);
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <module>
-  <id>org.exbin.framework.bined.kaitai.BinedKaitaiModule</id>
+  <plugin>org.exbin.framework.bined.kaitai.BinedKaitaiModule</plugin>
   <name>BinEd Kaitai Module</name>
   <provider>ExBin Project</provider>
   <homepage>https://bined.exbin.org</homepage>
