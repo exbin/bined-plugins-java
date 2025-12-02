@@ -15,7 +15,11 @@
  */
 package org.exbin.framework.bined.kaitai.gui;
 
+import java.awt.Component;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
@@ -38,10 +42,23 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
     private void init() {
         parserTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        parserTree.setCellRenderer(new DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                if (value instanceof TreeNode) {
+                    value = "X " + ((TreeNode) value).toString();
+                }
+                return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            }
+        });
     }
 
     public void setController(Controller controller) {
         this.controller = controller;
+    }
+
+    public void setCurrentDef(String definition) {
+        comboBox.addItem(definition);
     }
 
     /**
@@ -135,7 +152,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     public interface Controller {
 
         void manageDefinitions();
-        
+
         void statusDetail();
     }
 }

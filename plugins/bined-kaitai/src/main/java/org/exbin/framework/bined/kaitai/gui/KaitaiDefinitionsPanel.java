@@ -15,14 +15,21 @@
  */
 package org.exbin.framework.bined.kaitai.gui;
 
+import java.awt.Component;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
+import org.exbin.framework.bined.kaitai.DefinitionRecord;
 
 /**
  * Kaitai definitions panel.
@@ -43,6 +50,29 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
 
     private void init() {
         definitionsTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        definitionsTree.setCellRenderer(new DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                if (value instanceof DefaultMutableTreeNode) {
+                    Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
+                    if (userObject instanceof DefinitionRecord) {
+                        value = "Y " + ((DefinitionRecord) userObject).getFileName();
+                    } else {
+                        value = "X " + ((TreeNode) value).toString();
+                    }
+                }
+                return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            }
+        });
+    }
+    
+    @Nonnull
+    public Optional<DefaultMutableTreeNode> getSelectedNode() {
+        TreePath[] selectionPaths = definitionsTree.getSelectionPaths();
+        if (selectionPaths.length == 0) {
+            return Optional.empty();
+        }
+        return Optional.of((DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent());
     }
 
     @Nonnull

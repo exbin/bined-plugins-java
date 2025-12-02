@@ -23,10 +23,12 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,7 +93,8 @@ public class BinedKaitaiModule implements PluginModule {
         AbstractSideBarComponent sideBarComponent = new AbstractSideBarComponent() {
             @Override
             public JComponent createComponent() {
-                KaitaiSidePanel sidePanel = new KaitaiSidePanel();
+                KaitaiSideManager sideManager = new KaitaiSideManager();
+                KaitaiSidePanel sidePanel = sideManager.getSidePanel();
                 sidePanel.setController(new KaitaiSidePanel.Controller() {
                     @Override
                     public void manageDefinitions() {
@@ -108,6 +111,13 @@ public class BinedKaitaiModule implements PluginModule {
                         windowModule.addHeaderPanel(dialog.getWindow(), definitionsPanel.getClass(), definitionsPanel.getResourceBundle());
                         controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
                             if (actionType == DefaultControlController.ControlActionType.OK) {
+                                Optional<DefaultMutableTreeNode> optSelectedNode = definitionsPanel.getSelectedNode();
+                                if (optSelectedNode.isPresent()) {
+                                    Object userObject = optSelectedNode.get().getUserObject();
+                                    if (userObject instanceof DefinitionRecord) {
+                                        sideManager.loadFrom((DefinitionRecord) userObject);
+                                    }
+                                }
                             }
                             dialog.close();
                             dialog.dispose();
@@ -132,53 +142,66 @@ public class BinedKaitaiModule implements PluginModule {
 
     private void readAvailableFormats(DefaultMutableTreeNode formatsRootNode) {
         String formatsPath = "/org/exbin/framework/bined/kaitai/resources/formats/";
-        Path rootPath = null;
+        FileSystem fileSystem = null;
         try {
-            URI formats = getClass().getResource(formatsPath).toURI();
-            FileSystem fileSystem = FileSystems.newFileSystem(formats, Collections.<String, Object>emptyMap());
-            rootPath = fileSystem.getPath(formatsPath);
-        } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        if (rootPath == null) {
-            return;
-        }
-
-        List<PathRecord> records = new ArrayList<>();
-        records.add(new PathRecord(rootPath, formatsRootNode));
-        while (!records.isEmpty()) {
-            PathRecord record = records.remove(records.size() - 1);
-            Path path = record.path;
+            Path rootPath = null;
             try {
-                Stream<Path> walk = Files.walk(path, 1);
-                for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
-                    Path childPath = it.next();
-                    if (childPath == path) {
-                        continue;
-                    }
-
-                    String fileName = "";
-                    if (childPath.getNameCount() > 0) {
-                        fileName = childPath.getName(childPath.getNameCount() - 1).toString();
-                    }
-                    if (fileName.endsWith(File.separator)) {
-                        fileName = fileName.substring(0, fileName.length() - 1);
-                        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
-                        record.node.add(childNode);
-                        records.add(new PathRecord(childPath, childNode));
-                    } else if (fileName.endsWith(".ksy")) {
-                        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
-                        record.node.add(childNode);
-                    }
-                }
-            } catch (IOException ex) {
+                URI formats = getClass().getResource(formatsPath).toURI();
+                fileSystem = FileSystems.newFileSystem(formats, Collections.<String, Object>emptyMap());
+                rootPath = fileSystem.getPath(formatsPath);
+            } catch (URISyntaxException | IOException ex) {
                 Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            if (rootPath == null) {
+                return;
+            }
+
+            List<PathRecord> records = new ArrayList<>();
+            records.add(new PathRecord(rootPath, formatsRootNode));
+            while (!records.isEmpty()) {
+                PathRecord record = records.remove(records.size() - 1);
+                Path path = record.path;
+                try {
+                    Stream<Path> walk = Files.walk(path, 1);
+                    for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
+                        Path childPath = it.next();
+                        if (childPath == path) {
+                            continue;
+                        }
+
+                        String fileName = "";
+                        if (childPath.getNameCount() > 0) {
+                            fileName = childPath.getName(childPath.getNameCount() - 1).toString();
+                        }
+                        if (fileName.endsWith(File.separator)) {
+                            fileName = fileName.substring(0, fileName.length() - 1);
+                            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
+                            record.node.add(childNode);
+                            records.add(new PathRecord(childPath, childNode));
+                        } else if (fileName.endsWith(".ksy")) {
+                            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, childPath.toUri()));
+                            record.node.add(childNode);
+                        }
+                    }
+                } catch (IOException ex) {
+                    Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } finally {
+            try {
+                if (fileSystem != null) {
+                    fileSystem.close();
+                }
+            } catch (Throwable tw) {
+                // ignore
             }
         }
     }
-    
+
+    @ParametersAreNonnullByDefault
     private static class PathRecord {
+
         Path path;
         DefaultMutableTreeNode node;
 
