@@ -23,7 +23,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -37,6 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.framework.App;
 import org.exbin.framework.ModuleUtils;
 import org.exbin.framework.PluginModule;
@@ -115,7 +115,7 @@ public class BinedKaitaiModule implements PluginModule {
                                 if (optSelectedNode.isPresent()) {
                                     Object userObject = optSelectedNode.get().getUserObject();
                                     if (userObject instanceof DefinitionRecord) {
-                                        sideManager.loadFrom((DefinitionRecord) userObject);
+                                        sideManager.loadFrom((DefinitionRecord) userObject, new ByteArrayEditableData());
                                     }
                                 }
                             }

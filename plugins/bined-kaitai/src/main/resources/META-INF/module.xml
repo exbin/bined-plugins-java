@@ -6,10 +6,12 @@
   <homepage>https://bined.exbin.org</homepage>
   <description>Binary editor plugin supporting Kaitai decompilers</description>
   <dependency>
-    <library maven="io.kaitai:kaitai-struct-compiler_2.12:0.10" />
-    <library maven="org.scala-lang:scala-library:2.12.12" />
-    <library maven="com.github.scopt:scopt_2.12:3.6.0" />
-    <library maven="com.lihaoyi:fastparse_2.12:1.0.0" />
-    <library maven="org.yaml:snakeyaml:1.28" />
+    <library maven="io.kaitai:kaitai-struct-runtime:0.11" />
+    <library maven="io.kaitai:kaitai-struct-compiler_2.13:0.11" />
+    <library maven="org.scala-lang:scala-library:2.13.13" />
+    <library maven="com.github.scopt:scopt_2.13:4.1.0" />
+    <library maven="com.lihaoyi:fastparse_2.13:2.3.3" />
+    <library maven="org.yaml:snakeyaml:2.0" />
+    <library maven="org.mdkt.compiler:InMemoryJavaCompiler:1.3.0" />
   </dependency>
 </module>

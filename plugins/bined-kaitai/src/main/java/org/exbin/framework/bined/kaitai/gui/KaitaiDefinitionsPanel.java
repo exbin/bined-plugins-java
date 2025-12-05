@@ -49,6 +49,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     }
 
     private void init() {
+        definitionsTree.setShowsRootHandles(true);
         definitionsTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         definitionsTree.setCellRenderer(new DefaultTreeCellRenderer() {
             @Override

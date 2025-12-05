@@ -16,6 +16,7 @@
 package org.exbin.framework.bined.kaitai.gui;
 
 import java.awt.Component;
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -41,6 +42,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     }
 
     private void init() {
+        parserTree.setShowsRootHandles(true);
         parserTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         parserTree.setCellRenderer(new DefaultTreeCellRenderer() {
             @Override
@@ -59,6 +61,11 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
     public void setCurrentDef(String definition) {
         comboBox.addItem(definition);
+    }
+
+    @Nonnull
+    public JTree getParserTree() {
+        return parserTree;
     }
 
     /**
