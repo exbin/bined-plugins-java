@@ -1,6 +1,4 @@
-package io.kaitai.struct.visualizer;
-
-import io.kaitai.struct.datatype.DataType.StructType;
+package org.exbin.framework.bined.kaitai.visualizer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -12,8 +10,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public class DataNode extends DefaultMutableTreeNode {
+
     private boolean explored = false;
     private final int depth;
     private Object value;
@@ -68,7 +69,7 @@ public class DataNode extends DefaultMutableTreeNode {
             } else if (value instanceof ArrayList) {
                 ArrayList list = (ArrayList) value;
                 sb.append(String.format(" (%d = 0x%x entries)", list.size(), list.size()));
-            } else if (value instanceof StructType) {
+            } else if (isStructType(value)) {
                 // do not expand
             } else {
                 sb.append(" = ");
@@ -93,8 +94,9 @@ public class DataNode extends DefaultMutableTreeNode {
     }
 
     public void explore(final DefaultTreeModel model, final PropertyChangeListener progressListener) {
-        if (explored)
+        if (explored) {
             return;
+        }
 
         SwingWorker<List<DataNode>, Void> worker = new SwingWorker<List<DataNode>, Void>() {
             @Override
@@ -136,19 +138,21 @@ public class DataNode extends DefaultMutableTreeNode {
 
                         children.add(new DataNode(depth + 1, el, arrayIdxStr));
                     }
-                } else if (value instanceof StructType) {
-                    DebugAids debug = DebugAids.fromStruct((StructType) value);
+                } else if (isStructType(value)) {
+                    AttrPositions debug = AttrPositions.fromStruct(value);
 
                     for (Method m : cl.getDeclaredMethods()) {
                         // Ignore static methods, i.e. "fromFile"
-                        if (Modifier.isStatic(m.getModifiers()))
+                        if (Modifier.isStatic(m.getModifiers())) {
                             continue;
+                        }
 
                         String methodName = m.getName();
 
                         // Ignore all internal methods, i.e. "_io", "_parent", "_root"
-                        if (methodName.charAt(0) == '_')
+                        if (methodName.charAt(0) == '_') {
                             continue;
+                        }
 
                         try {
                             Field field = cl.getDeclaredField(methodName);
@@ -187,16 +191,25 @@ public class DataNode extends DefaultMutableTreeNode {
         worker.execute();
     }
 
+    private static boolean isStructType(Object value) {
+        Class<?> superClass = value.getClass().getSuperclass();
+        if ("io.kaitai.struct.datatype.DataType.StructType".equals(superClass.getName())) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean isImmediate(Object value, Class<?> cl) {
-        return cl.isPrimitive() ||
-                value instanceof Byte ||
-                value instanceof Short ||
-                value instanceof Integer ||
-                value instanceof Long ||
-                value instanceof Float ||
-                value instanceof Double ||
-                value instanceof String ||
-                value instanceof Boolean ||
-                value instanceof byte[];
+        return cl.isPrimitive()
+                || value instanceof Byte
+                || value instanceof Short
+                || value instanceof Integer
+                || value instanceof Long
+                || value instanceof Float
+                || value instanceof Double
+                || value instanceof String
+                || value instanceof Boolean
+                || value instanceof byte[];
     }
 }

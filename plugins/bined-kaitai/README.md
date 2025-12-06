@@ -5,9 +5,9 @@ Plugin to support Kaitai Struct parsers for binary structures.
 
 Kaitai Homepage: https://kaitai.io/  
 
-Libraries:
+Kaitai libraries:
 
-- Visualizer: https://github.com/kaitai-io/kaitai_struct_visualizer
+- Runtime: https://github.com/kaitai-io/kaitai_struct_java_runtime
 - Compiler: https://github.com/kaitai-io/kaitai_struct_compiler
 
 License

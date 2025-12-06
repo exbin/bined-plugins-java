@@ -60,6 +60,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     }
 
     public void setCurrentDef(String definition) {
+        comboBox.removeAllItems();
         comboBox.addItem(definition);
     }
 

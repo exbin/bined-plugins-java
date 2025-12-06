@@ -1,18 +1,19 @@
-package io.kaitai.struct.visualizer;
-
-import io.kaitai.struct.datatype.DataType.StructType;
+package org.exbin.framework.bined.kaitai.visualizer;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class DebugAids {
+@ParametersAreNonnullByDefault
+public class AttrPositions {
+
     private Map<String, Integer> attrStart;
     private Map<String, Integer> attrEnd;
     private Map<String, ArrayList<Integer>> arrStart;
     private Map<String, ArrayList<Integer>> arrEnd;
 
-    private DebugAids(
+    private AttrPositions(
             Map<String, Integer> attrStart,
             Map<String, Integer> attrEnd,
             Map<String, ArrayList<Integer>> arrStart,
@@ -42,7 +43,7 @@ public class DebugAids {
         return (positions != null) ? positions.get(idx) : null;
     }
 
-    public static DebugAids fromStruct(StructType struct) throws NoSuchFieldException, IllegalAccessException {
+    public static AttrPositions fromStruct(Object struct) throws NoSuchFieldException, IllegalAccessException {
         Class<?> ksyClass = struct.getClass();
 
         Field fAttrStart = ksyClass.getDeclaredField("_attrStart");
@@ -50,7 +51,7 @@ public class DebugAids {
         Field fArrStart = ksyClass.getDeclaredField("_arrStart");
         Field fArrEnd = ksyClass.getDeclaredField("_arrEnd");
 
-        return new DebugAids(
+        return new AttrPositions(
                 (Map<String, Integer>) fAttrStart.get(struct),
                 (Map<String, Integer>) fAttrEnd.get(struct),
                 (Map<String, ArrayList<Integer>>) fArrStart.get(struct),
