@@ -48,7 +48,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
             @Override
             public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
                 if (value instanceof TreeNode) {
-                    value = "X " + ((TreeNode) value).toString();
+                    value = ((TreeNode) value).toString();
                 }
                 return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
             }

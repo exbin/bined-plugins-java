@@ -57,16 +57,16 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                 if (value instanceof DefaultMutableTreeNode) {
                     Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
                     if (userObject instanceof DefinitionRecord) {
-                        value = "Y " + ((DefinitionRecord) userObject).getFileName();
+                        value = ((DefinitionRecord) userObject).getFileName();
                     } else {
-                        value = "X " + ((TreeNode) value).toString();
+                        value = ((TreeNode) value).toString();
                     }
                 }
                 return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
             }
         });
     }
-    
+
     @Nonnull
     public Optional<DefaultMutableTreeNode> getSelectedNode() {
         TreePath[] selectionPaths = definitionsTree.getSelectionPaths();
@@ -86,7 +86,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         definitionsTree.setModel(definitionsTreeModel);
         expandAll();
     }
-    
+
     private void expandAll() {
         int index = 0;
         while (index < definitionsTree.getRowCount()) {
