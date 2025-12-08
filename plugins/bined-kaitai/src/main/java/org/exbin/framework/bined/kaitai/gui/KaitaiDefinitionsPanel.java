@@ -114,6 +114,8 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
 
         filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/view-filter.png"))); // NOI18N
 
+        filterTextField.setEnabled(false);
+
         definitionsScrollPane.setViewportView(definitionsTree);
 
         addButton.setText(resourceBundle.getString("addButton.text")); // NOI18N

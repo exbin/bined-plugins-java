@@ -94,6 +94,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
         parserTreeScrollPane.setViewportView(parserTree);
 
+        statusLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/emblem-system-3.png"))); // NOI18N
         statusLabel.setText("Status");
 
         statusDetailButton.setText("...");

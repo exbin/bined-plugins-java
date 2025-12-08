@@ -56,6 +56,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="filterTextField">
+      <Properties>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
     </Component>
     <Container class="javax.swing.JScrollPane" name="definitionsScrollPane">
       <AuxValues>

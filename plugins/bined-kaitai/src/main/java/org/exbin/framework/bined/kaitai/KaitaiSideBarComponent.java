@@ -42,10 +42,12 @@ import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinaryDataComponent;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
+import org.exbin.framework.bined.kaitai.gui.KaitaiStatusPanel;
 import org.exbin.framework.sidebar.api.AbstractSideBarComponent;
 import org.exbin.framework.window.api.WindowHandler;
 import org.exbin.framework.window.api.WindowModuleApi;
 import org.exbin.framework.window.api.controller.DefaultControlController;
+import org.exbin.framework.window.api.gui.CloseControlPanel;
 import org.exbin.framework.window.api.gui.DefaultControlPanel;
 
 /**
@@ -96,7 +98,16 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
             @Override
             public void statusDetail() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
+                final KaitaiStatusPanel statusPanel = new KaitaiStatusPanel();
+                CloseControlPanel controlPanel = new CloseControlPanel(statusPanel.getResourceBundle());
+                final WindowHandler dialog = windowModule.createDialog(statusPanel, controlPanel);
+                windowModule.setWindowTitle(dialog, statusPanel.getResourceBundle());
+                controlPanel.setController(() -> {
+                    dialog.close();
+                    dialog.dispose();
+                });
+                dialog.showCentered(sidePanel);
             }
         });
         return sidePanel;
