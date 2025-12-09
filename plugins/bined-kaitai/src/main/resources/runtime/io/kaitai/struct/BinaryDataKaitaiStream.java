@@ -76,7 +76,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b1 = binaryData.getByte(position);
         byte b2 = binaryData.getByte(position + 1);
         position += 2;
-        return (short) ((b1 << 8) + (b2 << 0));
+        return (short) ((b1 << 8) | (b2 & 0xff));
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b3 = binaryData.getByte(position + 2);
         byte b4 = binaryData.getByte(position + 3);
         position += 4;
-        return (b1 << 24) + (b2 << 16) + (b3 << 8) + (b4 << 0);
+        return (b1 << 24) | ((b2 & 0xff) << 16) | ((b3 & 0xff) << 8) | (b4 & 0xff);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         alignToByte();
         long b1 = readU4be();
         long b2 = readU4be();
-        return (b1 << 32) + (b2 << 0);
+        return (b1 << 32) + b2;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b1 = binaryData.getByte(position);
         byte b2 = binaryData.getByte(position + 1);
         position += 2;
-        return (short) ((b2 << 8) + (b1 << 0));
+        return (short) ((b2 << 8) + (b1 & 0xff));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b3 = binaryData.getByte(position + 2);
         byte b4 = binaryData.getByte(position + 3);
         position += 4;
-        return (b4 << 24) + (b3 << 16) + (b2 << 8) + (b1 << 0);
+        return (b4 << 24) | ((b3 & 0xff) << 16) | ((b2 & 0xff) << 8) | (b1 & 0xff);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         alignToByte();
         long b1 = readU4le();
         long b2 = readU4le();
-        return (b2 << 32) + (b1 << 0);
+        return (b2 << 32) + b1;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
 
         byte result = binaryData.getByte(position);
         position++;
-        return result;
+        return result & 0xff;
     }
 
     @Override
@@ -160,7 +160,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b1 = binaryData.getByte(position);
         byte b2 = binaryData.getByte(position + 1);
         position += 2;
-        return (short) ((b1 << 8) + (b2 << 0));
+        return (short) ((b1 << 8) | (b2 | 0xff));
     }
 
     @Override
@@ -175,7 +175,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b3 = binaryData.getByte(position + 2);
         byte b4 = binaryData.getByte(position + 3);
         position += 4;
-        return (b1 << 24) + (b2 << 16) + (b3 << 8) + (b4 << 0);
+        return ((b1 & 0xff) << 24) | ((b2 & 0xff) << 16) | ((b3 & 0xff) << 8) | (b4 & 0xff);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b1 = binaryData.getByte(position);
         byte b2 = binaryData.getByte(position + 1);
         position += 2;
-        return (short) ((b2 << 8) + (b1 << 0));
+        return (short) (((b2 & 0xff) << 8) | (b1 & 0xff));
     }
 
     @Override
@@ -203,7 +203,7 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         byte b3 = binaryData.getByte(position + 2);
         byte b4 = binaryData.getByte(position + 3);
         position += 4;
-        return (b4 << 24) + (b3 << 16) + (b2 << 8) + (b1 << 0);
+        return ((b4 & 0xff) << 24) | ((b3 & 0xff) << 16) | ((b2 & 0xff) << 8) | (b1 & 0xff);
     }
 
     @Override

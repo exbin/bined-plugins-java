@@ -24,6 +24,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
+import org.exbin.framework.bined.kaitai.KaitaiStatusType;
 
 /**
  * Kaitai side panel.
@@ -63,6 +64,41 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         comboBox.removeAllItems();
         comboBox.addItem(definition);
     }
+    
+    public void setStatus(KaitaiStatusType statusType) {
+        String iconResource;
+        String statusText;
+        boolean detailAvailable = false;
+        switch (statusType) {
+            case OK:
+                iconResource = resourceBundle.getString("statusType.ok.icon");
+                statusText = resourceBundle.getString("statusType.ok.text");
+                break;
+            case PROCESSING:
+                iconResource = resourceBundle.getString("statusType.processing.icon");
+                statusText = resourceBundle.getString("statusType.processing.text");
+                break;
+            case NO_DEFINITION:
+                iconResource = resourceBundle.getString("statusType.noDefinition.icon");
+                statusText = resourceBundle.getString("statusType.noDefinition.text");
+                break;
+            case COMPILE_FAILED:
+                iconResource = resourceBundle.getString("statusType.compileFailed.icon");
+                statusText = resourceBundle.getString("statusType.compileFailed.text");
+                detailAvailable = true;
+                break;
+            case PARSING_FAILED:
+                iconResource = resourceBundle.getString("statusType.parsingFailed.icon");
+                statusText = resourceBundle.getString("statusType.parsingFailed.text");
+                detailAvailable = true;
+                break;
+            default:
+                throw new AssertionError();
+        }
+        statusLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource(iconResource)));
+        statusLabel.setText(statusText);
+        statusDetailButton.setEnabled(detailAvailable);
+    }
 
     @Nonnull
     public JTree getParserTree() {
@@ -94,7 +130,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
         parserTreeScrollPane.setViewportView(parserTree);
 
-        statusLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/emblem-system-3.png"))); // NOI18N
         statusLabel.setText("Status");
 
         statusDetailButton.setText("...");
@@ -145,7 +180,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_selectButtonActionPerformed
 
     private void statusDetailButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusDetailButtonActionPerformed
-        // TODO add your handling code here:
+        controller.showStatusDetail();
     }//GEN-LAST:event_statusDetailButtonActionPerformed
 
 
@@ -162,6 +197,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
         void manageDefinitions();
 
-        void statusDetail();
+        void showStatusDetail();
     }
 }

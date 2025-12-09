@@ -193,7 +193,7 @@ public class DataNode extends DefaultMutableTreeNode {
 
     private static boolean isStructType(Object value) {
         Class<?> superClass = value.getClass().getSuperclass();
-        if ("io.kaitai.struct.datatype.DataType.StructType".equals(superClass.getName())) {
+        if (superClass.getName().startsWith("io.kaitai.struct.KaitaiStruct")) {
             return true;
         }
 

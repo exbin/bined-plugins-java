@@ -97,7 +97,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             }
 
             @Override
-            public void statusDetail() {
+            public void showStatusDetail() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
                 final KaitaiStatusPanel statusPanel = new KaitaiStatusPanel();
                 CloseControlPanel controlPanel = new CloseControlPanel(statusPanel.getResourceBundle());

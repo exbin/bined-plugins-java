@@ -43,6 +43,7 @@ public class KaitaiSideManager {
         KaitaiTreeListener treeListener = new KaitaiTreeListener(model);
         parserTree.addTreeWillExpandListener(treeListener);
         parserTree.addTreeSelectionListener(treeListener);
+        sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
     }
 
     @Nonnull
@@ -53,5 +54,6 @@ public class KaitaiSideManager {
     public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
         sidePanel.setCurrentDef(definitionRecord.getFileName());
         visualizer.loadFrom(definitionRecord, sourceData);
+        sidePanel.setStatus(KaitaiStatusType.OK);
     }
 }
