@@ -35,6 +35,7 @@ public class KaitaiSideManager {
     protected KaitaiSidePanel sidePanel = new KaitaiSidePanel();
     protected KaitaiVisualizer visualizer = new KaitaiVisualizer();
     protected JTree parserTree;
+    protected String processingMessage = "";
 
     public KaitaiSideManager() {
         parserTree = sidePanel.getParserTree();
@@ -51,9 +52,29 @@ public class KaitaiSideManager {
         return sidePanel;
     }
 
+    @Nonnull
+    public String getProcessingMessage() {
+        return processingMessage;
+    }
+
     public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
         sidePanel.setCurrentDef(definitionRecord.getFileName());
-        visualizer.loadFrom(definitionRecord, sourceData);
+        sidePanel.clearParseTree();
+        sidePanel.setStatus(KaitaiStatusType.PROCESSING);
+        KaitaiVisualizer.CompileResult compileResult = visualizer.compileDefinition(definitionRecord);
+        if (compileResult.getErrorMessage() != null) {
+            processingMessage = compileResult.getErrorMessage();
+            sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
+            return;
+        }
+
+        KaitaiVisualizer.ParsingResult parsingResult = visualizer.parseData(compileResult.getKsyClass(), compileResult.getStreamClass(), compileResult.getParamNames(), sourceData);
+        if (parsingResult.getErrorMessage() != null) {
+            processingMessage = parsingResult.getErrorMessage();
+            sidePanel.setStatus(KaitaiStatusType.PARSING_FAILED);
+            return;
+        }
+
         sidePanel.setStatus(KaitaiStatusType.OK);
     }
 }

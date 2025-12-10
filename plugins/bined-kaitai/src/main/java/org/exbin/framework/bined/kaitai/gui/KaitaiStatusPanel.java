@@ -43,6 +43,10 @@ public class KaitaiStatusPanel extends javax.swing.JPanel {
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
+    
+    public void setProcessingMessage(String message) {
+        textPane.setText(message);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.annotation.concurrent.Immutable;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
@@ -77,11 +78,14 @@ public class KaitaiVisualizer {
         return model;
     }
 
-    public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
+    @Nonnull
+    public CompileResult compileDefinition(DefinitionRecord definitionRecord) {
+        InputStream input = null;
+        Reader inputReader = null;
         try {
             URL fileSource = definitionRecord.getUri().toURL();
-            InputStream input = fileSource.openStream();
-            Reader inputReader = new InputStreamReader(input);
+            input = fileSource.openStream();
+            inputReader = new InputStreamReader(input);
             ClassSpec classSpec = ClassSpec.fromYaml(JavaKSYParser.readerToYaml(inputReader), new Some<>("TEST"));
             final JavaClassSpecs specs = new JavaClassSpecs(null, null, classSpec);
 
@@ -123,8 +127,32 @@ public class KaitaiVisualizer {
 
             InMemoryJavaCompiler compiler = createInMemoryCompiler();
             final Class<?> ksyClass = compiler.compile(DEST_PACKAGE + "." + m.group(1), javaSrc);
-            final Class<?> streanClass = compiler.getClassloader().loadClass("io.kaitai.struct.BinaryDataKaitaiStream");
-            struct = construct(ksyClass, streanClass, paramNames, sourceData);
+            final Class<?> streamClass = compiler.getClassloader().loadClass("io.kaitai.struct.BinaryDataKaitaiStream");
+            return new CompileResult(ksyClass, streamClass, paramNames);
+        } catch (Exception ex) {
+            return new CompileResult(ex.getMessage());
+        } finally {
+            if (inputReader != null) {
+                try {
+                    inputReader.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException ex) {
+                    // ignore
+                }
+            }
+        }
+    }
+
+    @Nonnull
+    public ParsingResult parseData(Class<?> ksyClass, Class<?> streamClass, List<String> paramNames, EditableBinaryData sourceData) {
+        try {
+            struct = construct(ksyClass, streamClass, paramNames, sourceData);
 
             // Find and run "_read" that does actual parsing
             // TODO: wrap this in try-catch block
@@ -132,10 +160,9 @@ public class KaitaiVisualizer {
             readMethod.invoke(struct);
 
             loadStruct();
+            return new ParsingResult(null);
         } catch (Exception ex) {
-            Logger.getLogger(KaitaiSideManager.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            // TODO Close stream
+            return new ParsingResult(ex.getMessage());
         }
     }
 
@@ -272,5 +299,64 @@ public class KaitaiVisualizer {
         }
 
         return compiler;
+    }
+
+    @Immutable
+    @ParametersAreNonnullByDefault
+    public static class CompileResult {
+
+        private final Class<?> ksyClass;
+        private final Class<?> streamClass;
+        private final List<String> paramNames;
+        private final String errorMessage;
+
+        public CompileResult(Class<?> ksyClass, Class<?> streamClass, List<String> paramNames) {
+            this.ksyClass = ksyClass;
+            this.streamClass = streamClass;
+            this.paramNames = paramNames;
+            this.errorMessage = null;
+        }
+
+        public CompileResult(String errorMessage) {
+            this.ksyClass = null;
+            this.streamClass = null;
+            this.paramNames = null;
+            this.errorMessage = errorMessage;
+        }
+
+        @Nullable
+        public Class<?> getKsyClass() {
+            return ksyClass;
+        }
+
+        @Nullable
+        public Class<?> getStreamClass() {
+            return streamClass;
+        }
+
+        @Nullable
+        public List<String> getParamNames() {
+            return paramNames;
+        }
+
+        @Nullable
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    @Immutable
+    public static class ParsingResult {
+
+        private final String errorMessage;
+
+        public ParsingResult(@Nullable String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        @Nullable
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 }

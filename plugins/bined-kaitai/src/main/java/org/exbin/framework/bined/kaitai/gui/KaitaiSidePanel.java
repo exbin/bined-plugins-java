@@ -100,6 +100,10 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         statusDetailButton.setEnabled(detailAvailable);
     }
 
+    public void clearParseTree() {
+        parserTree.removeAll();
+    }
+
     @Nonnull
     public JTree getParserTree() {
         return parserTree;

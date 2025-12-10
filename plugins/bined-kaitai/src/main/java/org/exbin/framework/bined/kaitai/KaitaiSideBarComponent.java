@@ -58,6 +58,7 @@ import org.exbin.framework.window.api.gui.DefaultControlPanel;
 @ParametersAreNonnullByDefault
 public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
+    private static final String RESOURCE_FORMATS_PATH = "/org/exbin/framework/bined/kaitai/resources/formats/";
     protected KaitaiSideManager sideManager = new KaitaiSideManager();
     protected DefinitionRecord definitionRecord = null;
     protected BinaryDataComponent binaryDataComponent = null;
@@ -100,6 +101,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             public void showStatusDetail() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
                 final KaitaiStatusPanel statusPanel = new KaitaiStatusPanel();
+                statusPanel.setProcessingMessage(sideManager.getProcessingMessage());
                 CloseControlPanel controlPanel = new CloseControlPanel(statusPanel.getResourceBundle());
                 final WindowHandler dialog = windowModule.createDialog(statusPanel, controlPanel);
                 windowModule.setWindowTitle(dialog, statusPanel.getResourceBundle());
@@ -123,14 +125,13 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
     }
 
     private void readAvailableFormats(DefaultMutableTreeNode formatsRootNode) {
-        String formatsPath = "/org/exbin/framework/bined/kaitai/resources/formats/";
         FileSystem fileSystem = null;
         try {
             Path rootPath = null;
             try {
-                URI formats = getClass().getResource(formatsPath).toURI();
+                URI formats = getClass().getResource(RESOURCE_FORMATS_PATH).toURI();
                 fileSystem = FileSystems.newFileSystem(formats, Collections.<String, Object>emptyMap());
-                rootPath = fileSystem.getPath(formatsPath);
+                rootPath = fileSystem.getPath(RESOURCE_FORMATS_PATH);
             } catch (URISyntaxException | IOException ex) {
                 Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
             }
