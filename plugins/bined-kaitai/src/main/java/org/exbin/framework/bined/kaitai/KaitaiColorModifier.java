@@ -73,7 +73,7 @@ public class KaitaiColorModifier implements CodeAreaColorAssessor {
 
     @Override
     public void startPaint(CodeAreaPaintState codeAreaPaintState) {
-        color = UiUtils.isDarkUI() ? Color.YELLOW.darker().darker() : Color.YELLOW;
+        color = UiUtils.isDarkUI() ? Color.GREEN.darker().darker() : Color.GREEN;
     }
 
     public void setRange(long position, long length) {

@@ -17,11 +17,14 @@ package org.exbin.framework.bined.kaitai;
 
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.App;
 import org.exbin.framework.ModuleUtils;
 import org.exbin.framework.PluginModule;
 import org.exbin.framework.action.api.ContextComponent;
+import org.exbin.framework.bined.BinEdFileManager;
+import org.exbin.framework.bined.BinedModule;
 import org.exbin.framework.context.api.ContextChange;
 import org.exbin.framework.context.api.ContextChangeRegistration;
 import org.exbin.framework.language.api.LanguageModuleApi;
@@ -42,6 +45,8 @@ public class BinedKaitaiModule implements PluginModule {
 
     private java.util.ResourceBundle resourceBundle = null;
 
+    private KaitaiColorModifier kaitaiColorModifier;
+
     public BinedKaitaiModule() {
     }
 
@@ -49,9 +54,15 @@ public class BinedKaitaiModule implements PluginModule {
     public void register() {
         UiModuleApi uiModule = App.getModule(UiModuleApi.class);
         uiModule.addPostInitAction(() -> {
+            kaitaiColorModifier = new KaitaiColorModifier();
+
             registerSideBar();
             // registerMenuActions();
             // registerPopupMenuActions();
+
+            BinedModule binedModule = App.getModule(BinedModule.class);
+            BinEdFileManager fileManager = binedModule.getFileManager();
+            fileManager.addPainterColorModifier(kaitaiColorModifier);
         });
     }
 
@@ -81,5 +92,10 @@ public class BinedKaitaiModule implements PluginModule {
             }
         });
         sideBarManager.registerSideBarComponent(sideBarComponent);
+    }
+
+    @Nullable
+    public KaitaiColorModifier getKaitaiColorModifier() {
+        return kaitaiColorModifier;
     }
 }

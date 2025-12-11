@@ -20,6 +20,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.bined.kaitai.visualizer.KaitaiTreeListener;
 import org.exbin.framework.bined.kaitai.visualizer.KaitaiVisualizer;
@@ -41,7 +42,8 @@ public class KaitaiSideManager {
         parserTree = sidePanel.getParserTree();
         DefaultTreeModel model = visualizer.getModel();
         parserTree.setModel(model);
-        KaitaiTreeListener treeListener = new KaitaiTreeListener(model);
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiTreeListener treeListener = new KaitaiTreeListener(parserTree, kaitaiModule.getKaitaiColorModifier());
         parserTree.addTreeWillExpandListener(treeListener);
         parserTree.addTreeSelectionListener(treeListener);
         sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
