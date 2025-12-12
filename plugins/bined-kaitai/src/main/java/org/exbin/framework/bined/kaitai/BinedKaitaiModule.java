@@ -46,6 +46,7 @@ public class BinedKaitaiModule implements PluginModule {
     private java.util.ResourceBundle resourceBundle = null;
 
     private KaitaiColorModifier kaitaiColorModifier;
+    private KaitaiSideBarComponent sideBarComponent;
 
     public BinedKaitaiModule() {
     }
@@ -78,7 +79,7 @@ public class BinedKaitaiModule implements PluginModule {
     public void registerSideBar() {
         SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
         SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarManager(SideBarModuleApi.MODULE_ID);
-        KaitaiSideBarComponent sideBarComponent = new KaitaiSideBarComponent();
+        sideBarComponent = new KaitaiSideBarComponent();
         sideBarComponent.putValue(SideBarComponent.KEY_ID, "kaitai");
         //sideBarComponent.putValue(SideBarComponent.KEY_NAME, "KT");
         sideBarComponent.putValue(SideBarComponent.KEY_ICON, new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/kaitai_light_32.png")));
@@ -92,6 +93,10 @@ public class BinedKaitaiModule implements PluginModule {
             }
         });
         sideBarManager.registerSideBarComponent(sideBarComponent);
+    }
+    
+    public void setBuildInDefinition(String ksyFilePath) {
+        sideBarComponent.setBuildInDefinition(ksyFilePath);
     }
 
     @Nullable

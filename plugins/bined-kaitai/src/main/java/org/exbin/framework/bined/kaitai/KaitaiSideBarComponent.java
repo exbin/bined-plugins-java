@@ -86,8 +86,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         if (optSelectedNode.isPresent()) {
                             Object userObject = optSelectedNode.get().getUserObject();
                             if (userObject instanceof DefinitionRecord) {
-                                definitionRecord = (DefinitionRecord) userObject;
-                                update();
+                                setDefinitionRecord((DefinitionRecord) userObject);
                             }
                         }
                     }
@@ -114,7 +113,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         });
         return sidePanel;
     }
-    
+
     public void update() {
         if (definitionRecord == null) {
             return;
@@ -122,6 +121,43 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
         EditableBinaryData sourceData = binaryDataComponent != null ? (EditableBinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
         sideManager.loadFrom(definitionRecord, sourceData);
+    }
+
+    public void setActiveComponent(@Nullable ContextComponent contextComponent) {
+        binaryDataComponent = contextComponent instanceof BinaryDataComponent ? (BinaryDataComponent) contextComponent : null;
+        update();
+    }
+
+    public void setDefinitionRecord(DefinitionRecord definitionRecord) {
+        this.definitionRecord = definitionRecord;
+        update();
+    }
+
+    public void setBuildInDefinition(String ksyFilePath) {
+        FileSystem fileSystem = null;
+        try {
+            URI fileUri = getClass().getResource(RESOURCE_FORMATS_PATH + ksyFilePath).toURI();
+            fileSystem = FileSystems.newFileSystem(fileUri, Collections.<String, Object>emptyMap());
+            Path filePath = fileSystem.getPath(RESOURCE_FORMATS_PATH);
+            String fileName = "";
+            if (filePath.getNameCount() > 0) {
+                fileName = filePath.getName(filePath.getNameCount() - 1).toString();
+            }
+            if (fileName.endsWith(File.separator)) {
+                fileName = fileName.substring(0, fileName.length() - 1);
+            }
+            setDefinitionRecord(new DefinitionRecord(fileName, filePath.toUri()));
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                if (fileSystem != null) {
+                    fileSystem.close();
+                }
+            } catch (Throwable tw) {
+                // ignore
+            }
+        }
     }
 
     private void readAvailableFormats(DefaultMutableTreeNode formatsRootNode) {
@@ -180,11 +216,6 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                 // ignore
             }
         }
-    }
-
-    public void setActiveComponent(@Nullable ContextComponent contextComponent) {
-        binaryDataComponent = contextComponent instanceof BinaryDataComponent ? (BinaryDataComponent) contextComponent : null;
-        update();
     }
 
     @ParametersAreNonnullByDefault
