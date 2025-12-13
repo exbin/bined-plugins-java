@@ -16,7 +16,9 @@
 package org.exbin.framework.bined.kaitai;
 
 import java.net.URI;
+import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
@@ -43,5 +45,27 @@ public class DefinitionRecord {
     @Nonnull
     public URI getUri() {
         return uri;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 11 * hash + Objects.hashCode(this.uri);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final DefinitionRecord other = (DefinitionRecord) obj;
+        return Objects.equals(this.uri, other.uri);
     }
 }

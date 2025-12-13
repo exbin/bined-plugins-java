@@ -22,9 +22,10 @@ package org.exbin.framework.bined.kaitai;
  */
 public enum KaitaiStatusType {
 
-    OK,
-    PROCESSING,
     NO_DEFINITION,
+    OK,
+    COMPILING,
     COMPILE_FAILED,
+    PARSING,
     PARSING_FAILED
 }

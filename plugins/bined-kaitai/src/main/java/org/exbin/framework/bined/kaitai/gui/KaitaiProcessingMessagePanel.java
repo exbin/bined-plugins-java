@@ -22,16 +22,16 @@ import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
 
 /**
- * Kaitai status panel.
+ * Kaitai processing message panel.
  *
  * @author ExBin Project (https://exbin.org)
  */
 @ParametersAreNonnullByDefault
-public class KaitaiStatusPanel extends javax.swing.JPanel {
+public class KaitaiProcessingMessagePanel extends javax.swing.JPanel {
 
-    protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiStatusPanel.class);
+    protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiProcessingMessagePanel.class);
 
-    public KaitaiStatusPanel() {
+    public KaitaiProcessingMessagePanel() {
         initComponents();
         init();
     }
@@ -43,7 +43,7 @@ public class KaitaiStatusPanel extends javax.swing.JPanel {
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
-    
+
     public void setProcessingMessage(String message) {
         textPane.setText(message);
     }

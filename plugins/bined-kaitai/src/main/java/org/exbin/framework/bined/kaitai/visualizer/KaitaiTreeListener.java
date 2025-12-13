@@ -55,8 +55,8 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
                     continue;
                 }
                 colorModifier.setRange(start, end - start);
+                return;
             }
-            return;
         }
 
         colorModifier.clearRange();

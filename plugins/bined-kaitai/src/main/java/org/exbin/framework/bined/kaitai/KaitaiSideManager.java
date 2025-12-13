@@ -35,6 +35,8 @@ public class KaitaiSideManager {
 
     protected KaitaiSidePanel sidePanel = new KaitaiSidePanel();
     protected KaitaiVisualizer visualizer = new KaitaiVisualizer();
+    protected KaitaiCompiler compiler = new KaitaiCompiler();
+    protected KaitaiParser parser = null;
     protected JTree parserTree;
     protected String processingMessage = "";
 
@@ -60,18 +62,24 @@ public class KaitaiSideManager {
     }
 
     public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
-        sidePanel.setCurrentDef(definitionRecord.getFileName());
-        sidePanel.clearParseTree();
-        sidePanel.setStatus(KaitaiStatusType.PROCESSING);
-        KaitaiVisualizer.CompileResult compileResult = visualizer.compileDefinition(definitionRecord);
-        if (compileResult.getErrorMessage() != null) {
-            processingMessage = compileResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
-            return;
+        if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
+            sidePanel.setCurrentDef(definitionRecord.getFileName());
+            sidePanel.clearParseTree();
+            sidePanel.setStatus(KaitaiStatusType.COMPILING);
+            KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
+            if (compileResult.getErrorMessage() != null) {
+                processingMessage = compileResult.getErrorMessage();
+                sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
+                this.parser = null;
+                return;
+            }
+            this.parser = compileResult.getParser();
         }
 
-        KaitaiVisualizer.ParsingResult parsingResult = visualizer.parseData(compileResult.getKsyClass(), compileResult.getStreamClass(), compileResult.getParamNames(), sourceData);
+        sidePanel.setStatus(KaitaiStatusType.PARSING);
+        KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
         if (parsingResult.getErrorMessage() != null) {
+            sidePanel.clearParseTree();
             processingMessage = parsingResult.getErrorMessage();
             sidePanel.setStatus(KaitaiStatusType.PARSING_FAILED);
             return;

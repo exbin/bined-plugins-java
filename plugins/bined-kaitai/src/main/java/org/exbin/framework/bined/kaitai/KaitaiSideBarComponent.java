@@ -15,6 +15,7 @@
  */
 package org.exbin.framework.bined.kaitai;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -42,7 +43,7 @@ import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinaryDataComponent;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
-import org.exbin.framework.bined.kaitai.gui.KaitaiStatusPanel;
+import org.exbin.framework.bined.kaitai.gui.KaitaiProcessingMessagePanel;
 import org.exbin.framework.sidebar.api.AbstractSideBarComponent;
 import org.exbin.framework.window.api.WindowHandler;
 import org.exbin.framework.window.api.WindowModuleApi;
@@ -99,7 +100,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             @Override
             public void showStatusDetail() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
-                final KaitaiStatusPanel statusPanel = new KaitaiStatusPanel();
+                final KaitaiProcessingMessagePanel statusPanel = new KaitaiProcessingMessagePanel();
                 statusPanel.setProcessingMessage(sideManager.getProcessingMessage());
                 CloseControlPanel controlPanel = new CloseControlPanel(statusPanel.getResourceBundle());
                 final WindowHandler dialog = windowModule.createDialog(statusPanel, controlPanel);
@@ -108,6 +109,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                     dialog.close();
                     dialog.dispose();
                 });
+                dialog.getWindow().setSize(new Dimension(400, 300));
                 dialog.showCentered(sidePanel);
             }
         });
@@ -138,7 +140,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         try {
             URI fileUri = getClass().getResource(RESOURCE_FORMATS_PATH + ksyFilePath).toURI();
             fileSystem = FileSystems.newFileSystem(fileUri, Collections.<String, Object>emptyMap());
-            Path filePath = fileSystem.getPath(RESOURCE_FORMATS_PATH);
+            Path filePath = fileSystem.getPath(RESOURCE_FORMATS_PATH + ksyFilePath);
             String fileName = "";
             if (filePath.getNameCount() > 0) {
                 fileName = filePath.getName(filePath.getNameCount() - 1).toString();

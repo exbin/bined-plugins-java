@@ -119,8 +119,10 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         definitionsScrollPane.setViewportView(definitionsTree);
 
         addButton.setText(resourceBundle.getString("addButton.text")); // NOI18N
+        addButton.setEnabled(false);
 
         editButton.setText(resourceBundle.getString("editButton.text")); // NOI18N
+        editButton.setEnabled(false);
 
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);

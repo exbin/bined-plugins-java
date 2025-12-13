@@ -25,6 +25,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.KaitaiStatusType;
+import static org.exbin.framework.bined.kaitai.KaitaiStatusType.NO_DEFINITION;
 
 /**
  * Kaitai side panel.
@@ -74,18 +75,22 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
                 iconResource = resourceBundle.getString("statusType.ok.icon");
                 statusText = resourceBundle.getString("statusType.ok.text");
                 break;
-            case PROCESSING:
-                iconResource = resourceBundle.getString("statusType.processing.icon");
-                statusText = resourceBundle.getString("statusType.processing.text");
-                break;
             case NO_DEFINITION:
                 iconResource = resourceBundle.getString("statusType.noDefinition.icon");
                 statusText = resourceBundle.getString("statusType.noDefinition.text");
+                break;
+            case COMPILING:
+                iconResource = resourceBundle.getString("statusType.compiling.icon");
+                statusText = resourceBundle.getString("statusType.compiling.text");
                 break;
             case COMPILE_FAILED:
                 iconResource = resourceBundle.getString("statusType.compileFailed.icon");
                 statusText = resourceBundle.getString("statusType.compileFailed.text");
                 detailAvailable = true;
+                break;
+            case PARSING:
+                iconResource = resourceBundle.getString("statusType.parsing.icon");
+                statusText = resourceBundle.getString("statusType.parsing.text");
                 break;
             case PARSING_FAILED:
                 iconResource = resourceBundle.getString("statusType.parsingFailed.icon");

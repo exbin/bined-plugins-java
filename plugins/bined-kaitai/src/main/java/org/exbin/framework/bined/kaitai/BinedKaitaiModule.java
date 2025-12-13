@@ -42,6 +42,7 @@ import org.exbin.framework.ui.api.UiModuleApi;
 public class BinedKaitaiModule implements PluginModule {
 
     public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedKaitaiModule.class);
+    public static final String SIDEBAR_COMPONENT_ID = "kaitai";
 
     private java.util.ResourceBundle resourceBundle = null;
 
@@ -64,6 +65,10 @@ public class BinedKaitaiModule implements PluginModule {
             BinedModule binedModule = App.getModule(BinedModule.class);
             BinEdFileManager fileManager = binedModule.getFileManager();
             fileManager.addPainterColorModifier(kaitaiColorModifier);
+
+            SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
+            sideBarModule.setAutoShow(true);
+            sideBarComponent.setBuildInDefinition("image/png.ksy");
         });
     }
 
@@ -77,13 +82,14 @@ public class BinedKaitaiModule implements PluginModule {
     }
 
     public void registerSideBar() {
+        getResourceBundle();
         SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
         SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarManager(SideBarModuleApi.MODULE_ID);
         sideBarComponent = new KaitaiSideBarComponent();
-        sideBarComponent.putValue(SideBarComponent.KEY_ID, "kaitai");
+        sideBarComponent.putValue(SideBarComponent.KEY_ID, SIDEBAR_COMPONENT_ID);
         //sideBarComponent.putValue(SideBarComponent.KEY_NAME, "KT");
-        sideBarComponent.putValue(SideBarComponent.KEY_ICON, new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/kaitai_light_32.png")));
-        sideBarComponent.putValue(SideBarComponent.KEY_TOOLTIP, "Kaitai");
+        sideBarComponent.putValue(SideBarComponent.KEY_ICON, new javax.swing.ImageIcon(getClass().getResource(resourceBundle.getString("kaitaiSideBarComponent.icon"))));
+        sideBarComponent.putValue(SideBarComponent.KEY_TOOLTIP, resourceBundle.getString("kaitaiSideBarComponent.toolTip"));
         sideBarComponent.putValue(SideBarComponent.KEY_CONTEXT_CHANGE, new ContextChange() {
             @Override
             public void register(ContextChangeRegistration registrar) {
@@ -94,7 +100,7 @@ public class BinedKaitaiModule implements PluginModule {
         });
         sideBarManager.registerSideBarComponent(sideBarComponent);
     }
-    
+
     public void setBuildInDefinition(String ksyFilePath) {
         sideBarComponent.setBuildInDefinition(ksyFilePath);
     }
