@@ -5,6 +5,7 @@
   <provider>ExBin Project</provider>
   <homepage>https://bined.exbin.org</homepage>
   <description>Binary editor plugin supporting Kaitai decompilers</description>
+  <license spdx="GPL-3.0-or-later">GNU General Public License v3.0 or later</license>
   <dependency>
     <module id="org.exbin.framework.bined.BinedModule" />
     <module id="org.exbin.framework.ui.api.UiModuleApi" />
@@ -26,5 +27,7 @@
     <library maven="com.lihaoyi:fastparse_2.13:2.3.3" />
     <library maven="org.yaml:snakeyaml:2.0" />
     <library maven="org.mdkt.compiler:InMemoryJavaCompiler:1.3.0" />
+    <library maven="com.lihaoyi:geny_2.13:0.6.10" />
+    <library maven="com.lihaoyi:sourcecode_2.13:0.2.3" />
   </dependency>
 </module>

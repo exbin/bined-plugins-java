@@ -145,7 +145,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             if (filePath.getNameCount() > 0) {
                 fileName = filePath.getName(filePath.getNameCount() - 1).toString();
             }
-            if (fileName.endsWith(File.separator)) {
+            if (fileName.endsWith("/")) {
                 fileName = fileName.substring(0, fileName.length() - 1);
             }
             setDefinitionRecord(new DefinitionRecord(fileName, filePath.toUri()));
@@ -195,7 +195,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         if (childPath.getNameCount() > 0) {
                             fileName = childPath.getName(childPath.getNameCount() - 1).toString();
                         }
-                        if (fileName.endsWith(File.separator)) {
+                        if (fileName.endsWith("/")) {
                             fileName = fileName.substring(0, fileName.length() - 1);
                             DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
                             record.node.add(childNode);

@@ -46,6 +46,7 @@ public class KaitaiProcessingMessagePanel extends javax.swing.JPanel {
 
     public void setProcessingMessage(String message) {
         textPane.setText(message);
+        textPane.setCaretPosition(0);
     }
 
     /**

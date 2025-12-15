@@ -90,7 +90,7 @@ public class KaitaiParser {
             readMethod.invoke(struct);
 
             return new ParsingResult(struct);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
             String message = sw.toString();

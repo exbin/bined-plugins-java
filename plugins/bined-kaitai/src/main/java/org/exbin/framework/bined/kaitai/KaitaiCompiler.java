@@ -24,7 +24,6 @@ import io.kaitai.struct.formats.JavaClassSpecs;
 import io.kaitai.struct.formats.JavaKSYParser;
 import io.kaitai.struct.languages.JavaCompiler$;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -84,8 +81,9 @@ public class KaitaiCompiler {
         try {
             URL fileSource = definitionRecord.getUri().toURL();
             input = fileSource.openStream();
-            inputReader = new InputStreamReader(input);
-            ClassSpec classSpec = ClassSpec.fromYaml(JavaKSYParser.readerToYaml(inputReader), new Some<>(definitionRecord.getFileName()));
+            inputReader = new InputStreamReader(input, "UTF-8");
+            Object yamlSpec = JavaKSYParser.readerToYaml(inputReader);
+            ClassSpec classSpec = ClassSpec.fromYaml(yamlSpec, new Some<>(definitionRecord.getFileName()));
             final JavaClassSpecs specs = new JavaClassSpecs(null, null, classSpec);
 
             final RuntimeConfig config = new RuntimeConfig(
@@ -111,6 +109,8 @@ public class KaitaiCompiler {
             );
 
             Main.importAndPrecompile(specs, config).value();
+            // TODO: There is some king of racing condition in the current implementation of the KaiTai compiler, wait a bit
+            Thread.sleep(200);
             final CompileLog.SpecSuccess result = Main.compile(specs, classSpec, JavaCompiler$.MODULE$, config);
             String javaSrc = result.files().apply(0).contents();
             final Matcher m = TOP_CLASS_NAME_AND_PARAMETERS.matcher(javaSrc);
@@ -124,12 +124,20 @@ public class KaitaiCompiler {
                 paramNames.add(p.group(1));
             }
 
+            String wrapperClassSrc = "package " + DEST_PACKAGE + ";\n"
+                    + "public class DataWrapper {\n"
+                    + "public static Class getKsyClass() { return " + m.group(1) + ".class; }\n"
+                    + "public static Class getStreamClass() { return io.kaitai.struct.BinaryDataKaitaiStream.class; }\n"
+                    + "}\n";
+
             InMemoryJavaCompiler compiler = createInMemoryCompiler();
-            final Class<?> ksyClass = compiler.compile(DEST_PACKAGE + "." + m.group(1), javaSrc);
-            final Class<?> streamClass = compiler.getClassloader().loadClass("io.kaitai.struct.BinaryDataKaitaiStream");
+            compiler.addSource(DEST_PACKAGE + "." + m.group(1), javaSrc);
+            final Class<?> wrapperClass = compiler.compile(DEST_PACKAGE + "." + "DataWrapper", wrapperClassSrc);
+            final Class<?> ksyClass = (Class<?>) wrapperClass.getMethod("getKsyClass").invoke(null);
+            final Class<?> streamClass = (Class<?>) wrapperClass.getMethod("getStreamClass").invoke(null);
             KaitaiParser parser = new KaitaiParser(definitionRecord, ksyClass, streamClass, paramNames);
             return new CompileResult(parser);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
             String message = sw.toString();
@@ -164,7 +172,7 @@ public class KaitaiCompiler {
                 fileSystem = FileSystems.newFileSystem(runtimeFiles, Collections.<String, Object>emptyMap());
                 rootPath = fileSystem.getPath(runtimePath);
             } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+                throw new RuntimeException(ex);
             }
 
             List<Path> paths = new ArrayList<>();
@@ -183,7 +191,7 @@ public class KaitaiCompiler {
                         if (childPath.getNameCount() > 0) {
                             fileName = childPath.getName(childPath.getNameCount() - 1).toString();
                         }
-                        if (fileName.endsWith(File.separator)) {
+                        if (fileName.endsWith("/")) {
                             paths.add(childPath);
                         } else if (fileName.endsWith(".java")) {
                             BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(childPath)));
@@ -200,14 +208,14 @@ public class KaitaiCompiler {
                                 className += fileName.substring(0, fileName.length() - 5);
                                 compiler.addSource(className, stringBuilder.toString());
                             } catch (Exception ex) {
-                                Logger.getLogger(KaitaiSideManager.class.getName()).log(Level.SEVERE, null, ex);
+                                throw new RuntimeException(ex);
                             } finally {
                                 reader.close();
                             }
                         }
                     }
                 } catch (IOException ex) {
-                    Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException(ex);
                 }
             }
         } finally {

@@ -62,9 +62,13 @@ public class KaitaiSideManager {
     }
 
     public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
+        if (sourceData.isEmpty()) {
+            return;
+        }
+
         if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
             sidePanel.setCurrentDef(definitionRecord.getFileName());
-            sidePanel.clearParseTree();
+            clearParseTree();
             sidePanel.setStatus(KaitaiStatusType.COMPILING);
             KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
             if (compileResult.getErrorMessage() != null) {
@@ -79,12 +83,17 @@ public class KaitaiSideManager {
         sidePanel.setStatus(KaitaiStatusType.PARSING);
         KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
         if (parsingResult.getErrorMessage() != null) {
-            sidePanel.clearParseTree();
+            clearParseTree();
             processingMessage = parsingResult.getErrorMessage();
             sidePanel.setStatus(KaitaiStatusType.PARSING_FAILED);
             return;
         }
 
         sidePanel.setStatus(KaitaiStatusType.OK);
+    }
+
+    private void clearParseTree() {
+        DefaultTreeModel model = visualizer.getModel();
+        model.setRoot(null);
     }
 }
