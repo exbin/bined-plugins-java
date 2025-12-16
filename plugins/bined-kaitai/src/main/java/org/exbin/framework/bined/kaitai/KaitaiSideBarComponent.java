@@ -16,22 +16,20 @@
 package org.exbin.framework.bined.kaitai;
 
 import java.awt.Dimension;
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
@@ -163,70 +161,58 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
     }
 
     private void readAvailableFormats(DefaultMutableTreeNode formatsRootNode) {
-        FileSystem fileSystem = null;
-        try {
-            Path rootPath = null;
-            try {
-                URI formats = getClass().getResource(RESOURCE_FORMATS_PATH).toURI();
-                fileSystem = FileSystems.newFileSystem(formats, Collections.<String, Object>emptyMap());
-                rootPath = fileSystem.getPath(RESOURCE_FORMATS_PATH);
-            } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
 
-            if (rootPath == null) {
-                return;
-            }
-
-            List<PathRecord> records = new ArrayList<>();
-            records.add(new PathRecord(rootPath, formatsRootNode));
-            while (!records.isEmpty()) {
-                PathRecord record = records.remove(records.size() - 1);
-                Path path = record.path;
-                try {
-                    Stream<Path> walk = Files.walk(path, 1);
-                    for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
-                        Path childPath = it.next();
-                        if (childPath == path) {
-                            continue;
+        String listLine;
+        try (BufferedReader listReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_FORMATS_PATH + "formats.txt")))) {
+            do {
+                listLine = listReader.readLine();
+                if (listLine != null) {
+                    if (listLine.endsWith("/")) {
+                        DefaultMutableTreeNode parentNode;
+                        String fileName;
+                        int nameStart = listLine.lastIndexOf("/", listLine.length() - 2);
+                        if (nameStart >= 0) {
+                            parentNode = nodes.get(listLine.substring(0, nameStart + 1));
+                            fileName = listLine.substring(nameStart + 1, listLine.length() - 2);
+                        } else {
+                            parentNode = formatsRootNode;
+                            fileName = listLine.substring(0, listLine.length() - 2);
                         }
-
-                        String fileName = "";
-                        if (childPath.getNameCount() > 0) {
-                            fileName = childPath.getName(childPath.getNameCount() - 1).toString();
-                        }
-                        if (fileName.endsWith("/")) {
-                            fileName = fileName.substring(0, fileName.length() - 1);
-                            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
-                            record.node.add(childNode);
-                            records.add(new PathRecord(childPath, childNode));
-                        } else if (fileName.endsWith(".ksy")) {
-                            DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, childPath.toUri()));
-                            record.node.add(childNode);
-                        }
+                        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
+                        parentNode.add(childNode);
+                        nodes.put(listLine, childNode);
+                        
+                        continue;
                     }
-                } catch (IOException ex) {
-                    Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+
+                    DefaultMutableTreeNode parentNode;
+                    String fileName;
+                    int nameStart = listLine.lastIndexOf("/");
+                    if (nameStart >= 0) {
+                        parentNode = nodes.get(listLine.substring(0, nameStart + 1));
+                        fileName = listLine.substring(nameStart + 1);
+                    } else {
+                        parentNode = formatsRootNode;
+                        fileName = listLine;
+                    }
+                    URI definitionUri = getClass().getResource(RESOURCE_FORMATS_PATH + listLine).toURI();
+                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, definitionUri));
+                    parentNode.add(childNode);
                 }
-            }
-        } finally {
-            try {
-                if (fileSystem != null) {
-                    fileSystem.close();
-                }
-            } catch (Throwable tw) {
-                // ignore
-            }
+            } while (listLine != null);
+        } catch (URISyntaxException | IOException ex) {
+            Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @ParametersAreNonnullByDefault
     private static class PathRecord {
 
-        Path path;
+        String path;
         DefaultMutableTreeNode node;
 
-        public PathRecord(Path path, DefaultMutableTreeNode node) {
+        public PathRecord(String path, DefaultMutableTreeNode node) {
             this.path = path;
             this.node = node;
         }

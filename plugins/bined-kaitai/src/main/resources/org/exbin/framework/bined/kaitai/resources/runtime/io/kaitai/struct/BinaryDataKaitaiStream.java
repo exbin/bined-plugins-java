@@ -1,6 +1,5 @@
 package io.kaitai.struct;
 
-import io.kaitai.struct.KaitaiStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;

@@ -30,20 +30,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -59,6 +49,7 @@ import scala.Some;
 @ParametersAreNonnullByDefault
 public class KaitaiCompiler {
 
+    private static final String RESOURCE_RUNTIME_PATH = "/org/exbin/framework/bined/kaitai/resources/runtime/";
     public static final String DEST_PACKAGE = "io.kaitai.struct.visualized";
     /**
      * Regexp with 2 groups: class name and type parameters. Type parameters
@@ -163,69 +154,29 @@ public class KaitaiCompiler {
     @Nonnull
     private InMemoryJavaCompiler createInMemoryCompiler() {
         InMemoryJavaCompiler compiler = InMemoryJavaCompiler.newInstance();
-        String runtimePath = "/runtime/";
-        FileSystem fileSystem = null;
-        try {
-            Path rootPath = null;
-            try {
-                URI runtimeFiles = getClass().getResource(runtimePath).toURI();
-                fileSystem = FileSystems.newFileSystem(runtimeFiles, Collections.<String, Object>emptyMap());
-                rootPath = fileSystem.getPath(runtimePath);
-            } catch (URISyntaxException | IOException ex) {
-                throw new RuntimeException(ex);
-            }
-
-            List<Path> paths = new ArrayList<>();
-            paths.add(rootPath);
-            while (!paths.isEmpty()) {
-                Path path = paths.remove(paths.size() - 1);
-                try {
-                    Stream<Path> walk = Files.walk(path, 1);
-                    for (Iterator<Path> it = walk.iterator(); it.hasNext();) {
-                        Path childPath = it.next();
-                        if (childPath == path) {
-                            continue;
+        String listLine;
+        String ls = System.getProperty("line.separator");
+        try (BufferedReader listReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_RUNTIME_PATH + "runtime.txt")))) {
+            do {
+                listLine = listReader.readLine();
+                if (listLine != null) {
+                    String line;
+                    StringBuilder stringBuilder = new StringBuilder();
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_RUNTIME_PATH + listLine)))) {
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                            stringBuilder.append(ls);
                         }
 
-                        String fileName = "";
-                        if (childPath.getNameCount() > 0) {
-                            fileName = childPath.getName(childPath.getNameCount() - 1).toString();
-                        }
-                        if (fileName.endsWith("/")) {
-                            paths.add(childPath);
-                        } else if (fileName.endsWith(".java")) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(childPath)));
-                            String line;
-                            StringBuilder stringBuilder = new StringBuilder();
-                            String ls = System.getProperty("line.separator");
-                            try {
-                                while ((line = reader.readLine()) != null) {
-                                    stringBuilder.append(line);
-                                    stringBuilder.append(ls);
-                                }
-
-                                String className = path.toString().substring(9).replace("/", ".");
-                                className += fileName.substring(0, fileName.length() - 5);
-                                compiler.addSource(className, stringBuilder.toString());
-                            } catch (Exception ex) {
-                                throw new RuntimeException(ex);
-                            } finally {
-                                reader.close();
-                            }
-                        }
+                        String className = listLine.substring(0, listLine.length() - 5).replace("/", ".");
+                        compiler.addSource(className, stringBuilder.toString());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
                     }
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
                 }
-            }
-        } finally {
-            try {
-                if (fileSystem != null) {
-                    fileSystem.close();
-                }
-            } catch (Throwable tw) {
-                // ignore
-            }
+            } while (listLine != null);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
 
         return compiler;
