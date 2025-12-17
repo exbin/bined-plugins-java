@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.exbin.framework.bined.kaitai;
+package org.exbin.framework.bined.kaitai.service;
 
 import io.kaitai.struct.CompileLog;
 import io.kaitai.struct.JavaRuntimeConfig;
@@ -38,6 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
+import org.exbin.framework.bined.kaitai.DefinitionRecord;
 import org.mdkt.compiler.InMemoryJavaCompiler;
 import scala.Some;
 

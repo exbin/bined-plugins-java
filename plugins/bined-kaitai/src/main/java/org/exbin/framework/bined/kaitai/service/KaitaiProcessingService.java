@@ -1,4 +1,4 @@
-package org.exbin.framework.bined.kaitai.visualizer;
+package org.exbin.framework.bined.kaitai.service;
 
 import io.kaitai.struct.Version;
 import io.kaitai.struct.format.KSVersion;
@@ -7,16 +7,19 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
-import org.exbin.framework.bined.kaitai.KaitaiCompiler;
-import org.exbin.framework.bined.kaitai.KaitaiParser;
 
+/**
+ * Kaitai processing service.
+ *
+ * @author ExBin Project (https://exbin.org)
+ */
 @ParametersAreNonnullByDefault
-public class KaitaiVisualizer {
+public class KaitaiProcessingService {
 
     protected Object struct;
     protected final DefaultTreeModel model = new DefaultTreeModel(null);
 
-    public KaitaiVisualizer() {
+    public KaitaiProcessingService() {
         KSVersion.current_$eq(Version.version());
     }
 

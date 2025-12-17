@@ -1,4 +1,4 @@
-package org.exbin.framework.bined.kaitai.visualizer;
+package org.exbin.framework.bined.kaitai.service;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -16,7 +16,7 @@
 package org.exbin.framework.bined.kaitai;
 
 /**
- * Kaitai status type
+ * Kaitai status type.
  *
  * @author ExBin Project (https://exbin.org)
  */
@@ -27,5 +27,5 @@ public enum KaitaiStatusType {
     COMPILING,
     COMPILE_FAILED,
     PARSING,
-    PARSING_FAILED
+    PARSE_FAILED
 }

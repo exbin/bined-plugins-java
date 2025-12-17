@@ -92,9 +92,9 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
                 iconResource = resourceBundle.getString("statusType.parsing.icon");
                 statusText = resourceBundle.getString("statusType.parsing.text");
                 break;
-            case PARSING_FAILED:
-                iconResource = resourceBundle.getString("statusType.parsingFailed.icon");
-                statusText = resourceBundle.getString("statusType.parsingFailed.text");
+            case PARSE_FAILED:
+                iconResource = resourceBundle.getString("statusType.parseFailed.icon");
+                statusText = resourceBundle.getString("statusType.parseFailed.text");
                 detailAvailable = true;
                 break;
             default:

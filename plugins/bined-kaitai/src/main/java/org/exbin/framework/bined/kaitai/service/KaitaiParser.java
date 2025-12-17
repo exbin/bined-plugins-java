@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.exbin.framework.bined.kaitai;
+package org.exbin.framework.bined.kaitai.service;
 
 import io.kaitai.struct.KaitaiStream;
 import io.kaitai.struct.KaitaiStruct;
@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import org.exbin.framework.bined.kaitai.DefinitionRecord;
 
 /**
  * Kaitai parser.

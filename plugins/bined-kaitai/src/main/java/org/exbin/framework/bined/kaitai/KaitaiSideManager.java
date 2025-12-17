@@ -15,6 +15,8 @@
  */
 package org.exbin.framework.bined.kaitai;
 
+import org.exbin.framework.bined.kaitai.service.KaitaiCompiler;
+import org.exbin.framework.bined.kaitai.service.KaitaiParser;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
@@ -22,8 +24,8 @@ import javax.swing.tree.DefaultTreeModel;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
-import org.exbin.framework.bined.kaitai.visualizer.KaitaiTreeListener;
-import org.exbin.framework.bined.kaitai.visualizer.KaitaiVisualizer;
+import org.exbin.framework.bined.kaitai.service.KaitaiTreeListener;
+import org.exbin.framework.bined.kaitai.service.KaitaiProcessingService;
 
 /**
  * Kaitai side manager.
@@ -34,7 +36,7 @@ import org.exbin.framework.bined.kaitai.visualizer.KaitaiVisualizer;
 public class KaitaiSideManager {
 
     protected KaitaiSidePanel sidePanel = new KaitaiSidePanel();
-    protected KaitaiVisualizer visualizer = new KaitaiVisualizer();
+    protected KaitaiProcessingService visualizer = new KaitaiProcessingService();
     protected KaitaiCompiler compiler = new KaitaiCompiler();
     protected KaitaiParser parser = null;
     protected JTree parserTree;
@@ -85,7 +87,7 @@ public class KaitaiSideManager {
         if (parsingResult.getErrorMessage() != null) {
             clearParseTree();
             processingMessage = parsingResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.PARSING_FAILED);
+            sidePanel.setStatus(KaitaiStatusType.PARSE_FAILED);
             return;
         }
 
