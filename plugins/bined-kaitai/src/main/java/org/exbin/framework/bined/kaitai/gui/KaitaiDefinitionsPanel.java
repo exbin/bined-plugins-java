@@ -16,23 +16,23 @@
 package org.exbin.framework.bined.kaitai.gui;
 
 import java.awt.Component;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
 
 /**
- * Kaitai definitions panel.
+ * Kaitai definitions list panel.
  *
  * @author ExBin Project (https://exbin.org)
  */
@@ -40,8 +40,8 @@ import org.exbin.framework.bined.kaitai.DefinitionRecord;
 public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiDefinitionsPanel.class);
-    protected KaitaiSidePanel.Controller controller;
-    protected DefaultTreeModel definitionsTreeModel;
+    protected Controller controller;
+    protected DefaultListModel<DefinitionRecord> definitionsListModel;
 
     public KaitaiDefinitionsPanel() {
         initComponents();
@@ -49,31 +49,20 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     }
 
     private void init() {
-        definitionsTree.setShowsRootHandles(true);
-        definitionsTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        definitionsTree.setCellRenderer(new DefaultTreeCellRenderer() {
+        definitionsListModel = new DefaultListModel<>();
+        definitionsList.setModel(definitionsListModel);
+        definitionsList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                if (value instanceof DefaultMutableTreeNode) {
-                    Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
-                    if (userObject instanceof DefinitionRecord) {
-                        value = ((DefinitionRecord) userObject).getFileName();
-                    } else {
-                        value = ((TreeNode) value).toString();
-                    }
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                DefaultListCellRenderer component = (DefaultListCellRenderer) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof DefinitionRecord) {
+                    DefinitionRecord definition = (DefinitionRecord) value;
+                    component.setText(definition.getTitle());
                 }
-                return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+                return component;
             }
         });
-    }
-
-    @Nonnull
-    public Optional<DefaultMutableTreeNode> getSelectedNode() {
-        TreePath[] selectionPaths = definitionsTree.getSelectionPaths();
-        if (selectionPaths.length == 0) {
-            return Optional.empty();
-        }
-        return Optional.of((DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent());
+        definitionsList.addListSelectionListener((ListSelectionEvent e) -> updateStates());
     }
 
     @Nonnull
@@ -81,18 +70,49 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         return resourceBundle;
     }
 
-    public void setFormats(TreeNode rootNode) {
-        definitionsTreeModel = new DefaultTreeModel(rootNode);
-        definitionsTree.setModel(definitionsTreeModel);
-        expandAll();
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 
-    private void expandAll() {
-        int index = 0;
-        while (index < definitionsTree.getRowCount()) {
-            definitionsTree.expandRow(index);
-            index++;
+    @Nonnull
+    public List<DefinitionRecord> getDefinitions() {
+        List<DefinitionRecord> definitions = new ArrayList<>();
+        for (int i = 0; i < definitionsListModel.getSize(); i++) {
+            definitions.add(definitionsListModel.getElementAt(i));
         }
+        return definitions;
+    }
+
+    public void setDefinitions(List<DefinitionRecord> definitions) {
+        definitionsListModel.removeAllElements();
+        for (DefinitionRecord definition : definitions) {
+            definitionsListModel.addElement(definition);
+        }
+    }
+
+    private void updateStates() {
+        int[] selectedIndices = definitionsList.getSelectedIndices();
+        boolean hasSelection = selectedIndices.length > 0;
+        boolean singleSelection = selectedIndices.length == 1;
+        boolean hasAnyItems = !definitionsListModel.isEmpty();
+        editButton.setEnabled(singleSelection);
+        selectAllButton.setEnabled(hasAnyItems);
+        removeButton.setEnabled(hasSelection);
+
+        if (hasSelection) {
+            upButton.setEnabled(definitionsList.getMaxSelectionIndex() >= selectedIndices.length);
+            downButton.setEnabled(definitionsList.getMinSelectionIndex() + selectedIndices.length < definitionsListModel.getSize());
+            if (selectedIndices.length == 1) {
+                controller.updatePreview(previewPanel, definitionsListModel.getElementAt(selectedIndices[0]));
+            }
+        } else {
+            upButton.setEnabled(false);
+            downButton.setEnabled(false);
+        }
+    }
+    
+    private void notifyModified() {
+        updateStates();
     }
 
     /**
@@ -106,23 +126,71 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
 
         filterLabel = new javax.swing.JLabel();
         filterTextField = new javax.swing.JTextField();
-        definitionsScrollPane = new javax.swing.JScrollPane();
-        definitionsTree = new javax.swing.JTree();
         controlPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
+        buildInButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
+        upButton = new javax.swing.JButton();
+        downButton = new javax.swing.JButton();
+        selectAllButton = new javax.swing.JButton();
+        removeButton = new javax.swing.JButton();
+        definitionsListScrollPane = new javax.swing.JScrollPane();
+        definitionsList = new javax.swing.JList<>();
+        previewPanel = new javax.swing.JPanel();
 
         filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/view-filter.png"))); // NOI18N
 
         filterTextField.setEnabled(false);
 
-        definitionsScrollPane.setViewportView(definitionsTree);
-
         addButton.setText(resourceBundle.getString("addButton.text")); // NOI18N
         addButton.setEnabled(false);
 
+        buildInButton.setText(resourceBundle.getString("buildInButton.text")); // NOI18N
+        buildInButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buildInButtonActionPerformed(evt);
+            }
+        });
+
         editButton.setText(resourceBundle.getString("editButton.text")); // NOI18N
         editButton.setEnabled(false);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
+
+        upButton.setText(resourceBundle.getString("upButton.text")); // NOI18N
+        upButton.setEnabled(false);
+        upButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upButtonActionPerformed(evt);
+            }
+        });
+
+        downButton.setText(resourceBundle.getString("downButton.text")); // NOI18N
+        downButton.setEnabled(false);
+        downButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downButtonActionPerformed(evt);
+            }
+        });
+
+        selectAllButton.setText(resourceBundle.getString("selectAllButton.text")); // NOI18N
+        selectAllButton.setEnabled(false);
+        selectAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectAllButtonActionPerformed(evt);
+            }
+        });
+
+        removeButton.setText(resourceBundle.getString("removeButton.text")); // NOI18N
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
@@ -132,7 +200,12 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(editButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(buildInButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(editButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(removeButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(selectAllButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(downButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(upButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         controlPanelLayout.setVerticalGroup(
@@ -141,8 +214,31 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(addButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(buildInButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(editButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(upButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(downButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(selectAllButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(removeButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        definitionsListScrollPane.setViewportView(definitionsList);
+
+        javax.swing.GroupLayout previewPanelLayout = new javax.swing.GroupLayout(previewPanel);
+        previewPanel.setLayout(previewPanelLayout);
+        previewPanelLayout.setHorizontalGroup(
+            previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        previewPanelLayout.setVerticalGroup(
+            previewPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -156,8 +252,9 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                         .addComponent(filterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(filterTextField))
-                    .addComponent(definitionsScrollPane))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(definitionsListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                    .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
@@ -168,27 +265,106 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                     .addComponent(filterTextField)
                     .addComponent(filterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(definitionsScrollPane)
+                .addComponent(definitionsListScrollPane)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(controlPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    public void addDefinition(DefinitionRecord definition) {
+        definitionsListModel.addElement(definition);
+    }
+
+    private void upButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upButtonActionPerformed
+        int[] indices = definitionsList.getSelectedIndices();
+        int last = 0;
+        for (int i = 0; i < indices.length; i++) {
+            int next = indices[i];
+            if (last != next) {
+                DefinitionRecord item = definitionsListModel.getElementAt(next);
+                definitionsListModel.add(next - 1, item);
+                definitionsList.getSelectionModel().addSelectionInterval(next - 1, next - 1);
+                definitionsListModel.remove(next + 1);
+            } else {
+                last++;
+            }
+        }
+        notifyModified();
+    }//GEN-LAST:event_upButtonActionPerformed
+
+    private void downButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downButtonActionPerformed
+        int[] indices = definitionsList.getSelectedIndices();
+        int last = definitionsListModel.getSize() - 1;
+        for (int i = indices.length; i > 0; i--) {
+            int next = indices[i - 1];
+            if (last != next) {
+                DefinitionRecord item = definitionsListModel.getElementAt(next);
+                definitionsListModel.add(next + 2, item);
+                definitionsList.getSelectionModel().addSelectionInterval(next + 2, next + 2);
+                definitionsListModel.remove(next);
+            } else {
+                last--;
+            }
+        }
+        notifyModified();
+    }//GEN-LAST:event_downButtonActionPerformed
+
+    private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
+        if (definitionsList.getSelectedIndices().length < definitionsListModel.getSize()) {
+            definitionsList.setSelectionInterval(0, definitionsListModel.getSize() - 1);
+        } else {
+            definitionsList.clearSelection();
+        }
+        updateStates();
+    }//GEN-LAST:event_selectAllButtonActionPerformed
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        int[] indices = definitionsList.getSelectedIndices();
+        Arrays.sort(indices);
+        for (int i = indices.length - 1; i >= 0; i++) {
+            definitionsListModel.removeElementAt(i);
+        }
+        definitionsList.clearSelection();
+        notifyModified();
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void buildInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buildInButtonActionPerformed
+        controller.addBuildIn();
+        notifyModified();
+    }//GEN-LAST:event_buildInButtonActionPerformed
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        controller.editDefinition();
+        notifyModified();
+    }//GEN-LAST:event_editButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
+    private javax.swing.JButton buildInButton;
     private javax.swing.JPanel controlPanel;
-    private javax.swing.JScrollPane definitionsScrollPane;
-    private javax.swing.JTree definitionsTree;
+    private javax.swing.JList<DefinitionRecord> definitionsList;
+    private javax.swing.JScrollPane definitionsListScrollPane;
+    private javax.swing.JButton downButton;
     private javax.swing.JButton editButton;
     private javax.swing.JLabel filterLabel;
     private javax.swing.JTextField filterTextField;
+    private javax.swing.JPanel previewPanel;
+    private javax.swing.JButton removeButton;
+    private javax.swing.JButton selectAllButton;
+    private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 
+    @ParametersAreNonnullByDefault
     public interface Controller {
 
         void addDefinition();
 
+        void addBuildIn();
+
         void editDefinition();
+
+        void updatePreview(JPanel previewPanel, DefinitionRecord definition);
     }
 }

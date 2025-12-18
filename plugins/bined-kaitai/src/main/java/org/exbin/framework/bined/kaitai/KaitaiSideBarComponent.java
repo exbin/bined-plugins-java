@@ -26,6 +26,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -33,12 +34,14 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.framework.App;
 import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinaryDataComponent;
+import org.exbin.framework.bined.kaitai.gui.KaitaiBuildInPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiProcessingMessagePanel;
@@ -70,9 +73,50 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             public void manageDefinitions() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
                 final KaitaiDefinitionsPanel definitionsPanel = new KaitaiDefinitionsPanel();
-                DefaultMutableTreeNode formatsRootNode = new DefaultMutableTreeNode("Definitions");
-                readAvailableFormats(formatsRootNode);
-                definitionsPanel.setFormats(formatsRootNode);
+                definitionsPanel.setController(new KaitaiDefinitionsPanel.Controller() {
+                    @Override
+                    public void addDefinition() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    @Override
+                    public void addBuildIn() {
+                        KaitaiBuildInPanel buildInPanel = new KaitaiBuildInPanel();
+                        DefaultMutableTreeNode formatsRootNode = new DefaultMutableTreeNode("Definitions");
+                        readAvailableFormats(formatsRootNode);
+                        buildInPanel.setFormats(formatsRootNode);
+                        DefaultControlPanel controlPanel = new DefaultControlPanel(buildInPanel.getResourceBundle());
+//                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
+//                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
+                        final WindowHandler dialog = windowModule.createDialog(buildInPanel, controlPanel);
+                        windowModule.setWindowTitle(dialog, buildInPanel.getResourceBundle());
+                        windowModule.addHeaderPanel(dialog.getWindow(), buildInPanel.getClass(), buildInPanel.getResourceBundle());
+                        controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
+                            if (actionType == DefaultControlController.ControlActionType.OK) {
+                                Optional<DefaultMutableTreeNode> optSelectedNode = buildInPanel.getSelectedNode();
+                                if (optSelectedNode.isPresent()) {
+                                    Object userObject = optSelectedNode.get().getUserObject();
+                                    if (userObject instanceof DefinitionRecord) {
+                                        definitionsPanel.addDefinition((DefinitionRecord) userObject);
+                                    }
+                                }
+                            }
+                            dialog.close();
+                            dialog.dispose();
+                        });
+                        dialog.showCentered(sidePanel);
+                    }
+
+                    @Override
+                    public void editDefinition() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                    }
+
+                    @Override
+                    public void updatePreview(JPanel previewPanel, DefinitionRecord definition) {
+                        // TODO
+                    }
+                });
                 DefaultControlPanel controlPanel = new DefaultControlPanel(definitionsPanel.getResourceBundle());
 //                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
 //                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
@@ -81,13 +125,15 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                 windowModule.addHeaderPanel(dialog.getWindow(), definitionsPanel.getClass(), definitionsPanel.getResourceBundle());
                 controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
                     if (actionType == DefaultControlController.ControlActionType.OK) {
-                        Optional<DefaultMutableTreeNode> optSelectedNode = definitionsPanel.getSelectedNode();
-                        if (optSelectedNode.isPresent()) {
-                            Object userObject = optSelectedNode.get().getUserObject();
-                            if (userObject instanceof DefinitionRecord) {
-                                setDefinitionRecord((DefinitionRecord) userObject);
-                            }
-                        }
+                        List<DefinitionRecord> definitions = definitionsPanel.getDefinitions();
+//                        
+//                        Optional<DefaultMutableTreeNode> optSelectedNode = SelectedNode();
+//                        if (optSelectedNode.isPresent()) {
+//                            Object userObject = optSelectedNode.get().getUserObject();
+//                            if (userObject instanceof DefinitionRecord) {
+//                                setDefinitionRecord((DefinitionRecord) userObject);
+//                            }
+//                        }
                     }
                     dialog.close();
                     dialog.dispose();
@@ -146,7 +192,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             if (fileName.endsWith("/")) {
                 fileName = fileName.substring(0, fileName.length() - 1);
             }
-            setDefinitionRecord(new DefinitionRecord(fileName, filePath.toUri()));
+            setDefinitionRecord(new DefinitionRecord(fileName, fileName, filePath.toUri()));
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -197,24 +243,12 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         fileName = listLine;
                     }
                     URI definitionUri = getClass().getResource(RESOURCE_FORMATS_PATH + listLine).toURI();
-                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, definitionUri));
+                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, fileName, definitionUri));
                     parentNode.add(childNode);
                 }
             } while (listLine != null);
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @ParametersAreNonnullByDefault
-    private static class PathRecord {
-
-        String path;
-        DefaultMutableTreeNode node;
-
-        public PathRecord(String path, DefaultMutableTreeNode node) {
-            this.path = path;
-            this.node = node;
         }
     }
 }

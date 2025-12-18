@@ -29,12 +29,19 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @ParametersAreNonnullByDefault
 public class DefinitionRecord {
 
+    protected final String title;
     protected final String fileName;
     protected final URI uri;
 
-    public DefinitionRecord(String fileName, URI uri) {
+    public DefinitionRecord(String title, String fileName, URI uri) {
+        this.title = title;
         this.fileName = fileName;
         this.uri = uri;
+    }
+
+    @Nonnull
+    public String getTitle() {
+        return title;
     }
 
     @Nonnull

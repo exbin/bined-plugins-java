@@ -121,6 +121,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
         comboBox = new javax.swing.JComboBox<>();
         selectButton = new javax.swing.JButton();
+        parsePanel = new javax.swing.JPanel();
         parserTreeScrollPane = new javax.swing.JScrollPane();
         parserTree = new javax.swing.JTree();
         statusLabel = new javax.swing.JLabel();
@@ -133,7 +134,11 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
             }
         });
 
+        parsePanel.setLayout(new java.awt.BorderLayout());
+
         parserTreeScrollPane.setViewportView(parserTree);
+
+        parsePanel.add(parserTreeScrollPane, java.awt.BorderLayout.CENTER);
 
         statusLabel.setText("Status");
 
@@ -152,7 +157,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(parserTreeScrollPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(comboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -160,7 +164,8 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(statusDetailButton)))
+                        .addComponent(statusDetailButton))
+                    .addComponent(parsePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -171,7 +176,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
                     .addComponent(comboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(selectButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(parserTreeScrollPane)
+                .addComponent(parsePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(statusLabel)
@@ -191,6 +196,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> comboBox;
+    private javax.swing.JPanel parsePanel;
     private javax.swing.JTree parserTree;
     private javax.swing.JScrollPane parserTreeScrollPane;
     private javax.swing.JButton selectButton;
