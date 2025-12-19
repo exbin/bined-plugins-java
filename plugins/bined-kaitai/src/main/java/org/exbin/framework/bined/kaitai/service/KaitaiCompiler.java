@@ -23,7 +23,6 @@ import io.kaitai.struct.format.ClassSpec;
 import io.kaitai.struct.formats.JavaClassSpecs;
 import io.kaitai.struct.formats.JavaKSYParser;
 import io.kaitai.struct.languages.JavaCompiler$;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,14 +31,15 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
+import org.dvare.dynamic.compiler.DynamicCompiler;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
-import org.mdkt.compiler.InMemoryJavaCompiler;
 import scala.Some;
 
 /**
@@ -50,7 +50,6 @@ import scala.Some;
 @ParametersAreNonnullByDefault
 public class KaitaiCompiler {
 
-    private static final String RESOURCE_RUNTIME_PATH = "/org/exbin/framework/bined/kaitai/resources/runtime/";
     public static final String DEST_PACKAGE = "io.kaitai.struct.visualized";
     /**
      * Regexp with 2 groups: class name and type parameters. Type parameters
@@ -122,9 +121,11 @@ public class KaitaiCompiler {
                     + "public static Class getStreamClass() { return io.kaitai.struct.BinaryDataKaitaiStream.class; }\n"
                     + "}\n";
 
-            InMemoryJavaCompiler compiler = createInMemoryCompiler();
+            DynamicCompiler compiler = new DynamicCompiler();
             compiler.addSource(DEST_PACKAGE + "." + m.group(1), javaSrc);
-            final Class<?> wrapperClass = compiler.compile(DEST_PACKAGE + "." + "DataWrapper", wrapperClassSrc);
+            compiler.addSource(DEST_PACKAGE + "." + "DataWrapper", wrapperClassSrc);
+            Map<String, Class<?>> compiledClasses = compiler.build();
+            final Class<?> wrapperClass = compiledClasses.get(DEST_PACKAGE + "." + "DataWrapper");
             final Class<?> ksyClass = (Class<?>) wrapperClass.getMethod("getKsyClass").invoke(null);
             final Class<?> streamClass = (Class<?>) wrapperClass.getMethod("getStreamClass").invoke(null);
             KaitaiParser parser = new KaitaiParser(definitionRecord, ksyClass, streamClass, paramNames);
@@ -150,37 +151,6 @@ public class KaitaiCompiler {
                 }
             }
         }
-    }
-
-    @Nonnull
-    private InMemoryJavaCompiler createInMemoryCompiler() {
-        InMemoryJavaCompiler compiler = InMemoryJavaCompiler.newInstance();
-        String listLine;
-        String ls = System.getProperty("line.separator");
-        try (BufferedReader listReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_RUNTIME_PATH + "runtime.txt")))) {
-            do {
-                listLine = listReader.readLine();
-                if (listLine != null) {
-                    String line;
-                    StringBuilder stringBuilder = new StringBuilder();
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_RUNTIME_PATH + listLine)))) {
-                        while ((line = reader.readLine()) != null) {
-                            stringBuilder.append(line);
-                            stringBuilder.append(ls);
-                        }
-
-                        String className = listLine.substring(0, listLine.length() - 5).replace("/", ".");
-                        compiler.addSource(className, stringBuilder.toString());
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            } while (listLine != null);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-
-        return compiler;
     }
 
     @Immutable

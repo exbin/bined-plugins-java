@@ -34,7 +34,7 @@ import org.exbin.framework.sidebar.api.SideBarModuleApi;
 import org.exbin.framework.ui.api.UiModuleApi;
 
 /**
- * Binary editor plugin supporting Kaitai decompilers.
+ * Binary editor plugin for Kaitai analyzer support.
  *
  * @author ExBin Project (https://exbin.org)
  */

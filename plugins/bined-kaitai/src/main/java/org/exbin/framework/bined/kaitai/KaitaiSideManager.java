@@ -74,7 +74,7 @@ public class KaitaiSideManager {
             sidePanel.setStatus(KaitaiStatusType.COMPILING);
             KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
             if (compileResult.getErrorMessage() != null) {
-                processingMessage = compileResult.getErrorMessage();
+                processingMessage += compileResult.getErrorMessage();
                 sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
                 this.parser = null;
                 return;
@@ -86,7 +86,7 @@ public class KaitaiSideManager {
         KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
         if (parsingResult.getErrorMessage() != null) {
             clearParseTree();
-            processingMessage = parsingResult.getErrorMessage();
+            processingMessage += parsingResult.getErrorMessage();
             sidePanel.setStatus(KaitaiStatusType.PARSE_FAILED);
             return;
         }
