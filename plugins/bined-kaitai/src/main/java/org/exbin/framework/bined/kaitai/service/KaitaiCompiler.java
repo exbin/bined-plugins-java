@@ -38,6 +38,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import org.dvare.dynamic.compiler.DynamicCompiler;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
 import scala.Some;
@@ -121,7 +123,13 @@ public class KaitaiCompiler {
                     + "public static Class getStreamClass() { return io.kaitai.struct.BinaryDataKaitaiStream.class; }\n"
                     + "}\n";
 
-            DynamicCompiler compiler = new DynamicCompiler();
+            ClassLoader classLoader = getClass().getClassLoader();
+            JavaCompiler javaCompiler = ToolProvider.getSystemJavaCompiler();
+            if (javaCompiler == null) {
+                Class compilerClass = classLoader.loadClass("com.sun.tools.javac.api.JavacTool");
+                javaCompiler = (JavaCompiler) compilerClass.getConstructor().newInstance();
+            }
+            DynamicCompiler compiler = new DynamicCompiler(classLoader, javaCompiler);
             compiler.addSource(DEST_PACKAGE + "." + m.group(1), javaSrc);
             compiler.addSource(DEST_PACKAGE + "." + "DataWrapper", wrapperClassSrc);
             Map<String, Class<?>> compiledClasses = compiler.build();
