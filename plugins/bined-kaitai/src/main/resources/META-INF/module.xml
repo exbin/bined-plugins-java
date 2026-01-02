@@ -28,7 +28,6 @@
     <library maven="org.yaml:snakeyaml:2.0" />
     <library maven="org.dvare:dynamic-loader:3.2" />
     <library maven="org.slf4j:slf4j-api:2.0.16" />
-    <library maven="com.lihaoyi:geny_2.13:0.6.10" />
-    <library maven="com.lihaoyi:sourcecode_2.13:0.2.3" />
+    <library jar="tools.jar" />
   </dependency>
 </module>

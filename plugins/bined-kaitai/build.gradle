@@ -5,8 +5,8 @@ plugins {
 }
 
 group = 'org.exbin.framework'
-ext.libraryName = 'BinEd KaiTai Support Hexadecimal Editor Framework Library'
-ext.libraryDescription = 'BinEd KaiTai support hexadecimal editor framework library'
+ext.libraryName = 'BinEd Kaitai Support Plugin'
+ext.libraryDescription = 'BinEd Kaitai plugin'
 
 apply from: '../plugins.gradle'
 
@@ -55,6 +55,7 @@ dependencies {
     implementation moduleDep('ExbinFrameworkJava', 'org.exbin.framework', 'modules', 'exbin-framework-document-text')
     implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined')
     implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined-search')
+    implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined-objectdata')
     implementation moduleDep('Bined', 'org.exbin.framework', 'modules', 'exbin-framework-bined-inspector')
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     testImplementation group : 'junit', name: 'junit', version: '4.13.2'
