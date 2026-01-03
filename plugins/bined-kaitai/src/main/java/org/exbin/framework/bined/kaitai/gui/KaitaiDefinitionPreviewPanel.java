@@ -55,9 +55,36 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        label = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
+        titleTextField = new javax.swing.JTextField();
+        sourceLabel = new javax.swing.JLabel();
+        sourceLinkLabel = new javax.swing.JLabel();
+        idLabel = new javax.swing.JLabel();
+        idTextField = new javax.swing.JTextField();
+        extensionLabel = new javax.swing.JLabel();
+        extensionTextField = new javax.swing.JTextField();
+        mimeTypeLabel = new javax.swing.JLabel();
+        mimeTypeTextField = new javax.swing.JTextField();
 
-        label.setText("TODO");
+        titleLabel.setText(resourceBundle.getString("titleLabel.text")); // NOI18N
+
+        titleTextField.setEditable(false);
+
+        sourceLabel.setText(resourceBundle.getString("sourceLabel.text")); // NOI18N
+
+        sourceLinkLabel.setText("https://");
+
+        idLabel.setText(resourceBundle.getString("idLabel.text")); // NOI18N
+
+        idTextField.setEditable(false);
+
+        extensionLabel.setText(resourceBundle.getString("extensionLabel.text")); // NOI18N
+
+        extensionTextField.setEditable(false);
+
+        mimeTypeLabel.setText(resourceBundle.getString("mimeTypeLabel.text")); // NOI18N
+
+        mimeTypeTextField.setEditable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -65,20 +92,62 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(label)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(titleTextField)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(sourceLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(sourceLinkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(idTextField)
+                    .addComponent(extensionTextField)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(titleLabel)
+                            .addComponent(idLabel)
+                            .addComponent(extensionLabel)
+                            .addComponent(mimeTypeLabel))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(mimeTypeTextField))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(label)
+                .addComponent(titleLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sourceLabel)
+                    .addComponent(sourceLinkLabel))
+                .addGap(18, 18, 18)
+                .addComponent(idLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(extensionLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(extensionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mimeTypeLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mimeTypeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel label;
+    private javax.swing.JLabel extensionLabel;
+    private javax.swing.JTextField extensionTextField;
+    private javax.swing.JLabel idLabel;
+    private javax.swing.JTextField idTextField;
+    private javax.swing.JLabel mimeTypeLabel;
+    private javax.swing.JTextField mimeTypeTextField;
+    private javax.swing.JLabel sourceLabel;
+    private javax.swing.JLabel sourceLinkLabel;
+    private javax.swing.JLabel titleLabel;
+    private javax.swing.JTextField titleTextField;
     // End of variables declaration//GEN-END:variables
 }

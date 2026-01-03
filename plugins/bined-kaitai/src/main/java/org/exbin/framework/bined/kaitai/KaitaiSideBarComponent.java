@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
@@ -42,6 +43,7 @@ import org.exbin.framework.App;
 import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinaryDataComponent;
 import org.exbin.framework.bined.kaitai.gui.KaitaiBuildInPanel;
+import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionPreviewPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiProcessingMessagePanel;
@@ -82,13 +84,18 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                     @Override
                     public void addBuildIn() {
                         KaitaiBuildInPanel buildInPanel = new KaitaiBuildInPanel();
+                        KaitaiDefinitionPreviewPanel previewPanel = new KaitaiDefinitionPreviewPanel();
+                        JSplitPane splitPane = new JSplitPane();
+                        splitPane.setLeftComponent(buildInPanel);
+                        splitPane.setRightComponent(previewPanel);
                         DefaultMutableTreeNode formatsRootNode = new DefaultMutableTreeNode("Definitions");
                         readAvailableFormats(formatsRootNode);
                         buildInPanel.setFormats(formatsRootNode);
                         DefaultControlPanel controlPanel = new DefaultControlPanel(buildInPanel.getResourceBundle());
 //                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
 //                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
-                        final WindowHandler dialog = windowModule.createDialog(buildInPanel, controlPanel);
+                        splitPane.setSize(700, 500);
+                        final WindowHandler dialog = windowModule.createDialog(splitPane, controlPanel);
                         windowModule.setWindowTitle(dialog, buildInPanel.getResourceBundle());
                         windowModule.addHeaderPanel(dialog.getWindow(), buildInPanel.getClass(), buildInPanel.getResourceBundle());
                         controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
