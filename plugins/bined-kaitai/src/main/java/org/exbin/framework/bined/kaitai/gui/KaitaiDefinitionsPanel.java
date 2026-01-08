@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -89,6 +90,11 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
             definitionsListModel.addElement(definition);
         }
     }
+    
+    @Nonnull
+    public Optional<DefinitionRecord> getSelectedDefinition() {
+        return Optional.ofNullable(definitionsList.getSelectedValue());
+    }
 
     private void updateStates() {
         int[] selectedIndices = definitionsList.getSelectedIndices();
@@ -102,7 +108,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         if (hasSelection) {
             upButton.setEnabled(definitionsList.getMaxSelectionIndex() >= selectedIndices.length);
             downButton.setEnabled(definitionsList.getMinSelectionIndex() + selectedIndices.length < definitionsListModel.getSize());
-            if (selectedIndices.length == 1) {
+            if (singleSelection) {
                 controller.updatePreview(previewPanel, definitionsListModel.getElementAt(selectedIndices[0]));
             }
         } else {
@@ -143,7 +149,11 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         filterTextField.setEnabled(false);
 
         addButton.setText(resourceBundle.getString("addButton.text")); // NOI18N
-        addButton.setEnabled(false);
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         buildInButton.setText(resourceBundle.getString("buildInButton.text")); // NOI18N
         buildInButton.addActionListener(new java.awt.event.ActionListener() {
@@ -339,6 +349,10 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         controller.editDefinition();
         notifyModified();
     }//GEN-LAST:event_editButtonActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        controller.addDefinition();
+    }//GEN-LAST:event_addButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;

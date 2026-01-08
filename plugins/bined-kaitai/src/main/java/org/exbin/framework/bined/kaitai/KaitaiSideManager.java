@@ -15,6 +15,16 @@
  */
 package org.exbin.framework.bined.kaitai;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.exbin.framework.bined.kaitai.service.KaitaiCompiler;
 import org.exbin.framework.bined.kaitai.service.KaitaiParser;
 import javax.annotation.Nonnull;
@@ -51,6 +61,22 @@ public class KaitaiSideManager {
         parserTree.addTreeWillExpandListener(treeListener);
         parserTree.addTreeSelectionListener(treeListener);
         sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
+        sidePanel.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent event) {
+                try {
+                    event.acceptDrop(DnDConstants.ACTION_COPY);
+                    Object transferData = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    List<?> droppedFiles = (List) transferData;
+                    for (Object droppedFile : droppedFiles) {
+//                        sidePanel.addDefinition();
+//                        openFile(((File) file).toURI(), null);
+                    }
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    Logger.getLogger(KaitaiSideManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 
     @Nonnull

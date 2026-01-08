@@ -16,11 +16,20 @@
 package org.exbin.framework.bined.kaitai;
 
 import java.awt.Dimension;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -34,6 +43,7 @@ import java.util.logging.Logger;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -47,12 +57,19 @@ import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionPreviewPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiProcessingMessagePanel;
+import org.exbin.framework.file.api.DefaultFileTypes;
+import org.exbin.framework.file.api.FileDialogsProvider;
+import org.exbin.framework.file.api.FileModuleApi;
+import org.exbin.framework.file.api.OpenFileResult;
 import org.exbin.framework.sidebar.api.AbstractSideBarComponent;
 import org.exbin.framework.window.api.WindowHandler;
 import org.exbin.framework.window.api.WindowModuleApi;
+import org.exbin.framework.window.api.controller.CloseControlController;
 import org.exbin.framework.window.api.controller.DefaultControlController;
 import org.exbin.framework.window.api.gui.CloseControlPanel;
 import org.exbin.framework.window.api.gui.DefaultControlPanel;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  * Kaitai sidebar component.
@@ -75,10 +92,35 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             public void manageDefinitions() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
                 final KaitaiDefinitionsPanel definitionsPanel = new KaitaiDefinitionsPanel();
+                definitionsPanel.setDropTarget(new DropTarget() {
+                    @Override
+                    public synchronized void drop(DropTargetDropEvent event) {
+                        try {
+                            event.acceptDrop(DnDConstants.ACTION_COPY);
+                            Object transferData = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                            List<?> droppedFiles = (List) transferData;
+                            for (Object droppedFile : droppedFiles) {
+                                File file = (File) droppedFile;
+                                DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                                definitionsPanel.addDefinition(record);
+                            }
+                        } catch (UnsupportedFlavorException | IOException ex) {
+                            Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                });
+
                 definitionsPanel.setController(new KaitaiDefinitionsPanel.Controller() {
                     @Override
                     public void addDefinition() {
-                        throw new UnsupportedOperationException("Not supported yet.");
+                        FileModuleApi fileModule = App.getModule(FileModuleApi.class);
+                        FileDialogsProvider dialogsProvider = fileModule.getFileDialogsProvider();
+                        OpenFileResult openFileResult = dialogsProvider.showOpenFileDialog(new DefaultFileTypes(new KsyFileType()), null, null, null);
+                        if (openFileResult.getDialogResult() == JFileChooser.APPROVE_OPTION) {
+                            File file = openFileResult.getSelectedFile().get();
+                            DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                            definitionsPanel.addDefinition(record);
+                        }
                     }
 
                     @Override
@@ -116,7 +158,57 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
                     @Override
                     public void editDefinition() {
-                        throw new UnsupportedOperationException("Not supported yet.");
+                        RSyntaxTextArea textArea = new RSyntaxTextArea();
+                        RTextScrollPane scrollPane = new RTextScrollPane(textArea);
+                        textArea.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_YAML);
+                        DefinitionRecord definitionRecord = definitionsPanel.getSelectedDefinition().get();
+                        InputStream input = null;
+                        BufferedReader reader = null;
+                        try {
+                            URL fileSource = definitionRecord.getUri().toURL();
+                            input = fileSource.openStream();
+                            reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+                            StringBuilder builder = new StringBuilder();
+                            String read;
+                            try {
+                                while ((read = reader.readLine()) != null) {
+                                    builder.append(read);
+                                    builder.append("\n");
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
+                            }                            
+                            textArea.setText(builder.toString());
+                        } catch (IOException ex) {
+                            Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
+                        } finally {
+                            if (reader != null) {
+                                try {
+                                    reader.close();
+                                } catch (IOException e) {
+                                    // ignore
+                                }
+                            }
+                            if (input != null) {
+                                try {
+                                    input.close();
+                                } catch (IOException ex) {
+                                    // ignore
+                                }
+                            }
+                        }
+
+                        scrollPane.setViewportView(textArea);
+                        scrollPane.setSize(new Dimension(700, 500));
+                        CloseControlPanel controlPanel = new CloseControlPanel();
+                        final WindowHandler dialog = windowModule.createDialog(scrollPane, controlPanel);
+                        controlPanel.setController(new CloseControlController() {
+                            @Override
+                            public void controlActionPerformed() {
+                                dialog.close();
+                            }
+                        });
+                        dialog.showCentered(sidePanel);
                     }
 
                     @Override
@@ -201,7 +293,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             }
             setDefinitionRecord(new DefinitionRecord(fileName, fileName, filePath.toUri()));
         } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             try {
                 if (fileSystem != null) {
@@ -235,7 +327,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
                         parentNode.add(childNode);
                         nodes.put(listLine, childNode);
-                        
+
                         continue;
                     }
 
@@ -255,7 +347,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                 }
             } while (listLine != null);
         } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(BinedKaitaiModule.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
