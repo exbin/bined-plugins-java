@@ -20,7 +20,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -95,18 +94,21 @@ public class KaitaiSideManager {
         }
 
         if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
-            sidePanel.setCurrentDef(definitionRecord.getFileName());
-            clearParseTree();
-            sidePanel.setStatus(KaitaiStatusType.COMPILING);
-            KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
-            if (compileResult.getErrorMessage() != null) {
-                processingMessage += compileResult.getErrorMessage();
-                sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
-                this.parser = null;
-                return;
-            }
-            this.parser = compileResult.getParser();
+            sidePanel.addDefinition(definitionRecord);
         }
+    }
+    
+    public void processDefinition(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
+        clearParseTree();
+        sidePanel.setStatus(KaitaiStatusType.COMPILING);
+        KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
+        if (compileResult.getErrorMessage() != null) {
+            processingMessage += compileResult.getErrorMessage();
+            sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
+            this.parser = null;
+            return;
+        }
+        this.parser = compileResult.getParser();
 
         sidePanel.setStatus(KaitaiStatusType.PARSING);
         KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);

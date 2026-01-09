@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -88,6 +87,13 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
     public JComponent createComponent() {
         KaitaiSidePanel sidePanel = sideManager.getSidePanel();
         sidePanel.setController(new KaitaiSidePanel.Controller() {
+            @Override
+            public void selectedDefinitionChanged() {
+                DefinitionRecord definitionRecord = sidePanel.getSelectedDefinition();
+                EditableBinaryData sourceData = binaryDataComponent != null ? (EditableBinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
+                sideManager.processDefinition(definitionRecord, sourceData);
+            }
+
             @Override
             public void manageDefinitions() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
@@ -160,6 +166,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                     public void editDefinition() {
                         RSyntaxTextArea textArea = new RSyntaxTextArea();
                         RTextScrollPane scrollPane = new RTextScrollPane(textArea);
+                        textArea.setEditable(false);
                         textArea.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_YAML);
                         DefinitionRecord definitionRecord = definitionsPanel.getSelectedDefinition().get();
                         InputStream input = null;
@@ -216,6 +223,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         // TODO
                     }
                 });
+                definitionsPanel.setDefinitions(sidePanel.getDefinitions());
                 DefaultControlPanel controlPanel = new DefaultControlPanel(definitionsPanel.getResourceBundle());
 //                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
 //                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
@@ -224,15 +232,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                 windowModule.addHeaderPanel(dialog.getWindow(), definitionsPanel.getClass(), definitionsPanel.getResourceBundle());
                 controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
                     if (actionType == DefaultControlController.ControlActionType.OK) {
-                        List<DefinitionRecord> definitions = definitionsPanel.getDefinitions();
-//                        
-//                        Optional<DefaultMutableTreeNode> optSelectedNode = SelectedNode();
-//                        if (optSelectedNode.isPresent()) {
-//                            Object userObject = optSelectedNode.get().getUserObject();
-//                            if (userObject instanceof DefinitionRecord) {
-//                                setDefinitionRecord((DefinitionRecord) userObject);
-//                            }
-//                        }
+                        sidePanel.setDefinitions(definitionsPanel.getDefinitions());
                     }
                     dialog.close();
                     dialog.dispose();

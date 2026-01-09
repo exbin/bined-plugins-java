@@ -45,6 +45,13 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
+    
+    public void setData(String title, String id, String extension, String mimeType) {
+        titleTextField.setText(title);
+        idTextField.setText(id);
+        extensionTextField.setText(extension);
+        mimeTypeTextField.setText(mimeType);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

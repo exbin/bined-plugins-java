@@ -16,16 +16,20 @@
 package org.exbin.framework.bined.kaitai.gui;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
+import org.exbin.framework.bined.kaitai.DefinitionRecord;
 import org.exbin.framework.bined.kaitai.KaitaiStatusType;
-import static org.exbin.framework.bined.kaitai.KaitaiStatusType.NO_DEFINITION;
 
 /**
  * Kaitai side panel.
@@ -44,6 +48,15 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     }
 
     private void init() {
+        comboBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                if (value instanceof DefinitionRecord) {
+                    value = ((DefinitionRecord) value).getTitle();
+                }
+                return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            }
+        });
         parserTree.setShowsRootHandles(true);
         parserTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         parserTree.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -61,11 +74,36 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         this.controller = controller;
     }
 
-    public void setCurrentDef(String definition) {
-        comboBox.removeAllItems();
-        comboBox.addItem(definition);
+    @Nonnull
+    public List<DefinitionRecord> getDefinitions() {
+        List<DefinitionRecord> result = new ArrayList<>();
+        for (int i = 0; i < comboBox.getItemCount(); i++) {
+            result.add(comboBox.getItemAt(i));
+        }
+        return result;
     }
-    
+
+    public void setDefinitions(List<DefinitionRecord> definitionRecords) {
+        comboBox.removeAllItems();
+        for (DefinitionRecord definitionRecord : definitionRecords) {
+            comboBox.addItem(definitionRecord);
+        }
+    }
+
+    @Nonnull
+    public DefinitionRecord getSelectedDefinition() {
+        return (DefinitionRecord) comboBox.getSelectedItem();
+    }
+
+    public void setSelectedDefinition(int index) {
+        comboBox.setSelectedIndex(index);
+    }
+
+    public void addDefinition(DefinitionRecord definitionRecord) {
+        comboBox.addItem(definitionRecord);
+        comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
+    }
+
     public void setStatus(KaitaiStatusType statusType) {
         String iconResource;
         String statusText;
@@ -109,7 +147,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     public JTree getParserTree() {
         return parserTree;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -126,6 +164,12 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         parserTree = new javax.swing.JTree();
         statusLabel = new javax.swing.JLabel();
         statusDetailButton = new javax.swing.JButton();
+
+        comboBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboBoxItemStateChanged(evt);
+            }
+        });
 
         selectButton.setText("...");
         selectButton.addActionListener(new java.awt.event.ActionListener() {
@@ -193,9 +237,12 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         controller.showStatusDetail();
     }//GEN-LAST:event_statusDetailButtonActionPerformed
 
+    private void comboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBoxItemStateChanged
+        controller.selectedDefinitionChanged();
+    }//GEN-LAST:event_comboBoxItemStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> comboBox;
+    private javax.swing.JComboBox<DefinitionRecord> comboBox;
     private javax.swing.JPanel parsePanel;
     private javax.swing.JTree parserTree;
     private javax.swing.JScrollPane parserTreeScrollPane;
@@ -205,6 +252,8 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     public interface Controller {
+
+        void selectedDefinitionChanged();
 
         void manageDefinitions();
 

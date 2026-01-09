@@ -41,6 +41,7 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiBuildInPanel.class);
     protected DefaultTreeModel definitionsTreeModel;
+    protected Controller controller;
 
     public KaitaiBuildInPanel() {
         initComponents();
@@ -64,6 +65,10 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
                 return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
             }
         });
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 
     @Nonnull
@@ -112,6 +117,11 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
 
         filterTextField.setEnabled(false);
 
+        definitionsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                definitionsTreeValueChanged(evt);
+            }
+        });
         definitionsScrollPane.setViewportView(definitionsTree);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -141,6 +151,10 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void definitionsTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_definitionsTreeValueChanged
+        controller.selectedDefinitionChanged();
+    }//GEN-LAST:event_definitionsTreeValueChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane definitionsScrollPane;
@@ -149,4 +163,8 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
     private javax.swing.JTextField filterTextField;
     // End of variables declaration//GEN-END:variables
 
+    public interface Controller {
+
+        void selectedDefinitionChanged();
+    }
 }
