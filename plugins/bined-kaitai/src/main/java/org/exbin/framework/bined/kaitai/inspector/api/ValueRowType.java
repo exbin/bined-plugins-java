@@ -41,6 +41,14 @@ public interface ValueRowType {
     String getName();
 
     /**
+     * Returns property name.
+     *
+     * @return property name
+     */
+    @Nonnull
+    String getPropertyName();
+
+    /**
      * Creates row item.
      *
      * @return row item

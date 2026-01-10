@@ -16,6 +16,7 @@
 package org.exbin.framework.bined.kaitai.inspector.api;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.bined.objectdata.property.gui.PropertyTableItem;
 
@@ -26,17 +27,23 @@ import org.exbin.framework.bined.objectdata.property.gui.PropertyTableItem;
  */
 @ParametersAreNonnullByDefault
 public abstract class ValueRowItem extends PropertyTableItem {
-    
-    protected final String typeId;
 
-    public ValueRowItem(String typeId, String valueName, String typeName, Object value) {
+    protected final String typeId;
+    protected long position;
+
+    public ValueRowItem(String typeId, String valueName, String typeName, long position, @Nullable Object value) {
         super(valueName, typeName, value);
+        this.position = position;
         this.typeId = typeId;
     }
 
     @Nonnull
     public String getTypeId() {
         return typeId;
+    }
+
+    public long getPosition() {
+        return position;
     }
 
     public abstract void updateRow(byte[] values, int available);

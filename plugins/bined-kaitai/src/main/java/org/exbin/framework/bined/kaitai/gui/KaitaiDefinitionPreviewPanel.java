@@ -15,12 +15,17 @@
  */
 package org.exbin.framework.bined.kaitai.gui;
 
+import java.awt.Component;
+import java.awt.event.MouseEvent;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
+import org.exbin.framework.menu.popup.api.MenuPopupModuleApi;
+import org.exbin.framework.utils.DesktopUtils;
 
 /**
  * Kaitai definitions preview panel.
@@ -30,8 +35,11 @@ import org.exbin.framework.App;
 @ParametersAreNonnullByDefault
 public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
 
+    public static final String GALLERY_LINK = "https://formats.kaitai.io/%s/";
+    public static final String GALLERY_LINK_HTML = "<html><body><a href=\"%s\">%s</a></body></html>";
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiDefinitionPreviewPanel.class);
     protected DefaultTreeModel definitionsTreeModel;
+    protected String galleryLink = "";
 
     public KaitaiDefinitionPreviewPanel() {
         initComponents();
@@ -39,18 +47,32 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
     }
 
     private void init() {
+        galleryLinkLabel.setComponentPopupMenu(new JPopupMenu() {
+
+            @Override
+            public void show(Component invoker, int x, int y) {
+                MenuPopupModuleApi menuPopupModule = App.getModule(MenuPopupModuleApi.class);
+                menuPopupModule.createLinkPopupMenu(galleryLink).show(invoker, x, y);
+            }
+        });
     }
 
     @Nonnull
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
-    
+
     public void setData(String title, String id, String extension, String mimeType) {
         titleTextField.setText(title);
         idTextField.setText(id);
+        galleryLink = String.format(GALLERY_LINK, id);
+        galleryLinkLabel.setText(String.format(GALLERY_LINK_HTML, galleryLink, id));
         extensionTextField.setText(extension);
         mimeTypeTextField.setText(mimeType);
+    }
+
+    public void clearData() {
+        setData("", "", "", "");
     }
 
     /**
@@ -64,8 +86,8 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
 
         titleLabel = new javax.swing.JLabel();
         titleTextField = new javax.swing.JTextField();
-        sourceLabel = new javax.swing.JLabel();
-        sourceLinkLabel = new javax.swing.JLabel();
+        galleryLabel = new javax.swing.JLabel();
+        galleryLinkLabel = new javax.swing.JLabel();
         idLabel = new javax.swing.JLabel();
         idTextField = new javax.swing.JTextField();
         extensionLabel = new javax.swing.JLabel();
@@ -77,9 +99,15 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
 
         titleTextField.setEditable(false);
 
-        sourceLabel.setText(resourceBundle.getString("sourceLabel.text")); // NOI18N
+        galleryLabel.setText(resourceBundle.getString("galleryLabel.text")); // NOI18N
 
-        sourceLinkLabel.setText("https://");
+        galleryLinkLabel.setText("link");
+        galleryLinkLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        galleryLinkLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                galleryLinkLabelMouseClicked(evt);
+            }
+        });
 
         idLabel.setText(resourceBundle.getString("idLabel.text")); // NOI18N
 
@@ -102,9 +130,9 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(titleTextField)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(sourceLabel)
+                        .addComponent(galleryLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sourceLinkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(galleryLinkLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(idTextField)
                     .addComponent(extensionTextField)
                     .addGroup(layout.createSequentialGroup()
@@ -126,8 +154,8 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
                 .addComponent(titleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sourceLabel)
-                    .addComponent(sourceLinkLabel))
+                    .addComponent(galleryLabel)
+                    .addComponent(galleryLinkLabel))
                 .addGap(18, 18, 18)
                 .addComponent(idLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -144,16 +172,22 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void galleryLinkLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_galleryLinkLabelMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1 && !evt.isPopupTrigger()) {
+            DesktopUtils.openDesktopURL(galleryLink);
+        }
+    }//GEN-LAST:event_galleryLinkLabelMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel extensionLabel;
     private javax.swing.JTextField extensionTextField;
+    private javax.swing.JLabel galleryLabel;
+    private javax.swing.JLabel galleryLinkLabel;
     private javax.swing.JLabel idLabel;
     private javax.swing.JTextField idTextField;
     private javax.swing.JLabel mimeTypeLabel;
     private javax.swing.JTextField mimeTypeTextField;
-    private javax.swing.JLabel sourceLabel;
-    private javax.swing.JLabel sourceLinkLabel;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JTextField titleTextField;
     // End of variables declaration//GEN-END:variables

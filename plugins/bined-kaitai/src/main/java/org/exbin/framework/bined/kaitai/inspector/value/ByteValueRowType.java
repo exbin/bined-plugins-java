@@ -16,6 +16,7 @@
 package org.exbin.framework.bined.kaitai.inspector.value;
 
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
 
@@ -24,9 +25,17 @@ import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
  *
  * @author ExBin Project (https://exbin.org)
  */
+@ParametersAreNonnullByDefault
 public class ByteValueRowType implements ValueRowType {
 
-    private boolean signed = false;
+    protected String propertyName;
+    protected long position;
+    protected boolean signed = false;
+
+    public ByteValueRowType(String propertyName, long position) {
+        this.propertyName = propertyName;
+        this.position = position;
+    }
 
     @Nonnull
     @Override
@@ -42,8 +51,14 @@ public class ByteValueRowType implements ValueRowType {
 
     @Nonnull
     @Override
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    @Nonnull
+    @Override
     public ValueRowItem createRowItem() {
-        return new ValueRowItem(getId(), getName(), Byte.class.getTypeName(), null) {
+        return new ValueRowItem(getId(), propertyName, Byte.class.getTypeName(), position, null) {
             @Override
             public void updateRow(byte[] values, int available) {
                 if (available < 1) {

@@ -74,7 +74,7 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
     @Nonnull
     public Optional<DefaultMutableTreeNode> getSelectedNode() {
         TreePath[] selectionPaths = definitionsTree.getSelectionPaths();
-        if (selectionPaths.length == 0) {
+        if (selectionPaths == null || selectionPaths.length == 0) {
             return Optional.empty();
         }
         return Optional.of((DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent());

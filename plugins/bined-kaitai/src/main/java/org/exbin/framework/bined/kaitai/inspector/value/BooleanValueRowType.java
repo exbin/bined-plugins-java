@@ -15,26 +15,24 @@
  */
 package org.exbin.framework.bined.kaitai.inspector.value;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
 
 /**
- * Float value type.
+ * Boolean value type.
  *
  * @author ExBin Project (https://exbin.org)
  */
 @ParametersAreNonnullByDefault
-public class FloatValueRowType implements ValueRowType {
+public class BooleanValueRowType implements ValueRowType {
 
     protected String propertyName;
     protected long position;
-    protected ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+    protected boolean signed = false;
 
-    public FloatValueRowType(String propertyName, long position) {
+    public BooleanValueRowType(String propertyName, long position) {
         this.propertyName = propertyName;
         this.position = position;
     }
@@ -42,13 +40,13 @@ public class FloatValueRowType implements ValueRowType {
     @Nonnull
     @Override
     public String getId() {
-        return "float";
+        return "boolean";
     }
 
     @Nonnull
     @Override
     public String getName() {
-        return "Float";
+        return "Boolean";
     }
 
     @Nonnull
@@ -60,24 +58,15 @@ public class FloatValueRowType implements ValueRowType {
     @Nonnull
     @Override
     public ValueRowItem createRowItem() {
-        return new ValueRowItem(getId(), propertyName, Short.class.getTypeName(), position, null) {
+        return new ValueRowItem(getId(), propertyName, Boolean.class.getTypeName(), position, null) {
             @Override
             public void updateRow(byte[] values, int available) {
-                if (available < 4) {
+                if (available < 1) {
                     setValue(null);
                     return;
                 }
-                
-                int length = Math.min(available, 4);
 
-                ByteBuffer byteBuffer = ByteBuffer.allocate(4);
-                byteBuffer.put(values, 0, length);
-                byteBuffer.rewind();
-                if (byteBuffer.order() != byteOrder) {
-                    byteBuffer.order(byteOrder);
-                }
-
-                setValue(byteBuffer.getFloat());
+                setValue(values[0] > 0);
             }
         };
     }

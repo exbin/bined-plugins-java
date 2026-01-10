@@ -18,6 +18,7 @@ package org.exbin.framework.bined.kaitai.inspector.value;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
 
@@ -26,9 +27,17 @@ import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
  *
  * @author ExBin Project (https://exbin.org)
  */
+@ParametersAreNonnullByDefault
 public class DoubleValueRowType implements ValueRowType {
 
-    private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+    protected String propertyName;
+    protected long position;
+    protected ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+
+    public DoubleValueRowType(String propertyName, long position) {
+        this.propertyName = propertyName;
+        this.position = position;
+    }
 
     @Nonnull
     @Override
@@ -44,8 +53,14 @@ public class DoubleValueRowType implements ValueRowType {
 
     @Nonnull
     @Override
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    @Nonnull
+    @Override
     public ValueRowItem createRowItem() {
-        return new ValueRowItem(getId(), getName(), Short.class.getTypeName(), null) {
+        return new ValueRowItem(getId(), propertyName, Short.class.getTypeName(), position, null) {
             @Override
             public void updateRow(byte[] values, int available) {
                 if (available < 8) {

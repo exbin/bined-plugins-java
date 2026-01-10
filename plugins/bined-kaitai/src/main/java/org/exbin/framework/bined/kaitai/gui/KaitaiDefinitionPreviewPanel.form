@@ -21,9 +21,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="titleTextField" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="sourceLabel" min="-2" max="-2" attributes="0"/>
+                      <Component id="galleryLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="sourceLinkLabel" max="32767" attributes="0"/>
+                      <Component id="galleryLinkLabel" max="32767" attributes="0"/>
                   </Group>
                   <Component id="idTextField" alignment="0" max="32767" attributes="0"/>
                   <Component id="extensionTextField" alignment="0" max="32767" attributes="0"/>
@@ -51,8 +51,8 @@
               <Component id="titleTextField" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="sourceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="sourceLinkLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="galleryLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="galleryLinkLabel" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="idLabel" min="-2" max="-2" attributes="0"/>
@@ -84,17 +84,23 @@
         <Property name="editable" type="boolean" value="false"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="sourceLabel">
+    <Component class="javax.swing.JLabel" name="galleryLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="sourceLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="galleryLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="sourceLinkLabel">
+    <Component class="javax.swing.JLabel" name="galleryLinkLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="https://"/>
+        <Property name="text" type="java.lang.String" value="link"/>
+        <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+          <Color id="Hand Cursor"/>
+        </Property>
       </Properties>
+      <Events>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="galleryLinkLabelMouseClicked"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="idLabel">
       <Properties>

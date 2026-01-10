@@ -17,6 +17,7 @@ package org.exbin.framework.bined.kaitai.inspector.gui;
 
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
@@ -26,11 +27,26 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.bined.capability.CaretCapable;
 import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.framework.App;
+import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
+import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
+import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.BooleanValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.ByteArrayValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.ByteValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.DoubleValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.FloatValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.IntegerValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.LongValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.NullValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.StringValueRowType;
+import org.exbin.framework.bined.kaitai.inspector.value.WordValueRowType;
+import org.exbin.framework.bined.kaitai.service.DataNode;
 import org.exbin.framework.bined.objectdata.property.gui.PropertyTableCellEditor;
 import org.exbin.framework.bined.objectdata.property.gui.PropertyTableCellRenderer;
 import org.exbin.framework.bined.objectdata.property.gui.PropertyTableItem;
@@ -125,19 +141,65 @@ public class ValuesTablePanel extends javax.swing.JPanel {
             return;
         }
 
+        tableModel.removeAll();
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
+        Object node = kaitaiSideManager.getSelectedNode();
+        if (node instanceof DataNode) {
+            Enumeration children = ((DataNode) node).children();
+            while (children.hasMoreElements()) {
+                Object child = children.nextElement();
+                if (child instanceof DataNode) {
+                    DataNode childNode = (DataNode) child;
+                    Object value = childNode.getValue();
+                    ValueRowType rowType;
+                    if (value == null) {
+                        rowType = new NullValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Byte) {
+                        rowType = new ByteValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Integer) {
+                        rowType = new IntegerValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Long) {
+                        rowType = new LongValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Float) {
+                        rowType = new FloatValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Double) {
+                        rowType = new DoubleValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Short) {
+                        rowType = new WordValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof Boolean) {
+                        rowType = new BooleanValueRowType(childNode.getName(), childNode.posStart());
+                    } else if (value instanceof String) {
+                        rowType = new StringValueRowType(childNode.getName(), childNode.posStart(), childNode.posEnd() - childNode.posStart());
+                    } else if (value instanceof byte[]) {
+                        rowType = new ByteArrayValueRowType(childNode.getName(), childNode.posStart(), childNode.posEnd() - childNode.posStart());
+                    } else{
+                        rowType = new NullValueRowType(childNode.getName(), childNode.posStart());
+                    }
+                    tableModel.addRow(rowType.createRowItem());
+                } else if (child instanceof DefaultMutableTreeNode) {
+                    DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) child;
+                    Object userObject = childNode.getUserObject();
+                    tableModel.addRow(new NullValueRowType((String) userObject, 0).createRowItem());
+                } else {
+                    tableModel.addRow(new NullValueRowType(((DataNode) node).getName(), ((DataNode) node).posStart()).createRowItem());
+                }
+            }
+        }
+
         BinaryData contentData = codeArea.getContentData();
         long dataSize = codeArea.getDataSize();
-        long dataPosition = ((CaretCapable) codeArea).getDataPosition();
-        long available = dataSize - dataPosition;
 
         if (valuesTable.isEditing()) {
             valuesTable.getCellEditor().cancelCellEditing();
         }
 
-        int valuesAvailable = Math.min((int) available, DATA_LIMIT);
-        contentData.copyToArray(dataPosition, values, 0, valuesAvailable);
         List<PropertyTableItem> items = tableModel.getItems();
         for (PropertyTableItem item : items) {
+            long dataPosition = ((ValueRowItem) item).getPosition();
+            long available = dataSize - dataPosition;
+            int valuesAvailable = Math.min((int) available, DATA_LIMIT);
+            contentData.copyToArray(dataPosition, values, 0, valuesAvailable);
             ((ValueRowItem) item).updateRow(values, valuesAvailable);
         }
         tableModel.fireTableRowsUpdated(0, tableModel.getRowCount() - 1);

@@ -1,5 +1,7 @@
 package org.exbin.framework.bined.kaitai.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
@@ -10,6 +12,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import org.exbin.framework.bined.kaitai.KaitaiColorModifier;
+import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 
 /**
  * Kaitai parse tree listener
@@ -19,6 +22,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
 
     protected final JTree tree;
     protected KaitaiColorModifier colorModifier = null;
+    protected List<KaitaiSideManager.NodeSelectionListener> nodeSelectionListeners = new ArrayList<>();
 
     public KaitaiTreeListener(JTree tree, KaitaiColorModifier colorModifier) {
         this.tree = tree;
@@ -31,6 +35,10 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
         if (path.getLastPathComponent() instanceof DataNode) {
             DataNode node = (DataNode) path.getLastPathComponent();
             node.explore((DefaultTreeModel) tree.getModel(), null);
+
+            for (KaitaiSideManager.NodeSelectionListener nodeSelectionListener : nodeSelectionListeners) {
+                nodeSelectionListener.selectionChanged();
+            }
         }
     }
 
@@ -40,6 +48,10 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
 
     @Override
     public void valueChanged(TreeSelectionEvent event) {
+        for (KaitaiSideManager.NodeSelectionListener nodeSelectionListener : nodeSelectionListeners) {
+            nodeSelectionListener.selectionChanged();
+        }
+
         TreePath[] selectionPaths = tree.getSelectionPaths();
         if (selectionPaths != null) {
             for (final TreePath path : selectionPaths) {
@@ -60,5 +72,13 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
         }
 
         colorModifier.clearRange();
+    }
+
+    public void addNodeSelectionListener(KaitaiSideManager.NodeSelectionListener listener) {
+        nodeSelectionListeners.add(listener);
+    }
+
+    public void removeNodeSelectionListener(KaitaiSideManager.NodeSelectionListener listener) {
+        nodeSelectionListeners.remove(listener);
     }
 }

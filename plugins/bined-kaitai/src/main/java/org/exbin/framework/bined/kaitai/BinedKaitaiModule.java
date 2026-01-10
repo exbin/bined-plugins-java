@@ -139,4 +139,9 @@ public class BinedKaitaiModule implements PluginModule {
     public KaitaiColorModifier getKaitaiColorModifier() {
         return kaitaiColorModifier;
     }
+    
+    @Nonnull
+    public KaitaiSideManager getKaitaiSideManager() {
+        return sideBarComponent.getSideManager();
+    }
 }

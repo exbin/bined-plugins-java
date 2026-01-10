@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
@@ -49,6 +51,16 @@ public class DataNode extends DefaultMutableTreeNode {
         updateVisual();
     }
 
+    @Nullable
+    public Object getValue() {
+        return value;
+    }
+
+    @Nonnull
+    public String getName() {
+        return name;
+    }
+
     public Integer posStart() {
         return posStart;
     }
@@ -81,7 +93,7 @@ public class DataNode extends DefaultMutableTreeNode {
 
     private void setChildren(List<DataNode> children) {
         removeAllChildren();
-        setAllowsChildren(children.size() > 0);
+        setAllowsChildren(!children.isEmpty());
         for (MutableTreeNode node : children) {
             add(node);
         }

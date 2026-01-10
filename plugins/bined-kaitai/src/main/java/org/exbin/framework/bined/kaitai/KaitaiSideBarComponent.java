@@ -15,6 +15,7 @@
  */
 package org.exbin.framework.bined.kaitai;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -39,6 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
@@ -69,6 +72,7 @@ import org.exbin.framework.window.api.gui.CloseControlPanel;
 import org.exbin.framework.window.api.gui.DefaultControlPanel;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Kaitai sidebar component.
@@ -131,8 +135,83 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
                     @Override
                     public void addBuildIn() {
-                        KaitaiBuildInPanel buildInPanel = new KaitaiBuildInPanel();
-                        KaitaiDefinitionPreviewPanel previewPanel = new KaitaiDefinitionPreviewPanel();
+                        final KaitaiBuildInPanel buildInPanel = new KaitaiBuildInPanel();
+                        final KaitaiDefinitionPreviewPanel previewPanel = new KaitaiDefinitionPreviewPanel();
+                        buildInPanel.setController(new KaitaiBuildInPanel.Controller() {
+                            @Override
+                            public void selectedDefinitionChanged() {
+                                Optional<DefaultMutableTreeNode> optSelectedNode = buildInPanel.getSelectedNode();
+                                if (optSelectedNode.isPresent()) {
+                                    DefaultMutableTreeNode treeNode = optSelectedNode.get();
+                                    Object userObject = treeNode.getUserObject();
+                                    if (userObject instanceof DefinitionRecord) {
+                                        String title = "";
+                                        String id = "";
+                                        String extension = "";
+                                        String mimeType = "";
+
+                                        InputStream input = null;
+                                        Reader inputReader = null;
+                                        try {
+                                            URL fileSource = ((DefinitionRecord) userObject).getUri().toURL();
+                                            input = fileSource.openStream();
+                                            inputReader = new InputStreamReader(input, "UTF-8");
+                                            Yaml yaml = new Yaml();
+                                            Object content = yaml.load(input);
+                                            if (content instanceof Map) {
+                                                Map map = (Map) content;
+                                                Object metaNode = map.get("meta");
+                                                if (metaNode instanceof Map) {
+                                                    Map metaMap = (Map) metaNode;
+                                                    Object value = metaMap.get("id");
+                                                    if (value instanceof String) {
+                                                        id = (String) value;
+                                                    }
+                                                    value = metaMap.get("title");
+                                                    if (value instanceof String) {
+                                                        title = (String) value;
+                                                    }
+                                                    value = metaMap.get("file-extension");
+                                                    if (value instanceof String) {
+                                                        extension = (String) value;
+                                                    }
+                                                    value = metaMap.get("xref");
+                                                    if (value instanceof Map) {
+                                                        Map xRefMap = (Map) value;
+                                                        value = xRefMap.get("mime");
+                                                        if (value instanceof String) {
+                                                            mimeType = (String) value;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } catch (Throwable ex) {
+                                            // ignore
+                                        } finally {
+                                            if (inputReader != null) {
+                                                try {
+                                                    inputReader.close();
+                                                } catch (IOException e) {
+                                                    // ignore
+                                                }
+                                            }
+                                            if (input != null) {
+                                                try {
+                                                    input.close();
+                                                } catch (IOException ex) {
+                                                    // ignore
+                                                }
+                                            }
+                                        }
+                                        previewPanel.setData(title, id, extension, mimeType);
+                                        return;
+                                    }
+                                }
+
+                                previewPanel.clearData();
+                            }
+                        });
+                        JPanel wrapperPanel = new JPanel(new BorderLayout());
                         JSplitPane splitPane = new JSplitPane();
                         splitPane.setLeftComponent(buildInPanel);
                         splitPane.setRightComponent(previewPanel);
@@ -142,8 +221,10 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         DefaultControlPanel controlPanel = new DefaultControlPanel(buildInPanel.getResourceBundle());
 //                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
 //                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
-                        splitPane.setSize(700, 500);
-                        final WindowHandler dialog = windowModule.createDialog(splitPane, controlPanel);
+                        wrapperPanel.add(splitPane, BorderLayout.CENTER);
+                        wrapperPanel.setPreferredSize(new Dimension(800, 500));
+                        wrapperPanel.setSize(800, 500);
+                        final WindowHandler dialog = windowModule.createDialog(wrapperPanel, controlPanel);
                         windowModule.setWindowTitle(dialog, buildInPanel.getResourceBundle());
                         windowModule.addHeaderPanel(dialog.getWindow(), buildInPanel.getClass(), buildInPanel.getResourceBundle());
                         controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
@@ -164,6 +245,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
                     @Override
                     public void editDefinition() {
+                        JPanel definitionPanel = new JPanel(new BorderLayout());
                         RSyntaxTextArea textArea = new RSyntaxTextArea();
                         RTextScrollPane scrollPane = new RTextScrollPane(textArea);
                         textArea.setEditable(false);
@@ -206,9 +288,11 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         }
 
                         scrollPane.setViewportView(textArea);
-                        scrollPane.setSize(new Dimension(700, 500));
+                        definitionPanel.add(scrollPane, BorderLayout.CENTER);
+                        scrollPane.setPreferredSize(new Dimension(700, 500));
+                        scrollPane.setSize(700, 500);
                         CloseControlPanel controlPanel = new CloseControlPanel();
-                        final WindowHandler dialog = windowModule.createDialog(scrollPane, controlPanel);
+                        final WindowHandler dialog = windowModule.createDialog(definitionPanel, controlPanel);
                         controlPanel.setController(new CloseControlController() {
                             @Override
                             public void controlActionPerformed() {
@@ -266,6 +350,11 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
         EditableBinaryData sourceData = binaryDataComponent != null ? (EditableBinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
         sideManager.loadFrom(definitionRecord, sourceData);
+    }
+
+    @Nonnull
+    public KaitaiSideManager getSideManager() {
+        return sideManager;
     }
 
     public void setActiveComponent(@Nullable ContextComponent contextComponent) {

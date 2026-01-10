@@ -20,10 +20,12 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JComponent;
 import org.exbin.bined.CodeAreaCaretListener;
 import org.exbin.bined.DataChangedListener;
-import org.exbin.bined.capability.CaretCapable;
 import org.exbin.bined.operation.command.BinaryDataUndoRedo;
 import org.exbin.bined.swing.CodeAreaCore;
+import org.exbin.framework.App;
 import org.exbin.framework.bined.inspector.BinEdInspector;
+import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
+import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 import org.exbin.framework.bined.kaitai.inspector.gui.KaitaiInspectorPanel;
 
 /**
@@ -39,6 +41,7 @@ public class KaitaiInspector implements BinEdInspector {
 
     protected DataChangedListener dataChangedListener;
     protected CodeAreaCaretListener caretMovedListener;
+    protected KaitaiSideManager.NodeSelectionListener nodeSelectionListener;
 
     @Nonnull
     @Override
@@ -48,6 +51,12 @@ public class KaitaiInspector implements BinEdInspector {
             dataChangedListener = component::requestUpdate;
             caretMovedListener = (caretPosition) -> {
                 component.requestUpdate();
+            };
+            nodeSelectionListener = new KaitaiSideManager.NodeSelectionListener() {
+                @Override
+                public void selectionChanged() {
+                    component.requestUpdate();
+                }
             };
         }
         return component;
@@ -61,13 +70,19 @@ public class KaitaiInspector implements BinEdInspector {
 
     @Override
     public void activateSync() {
-        codeArea.addDataChangedListener(dataChangedListener);
-        ((CaretCapable) codeArea).addCaretMovedListener(caretMovedListener);
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
+        kaitaiSideManager.addNodeSelectionListener(nodeSelectionListener);
+//        codeArea.addDataChangedListener(dataChangedListener);
+//        ((CaretCapable) codeArea).addCaretMovedListener(caretMovedListener);
     }
 
     @Override
     public void deactivateSync() {
-        codeArea.removeDataChangedListener(dataChangedListener);
-        ((CaretCapable) codeArea).removeCaretMovedListener(caretMovedListener);
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
+        kaitaiSideManager.removeNodeSelectionListener(nodeSelectionListener);
+//        codeArea.removeDataChangedListener(dataChangedListener);
+//        ((CaretCapable) codeArea).removeCaretMovedListener(caretMovedListener);
     }
 }

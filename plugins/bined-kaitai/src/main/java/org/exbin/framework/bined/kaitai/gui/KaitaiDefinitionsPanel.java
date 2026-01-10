@@ -63,7 +63,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
                 return component;
             }
         });
-        definitionsList.addListSelectionListener((ListSelectionEvent e) -> updateStates());
+        definitionsList.addListSelectionListener((ListSelectionEvent e) -> updateState());
     }
 
     @Nonnull
@@ -96,7 +96,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         return Optional.ofNullable(definitionsList.getSelectedValue());
     }
 
-    private void updateStates() {
+    private void updateState() {
         int[] selectedIndices = definitionsList.getSelectedIndices();
         boolean hasSelection = selectedIndices.length > 0;
         boolean singleSelection = selectedIndices.length == 1;
@@ -118,7 +118,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     }
     
     private void notifyModified() {
-        updateStates();
+        updateState();
     }
 
     /**
@@ -327,7 +327,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         } else {
             definitionsList.clearSelection();
         }
-        updateStates();
+        updateState();
     }//GEN-LAST:event_selectAllButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed

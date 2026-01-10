@@ -20,6 +20,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,9 +28,11 @@ import java.util.logging.Logger;
 import org.exbin.framework.bined.kaitai.service.KaitaiCompiler;
 import org.exbin.framework.bined.kaitai.service.KaitaiParser;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
@@ -50,13 +53,14 @@ public class KaitaiSideManager {
     protected KaitaiParser parser = null;
     protected JTree parserTree;
     protected String processingMessage = "";
+    protected KaitaiTreeListener treeListener;
 
     public KaitaiSideManager() {
         parserTree = sidePanel.getParserTree();
         DefaultTreeModel model = visualizer.getModel();
         parserTree.setModel(model);
         BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
-        KaitaiTreeListener treeListener = new KaitaiTreeListener(parserTree, kaitaiModule.getKaitaiColorModifier());
+        treeListener = new KaitaiTreeListener(parserTree, kaitaiModule.getKaitaiColorModifier());
         parserTree.addTreeWillExpandListener(treeListener);
         parserTree.addTreeSelectionListener(treeListener);
         sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
@@ -68,8 +72,9 @@ public class KaitaiSideManager {
                     Object transferData = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     List<?> droppedFiles = (List) transferData;
                     for (Object droppedFile : droppedFiles) {
-//                        sidePanel.addDefinition();
-//                        openFile(((File) file).toURI(), null);
+                        File file = (File) droppedFile;
+                        DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                        sidePanel.addDefinition(record);
                     }
                 } catch (UnsupportedFlavorException | IOException ex) {
                     Logger.getLogger(KaitaiSideManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -97,7 +102,7 @@ public class KaitaiSideManager {
             sidePanel.addDefinition(definitionRecord);
         }
     }
-    
+
     public void processDefinition(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
         clearParseTree();
         sidePanel.setStatus(KaitaiStatusType.COMPILING);
@@ -121,9 +126,28 @@ public class KaitaiSideManager {
 
         sidePanel.setStatus(KaitaiStatusType.OK);
     }
+    
+    public void addNodeSelectionListener(NodeSelectionListener listener) {
+        treeListener.addNodeSelectionListener(listener);
+    }
+
+    public void removeNodeSelectionListener(NodeSelectionListener listener) {
+        treeListener.removeNodeSelectionListener(listener);
+    }
+    
+    @Nullable
+    public Object getSelectedNode() {
+        TreePath treePath = parserTree.getSelectionPath();
+        return treePath == null ? null : treePath.getLastPathComponent();
+    }
 
     private void clearParseTree() {
         DefaultTreeModel model = visualizer.getModel();
         model.setRoot(null);
+    }
+
+    public interface NodeSelectionListener {
+
+        void selectionChanged();
     }
 }
