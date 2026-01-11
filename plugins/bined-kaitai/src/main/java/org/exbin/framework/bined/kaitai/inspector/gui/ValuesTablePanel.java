@@ -160,7 +160,12 @@ public class ValuesTablePanel extends javax.swing.JPanel {
                     } else if (value instanceof Integer) {
                         rowType = new IntegerValueRowType(childNode.getName(), childNode.posStart());
                     } else if (value instanceof Long) {
-                        rowType = new LongValueRowType(childNode.getName(), childNode.posStart());
+                        int length = childNode.posEnd() - childNode.posStart();
+                        if (length == 4) {
+                            rowType = new IntegerValueRowType(childNode.getName(), childNode.posStart());
+                        } else {
+                            rowType = new LongValueRowType(childNode.getName(), childNode.posStart());
+                        }
                     } else if (value instanceof Float) {
                         rowType = new FloatValueRowType(childNode.getName(), childNode.posStart());
                     } else if (value instanceof Double) {

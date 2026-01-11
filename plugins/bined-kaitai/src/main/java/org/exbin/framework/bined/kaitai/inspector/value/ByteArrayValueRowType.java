@@ -67,8 +67,9 @@ public class ByteArrayValueRowType implements ValueRowType {
                     return;
                 }
 
-                // TODO
-                setValue(values);
+                byte[] value = new byte[length];
+                System.arraycopy(values, 0, value, 0, length);
+                setValue(value);
             }
         };
     }

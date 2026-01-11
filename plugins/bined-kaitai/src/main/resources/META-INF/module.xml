@@ -8,6 +8,8 @@
   <license spdx="GPL-3.0-or-later">GNU General Public License v3.0 or later</license>
   <dependency>
     <module id="org.exbin.framework.bined.BinedModule" />
+    <module id="org.exbin.framework.bined.inspector.BinedInspectorModule" />
+    <module id="org.exbin.framework.bined.objectdata.BinedObjectDataModule" />
     <module id="org.exbin.framework.ui.api.UiModuleApi" />
     <module id="org.exbin.framework.frame.api.FrameModuleApi" />
     <module id="org.exbin.framework.window.api.WindowModuleApi" />
