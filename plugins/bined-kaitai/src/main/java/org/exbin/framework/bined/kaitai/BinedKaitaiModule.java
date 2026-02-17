@@ -25,11 +25,9 @@ import org.exbin.framework.PluginModule;
 import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinEdFileManager;
 import org.exbin.framework.bined.BinedModule;
-import org.exbin.framework.bined.inspector.BinEdInspector;
 import org.exbin.framework.bined.inspector.BinEdInspectorManager;
-import org.exbin.framework.bined.inspector.BinEdInspectorProvider;
 import org.exbin.framework.bined.inspector.BinedInspectorModule;
-import org.exbin.framework.bined.kaitai.inspector.KaitaiInspector;
+import org.exbin.framework.bined.kaitai.inspector.KaitaiInspectorProvider;
 import org.exbin.framework.context.api.ContextChange;
 import org.exbin.framework.context.api.ContextChangeRegistration;
 import org.exbin.framework.language.api.LanguageModuleApi;
@@ -110,25 +108,7 @@ public class BinedKaitaiModule implements PluginModule {
     public void registerInspector() {
         BinedInspectorModule binedInspectorModule = App.getModule(BinedInspectorModule.class);
         BinEdInspectorManager inspectorManager = binedInspectorModule.getBinEdInspectorManager();
-        inspectorManager.addInspector(new BinEdInspectorProvider() {
-
-            private KaitaiInspector inspector;
-
-            @Nonnull
-            @Override
-            public String getName() {
-                return "Kaitai";
-            }
-
-            @Nonnull
-            @Override
-            public BinEdInspector createInspector() {
-                if (inspector == null) {
-                    inspector = new KaitaiInspector();
-                }
-                return inspector;
-            }
-        });
+        inspectorManager.addInspector(new KaitaiInspectorProvider(getResourceBundle()));
     }
 
     public void setBuildInDefinition(String ksyFilePath) {
@@ -139,7 +119,7 @@ public class BinedKaitaiModule implements PluginModule {
     public KaitaiColorModifier getKaitaiColorModifier() {
         return kaitaiColorModifier;
     }
-    
+
     @Nonnull
     public KaitaiSideManager getKaitaiSideManager() {
         return sideBarComponent.getSideManager();
