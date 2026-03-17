@@ -21,6 +21,9 @@ import java.util.ResourceBundle;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -57,12 +60,43 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
                 if (value instanceof DefaultMutableTreeNode) {
                     Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
                     if (userObject instanceof DefinitionRecord) {
-                        value = ((DefinitionRecord) userObject).getFileName();
+                        value = ((DefinitionRecord) userObject).getTitle();
                     } else {
                         value = ((TreeNode) value).toString();
                     }
                 }
                 return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            }
+        });
+
+        Document document = filterTextField.getDocument();
+        document.addDocumentListener(new DocumentListener() {
+
+            private String lastFilter = "";
+
+            @Override
+            public void insertUpdate(DocumentEvent de) {
+                filterValueChanged();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent de) {
+                filterValueChanged();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent de) {
+                filterValueChanged();
+            }
+
+            public void filterValueChanged() {
+                if (controller != null) {
+                    String newFilter = filterTextField.getText();
+                    if (!lastFilter.equals(newFilter)) {
+                        lastFilter = newFilter;
+                        controller.filter(newFilter);
+                    }
+                }
             }
         });
     }
@@ -115,8 +149,6 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
 
         filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/view-filter.png"))); // NOI18N
 
-        filterTextField.setEnabled(false);
-
         definitionsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
                 definitionsTreeValueChanged(evt);
@@ -166,5 +198,7 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
     public interface Controller {
 
         void selectedDefinitionChanged();
+        
+        void filter(String filter);
     }
 }

@@ -34,6 +34,7 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.framework.App;
@@ -125,7 +127,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                     public void addDefinition() {
                         FileModuleApi fileModule = App.getModule(FileModuleApi.class);
                         FileDialogsProvider dialogsProvider = fileModule.getFileDialogsProvider();
-                        OpenFileResult openFileResult = dialogsProvider.showOpenFileDialog(new DefaultFileTypes(new KsyFileType()), null, null, null);
+                        OpenFileResult openFileResult = dialogsProvider.showOpenFileDialog(definitionsPanel, new DefaultFileTypes(new KsyFileType()), null, null, null);
                         if (openFileResult.getDialogResult() == JFileChooser.APPROVE_OPTION) {
                             File file = openFileResult.getSelectedFile().get();
                             DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
@@ -137,6 +139,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                     public void addBuildIn() {
                         final KaitaiBuildInPanel buildInPanel = new KaitaiBuildInPanel();
                         final KaitaiDefinitionPreviewPanel previewPanel = new KaitaiDefinitionPreviewPanel();
+                        DefaultMutableTreeNode formatsRootNode = new DefaultMutableTreeNode("Definitions");
                         buildInPanel.setController(new KaitaiBuildInPanel.Controller() {
                             @Override
                             public void selectedDefinitionChanged() {
@@ -210,18 +213,65 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
                                 previewPanel.clearData();
                             }
+
+                            @Override
+                            public void filter(String filter) {
+                                if (filter.isEmpty()) {
+                                    buildInPanel.setFormats(formatsRootNode);
+                                    return;
+                                }
+
+                                DefaultMutableTreeNode filteredFormats = new DefaultMutableTreeNode("Definitions");
+                                
+                                List<NodeFilterRecord> nodesToProcess = new ArrayList<>();
+                                List<DefaultMutableTreeNode> nodesToCheck = new ArrayList<>();
+                                nodesToProcess.add(new NodeFilterRecord(formatsRootNode, filteredFormats));
+
+                                while (!nodesToProcess.isEmpty()) {
+                                    NodeFilterRecord filterRecord = nodesToProcess.remove(0);
+                                    DefaultMutableTreeNode currentNode = filterRecord.node;
+                                    DefaultMutableTreeNode filteredNode = filterRecord.filteredNode;
+                                    
+                                    for (int i = 0; i < currentNode.getChildCount(); i++) {
+                                        DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) currentNode.getChildAt(i);
+                                        Object userObject = childNode.getUserObject();
+                                        if (userObject instanceof DefinitionRecord) {
+                                            DefinitionRecord definition = (DefinitionRecord) userObject;
+                                            if (definition.fileName.contains(filter) || definition.title.contains(filter)) {
+                                                DefaultMutableTreeNode childFilteredNode = (DefaultMutableTreeNode) childNode.clone();
+                                                filteredNode.add(childFilteredNode);
+                                            }
+                                        } else {
+                                            DefaultMutableTreeNode childFilteredNode = (DefaultMutableTreeNode) childNode.clone();
+                                            filteredNode.add(childFilteredNode);
+                                            nodesToProcess.add(new NodeFilterRecord(childNode, childFilteredNode));
+                                            nodesToCheck.add(childFilteredNode);
+                                        }
+                                    }
+                                }
+                                
+                                for (int i = nodesToCheck.size() - 1; i >= 0; i--) {
+                                    DefaultMutableTreeNode node = nodesToCheck.get(i);
+                                    if (node.isLeaf()) {
+                                        DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
+                                        parentNode.remove(node);
+                                    }
+                                }
+                                
+                                buildInPanel.setFormats(filteredFormats);
+                            }
                         });
                         JPanel wrapperPanel = new JPanel(new BorderLayout());
                         JSplitPane splitPane = new JSplitPane();
                         splitPane.setLeftComponent(buildInPanel);
                         splitPane.setRightComponent(previewPanel);
-                        DefaultMutableTreeNode formatsRootNode = new DefaultMutableTreeNode("Definitions");
                         readAvailableFormats(formatsRootNode);
                         buildInPanel.setFormats(formatsRootNode);
                         DefaultControlPanel controlPanel = new DefaultControlPanel(buildInPanel.getResourceBundle());
 //                        HelpModuleApi helpModule = App.getModule(HelpModuleApi.class);
 //                        helpModule.addLinkToControlPanel(controlPanel, new HelpLink(HELP_ID));
                         wrapperPanel.add(splitPane, BorderLayout.CENTER);
+                        splitPane.setDividerLocation(400);
                         wrapperPanel.setPreferredSize(new Dimension(800, 500));
                         wrapperPanel.setSize(800, 500);
                         final WindowHandler dialog = windowModule.createDialog(wrapperPanel, controlPanel);
@@ -348,7 +398,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             return;
         }
 
-        EditableBinaryData sourceData = binaryDataComponent != null ? (EditableBinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
+        BinaryData sourceData = binaryDataComponent != null ? (BinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
         sideManager.loadFrom(definitionRecord, sourceData);
     }
 
@@ -402,18 +452,19 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             do {
                 listLine = listReader.readLine();
                 if (listLine != null) {
+                    String title = listReader.readLine();
                     if (listLine.endsWith("/")) {
                         DefaultMutableTreeNode parentNode;
                         String fileName;
                         int nameStart = listLine.lastIndexOf("/", listLine.length() - 2);
                         if (nameStart >= 0) {
                             parentNode = nodes.get(listLine.substring(0, nameStart + 1));
-                            fileName = listLine.substring(nameStart + 1, listLine.length() - 2);
+                            fileName = listLine.substring(nameStart + 1, listLine.length() - 1);
                         } else {
                             parentNode = formatsRootNode;
-                            fileName = listLine.substring(0, listLine.length() - 2);
+                            fileName = listLine.substring(0, listLine.length() - 1);
                         }
-                        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(fileName);
+                        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(title.isEmpty() ? fileName : title);
                         parentNode.add(childNode);
                         nodes.put(listLine, childNode);
 
@@ -431,12 +482,23 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         fileName = listLine;
                     }
                     URI definitionUri = getClass().getResource(RESOURCE_FORMATS_PATH + listLine).toURI();
-                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(fileName, fileName, definitionUri));
+                    String defTitle = title.isEmpty() ? fileName.substring(0, fileName.length() - 4) : title;
+                    DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(defTitle, fileName, definitionUri));
                     parentNode.add(childNode);
                 }
             } while (listLine != null);
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private static class NodeFilterRecord {
+        DefaultMutableTreeNode node;
+        DefaultMutableTreeNode filteredNode;
+
+        public NodeFilterRecord(DefaultMutableTreeNode node, DefaultMutableTreeNode filteredNode) {
+            this.node = node;
+            this.filteredNode = filteredNode;
         }
     }
 }

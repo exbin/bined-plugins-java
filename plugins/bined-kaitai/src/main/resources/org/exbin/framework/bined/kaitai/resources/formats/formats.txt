@@ -1,214 +1,428 @@
 3d/
+3D Models
 3d/gltf_binary.ksy
+GL Transmission Format, binary container
 archive/
+Archive Files
 archive/android_bootldr_asus.ksy
+ASUS Fugu bootloader.img format (version 2 and later)
 archive/android_bootldr_huawei.ksy
+Huawei Bootloader packed image format
 archive/android_bootldr_qcom.ksy
+Qualcomm Snapdragon (MSM) bootloader.img format
 archive/android_dto.ksy
+Android DTB/DTBO Partition
 archive/android_img.ksy
+Android Boot Image
 archive/android_sparse.ksy
+Android sparse image
 archive/cpio_old_le.ksy
+cpio archive, old binary variant, little-endian
 archive/gzip.ksy
+
 archive/lzh.ksy
+
 archive/mozilla_mar.ksy
+Mozilla ARchive
 archive/phar_without_stub.ksy
+PHP phar archive (without stub)
 archive/rar.ksy
+RAR (Roshall ARchiver) archive files
 archive/respack.ksy
+ResPack
 archive/rpm.ksy
+RPM package file
 archive/xar.ksy
+XAR (eXtensible ARchive)
 archive/zip.ksy
+ZIP archive file
 archive/zisofs.ksy
+zisofs
 cad/
+CAD
 cad/monomakh_sapr_chg.ksy
+
 common/
+Commonly Used Data Types
 common/bcd.ksy
+BCD (Binary Coded Decimals)
 common/bytes_with_io.ksy
+Byte array with an `_io` member
 common/dos_datetime.ksy
+MS-DOS datetime
 common/riff.ksy
+Resource Interchange File Format (RIFF)
 common/utf8_string.ksy
+UTF-8-encoded string
 common/vlq_base128_be.ksy
+Variable length quantity, unsigned integer, base128, big-endian
 common/vlq_base128_le.ksy
+Variable length quantity, unsigned/signed integer, base128, little-endian
 database/
+Databases
 database/dbf.ksy
+
 database/gettext_mo.ksy
+gettext binary database
 database/sqlite3.ksy
+SQLite3 database file
 database/tsm.ksy
+InfluxDB TSM file
 executable/
+Executables and Byte-code
 executable/android_nanoapp_header.ksy
+Android nanoapp header
 executable/dex.ksy
+Android Dalvik VM executable (dex)
 executable/dos_mz.ksy
+DOS MZ executable
 executable/elf.ksy
+Executable and Linkable Format
 executable/java_class.ksy
-executable/mach_o_fat.ksy
+
 executable/mach_o.ksy
+
+executable/mach_o_fat.ksy
+macOS Mach-O multiarch ("fat") binary
 executable/microsoft_pe.ksy
+Microsoft PE (Portable Executable) file format
 executable/python_pyc_27.ksy
+
 executable/swf.ksy
+Adobe Flash (AKA Shockwave Flash, Macromedia Flash)
 executable/uefi_te.ksy
+TE (Terse Executable) file
 filesystem/
+Filesystems
 filesystem/amlogic_emmc_partitions.ksy
+Amlogic proprietary eMMC partition table
 filesystem/android_super.ksy
+Android Dynamic Partitions metadata
 filesystem/apm_partition_table.ksy
+APM (Apple Partition Map) partition table
 filesystem/apple_single_double.ksy
+AppleSingle / AppleDouble
 filesystem/btrfs_stream.ksy
+
 filesystem/cramfs.ksy
+
 filesystem/ext2.ksy
+ext2 filesystem
 filesystem/gpt_partition_table.ksy
+GPT (GUID) partition table
 filesystem/iso9660.ksy
+ISO9660 CD filesystem
 filesystem/luks.ksy
+Linux Unified Key Setup
 filesystem/lvm2.ksy
+Logical Volume Manager version 2
 filesystem/mbr_partition_table.ksy
+MBR (Master Boot Record) partition table
 filesystem/tr_dos_image.ksy
+TR-DOS flat-file disk image
 filesystem/vdi.ksy
+VirtualBox Disk Image
 filesystem/vfat.ksy
+
 filesystem/vmware_vmdk.ksy
+VMWare Virtual Disk
 filesystem/zx_spectrum_tap.ksy
+ZX Spectrum tape file
 firmware/
+Firmware
 firmware/andes_firmware.ksy
+Andes Firmware Image layout as seen in MT76 Wifi Chipsets
 firmware/broadcom_trx.ksy
+Broadcom devices .trx firmware packaging
 firmware/ines.ksy
+
 firmware/uimage.ksy
+U-Boot Image wrapper
 font/
+Fonts
 font/grub2_font.ksy
+GRUB 2 font
 font/pcf_font.ksy
+Portable Compiled Format (PCF) font
 font/ttf.ksy
+TrueType Font File
 game/
+Game Data Files
 game/allegro_dat.ksy
+Allegro data file
 game/doom_wad.ksy
+
 game/dune_2_pak.ksy
-game/fallout_dat.ksy
+
 game/fallout2_dat.ksy
+
+game/fallout_dat.ksy
+
 game/ftl_dat.ksy
+
 game/gran_turismo_vol.ksy
+Gran Turismo File System (GTFS)
 game/heaps_pak.ksy
+
 game/heroes_of_might_and_magic_agg.ksy
+
 game/heroes_of_might_and_magic_bmp.ksy
+
 game/minecraft_nbt.ksy
-game/quake_mdl.ksy
-game/quake_pak.ksy
+Minecraft NBT (Named Binary Tag)
 game/quake2_md2.ksy
+Quake II player model (version 8)
+game/quake_mdl.ksy
+Quake 1 (idtech2) model format (MDL version 6)
+game/quake_pak.ksy
+
 game/renderware_binary_stream.ksy
+RenderWare binary stream
 game/saints_row_2_vpp_pc.ksy
+Saints Rows 2 game packages
 game/warcraft_2_pud.ksy
+Warcraft II map files
 geospatial/
+Geospatial (Maps)
 geospatial/shapefile_index.ksy
+Shapefile index file
 geospatial/shapefile_main.ksy
+Shapefile main file
 hardware/
-hardware/dtb.ksy
-hardware/edid.ksy
+Hardware Protocols
 hardware/mifare/
+
 hardware/mifare/mifare_classic.ksy
+Mifare Classic RFID tag dump
+hardware/dtb.ksy
+Flattened Devicetree Format
+hardware/edid.ksy
+EDID (VESA Enhanced Extended Display Identification Data)
 image/
+Image Files
 image/bmp.ksy
+
 image/dicom.ksy
+Digital Imaging and Communications in Medicine (DICOM) file format
 image/exif.ksy
+
 image/gif.ksy
+GIF (Graphics Interchange Format) image file
 image/gimp_brush.ksy
+GIMP brush file version 2
 image/icc_4.ksy
+ICC profile, version 4
 image/ico.ksy
+Microsoft Windows icon file
 image/jpeg.ksy
+JPEG (Joint Photographic Experts Group) File Interchange Format
 image/nitf.ksy
-image/pcx_dcx.ksy
+National Imagery Transmission Format
 image/pcx.ksy
+
+image/pcx_dcx.ksy
+
 image/pif.ksy
+Portable Image Format
 image/png.ksy
+PNG (Portable Network Graphics) file
 image/psx_tim.ksy
+
 image/tga.ksy
+TGA (AKA Truevision TGA, AKA TARGA) raster image file format
 image/wmf.ksy
+Windows Metafile (WMF) vector image
 image/xwd.ksy
+xwd (X Window Dump) bitmap image
 log/
+Logs
 log/aix_utmp.ksy
+utmp log file, IBM AIX version
 log/glibc_utmp.ksy
+utmp log file, Linux/glibc version
 log/hashcat_restore.ksy
+Hashcat Restore file
 log/mcap.ksy
+MCAP
 log/sudoers_ts.ksy
+Sudoers Time Stamp file
 log/systemd_journal.ksy
+systemd journal file
 log/windows_evt_log.ksy
-macos/
-macos/compressed_resource.ksy
-macos/ds_store.ksy
-macos/mac_os_resource_snd.ksy
-macos/resource_compression/
-macos/resource_compression/dcmp_0.ksy
-macos/resource_compression/dcmp_1.ksy
-macos/resource_compression/dcmp_2.ksy
-macos/resource_compression/dcmp_variable_length_integer.ksy
-macos/resource_fork.ksy
+Windows Event Log (EVT)
 machine_code/
+CPU / Machine Code Disassembly
 machine_code/code_6502.ksy
+
+macos/
+macOS-specific
+macos/resource_compression/
+
+macos/resource_compression/dcmp_0.ksy
+Compressed Macintosh resource data, Apple `'dcmp' (0)` format
+macos/resource_compression/dcmp_1.ksy
+Compressed Macintosh resource data, Apple `'dcmp' (1)` format
+macos/resource_compression/dcmp_2.ksy
+Compressed Macintosh resource data, Apple `'dcmp' (2)` format
+macos/resource_compression/dcmp_variable_length_integer.ksy
+Variable-length integer used in Apple `'dcmp' (0)` and `'dcmp' (1)` compressed resource formats
+macos/compressed_resource.ksy
+Compressed Macintosh resource
+macos/ds_store.ksy
+macOS '.DS_Store' format
+macos/mac_os_resource_snd.ksy
+Classic MacOS Sound Resource
+macos/resource_fork.ksy
+Macintosh resource fork data
 media/
-media/android_opengl_shaders_cache.ksy
-media/au.ksy
-media/avi.ksy
-media/blender_blend.ksy
-media/creative_voice_file.ksy
-media/genmidi_op2.ksy
-media/id3v1_1.ksy
-media/id3v2_3.ksy
-media/id3v2_4.ksy
-media/magicavoxel_vox.ksy
-media/ogg.ksy
-media/quicktime_mov.ksy
-media/standard_midi_file.ksy
-media/stl.ksy
+Multimedia Files
 media/tracker_modules/
+
 media/tracker_modules/fasttracker_xm_module.ksy
+Extended Module
 media/tracker_modules/s3m.ksy
+Scream Tracker 3 module
+media/android_opengl_shaders_cache.ksy
+com.android.opengl.shaders_cache file
+media/au.ksy
+AU audio format
+media/avi.ksy
+Microsoft AVI file
+media/blender_blend.ksy
+
+media/creative_voice_file.ksy
+Creative Voice File
+media/genmidi_op2.ksy
+GENMIDI.OP2 OPL2 sound bank
+media/id3v1_1.ksy
+ID3v1.1 tag for .mp3 files
+media/id3v2_3.ksy
+ID3v2.3 tag for .mp3 files
+media/id3v2_4.ksy
+ID3v2.4 tag for .mp3 files
+media/magicavoxel_vox.ksy
+MagicaVoxel File
+media/ogg.ksy
+Ogg media container file
+media/quicktime_mov.ksy
+
+media/standard_midi_file.ksy
+Standard MIDI file
+media/stl.ksy
+
 media/vp8_duck_ivf.ksy
+Duck IVF (container format for VP8)
 media/wav.ksy
+Microsoft WAVE audio file
 network/
-network/bitcoin_transaction.ksy
-network/dime_message.ksy
-network/dns_packet.ksy
-network/ethernet_frame.ksy
-network/hccap.ksy
-network/hccapx.ksy
-network/icmp_packet.ksy
-network/ipv4_packet.ksy
-network/ipv6_packet.ksy
-network/microsoft_network_monitor_v2.ksy
-network/packet_ppi.ksy
-network/pcap.ksy
-network/protocol_body.ksy
-network/rtcp_payload.ksy
-network/rtp_packet.ksy
-network/rtpdump.ksy
+Networking Protocols
 network/some_ip/
-network/some_ip/some_ip_container.ksy
-network/some_ip/some_ip_sd_entries.ksy
-network/some_ip/some_ip_sd_options.ksy
-network/some_ip/some_ip_sd.ksy
+
 network/some_ip/some_ip.ksy
+AUTOSAR SOME/IP
+network/some_ip/some_ip_container.ksy
+AUTOSAR SOME/IP container
+network/some_ip/some_ip_sd.ksy
+AUTOSAR SOME/IP Service Discovery
+network/some_ip/some_ip_sd_entries.ksy
+AUTOSAR SOME/IP Service Discovery Entries
+network/some_ip/some_ip_sd_options.ksy
+AUTOSAR SOME/IP Service Discovery Options
+network/bitcoin_transaction.ksy
+Bitcoin Transaction
+network/dime_message.ksy
+DIME (Direct Internet Message Encapsulation) Message
+network/dns_packet.ksy
+DNS (Domain Name Service) packet
+network/ethernet_frame.ksy
+Ethernet frame (layer 2, IEEE 802.3)
+network/hccap.ksy
+Hashcat capture file (old version)
+network/hccapx.ksy
+Hashcat capture file
+network/icmp_packet.ksy
+ICMP network packet
+network/ipv4_packet.ksy
+IPv4 network packet
+network/ipv6_packet.ksy
+IPv6 network packet
+network/microsoft_network_monitor_v2.ksy
+
+network/packet_ppi.ksy
+
+network/pcap.ksy
+
+network/protocol_body.ksy
+
+network/rtcp_payload.ksy
+rtcp network payload (single udp packet)
+network/rtp_packet.ksy
+RTP (Real-time Transport Protocol)
+network/rtpdump.ksy
+Rtpdump (rtptools)
 network/tcp_segment.ksy
+TCP (Transmission Control Protocol) segment
 network/tls_client_hello.ksy
+
 network/udp_datagram.ksy
+UDP (User Datagram Protocol) datagram
 network/websocket.ksy
+WebSocket
 scientific/
+Scientific Applications
 scientific/nt_mdt/
-scientific/nt_mdt/nt_mdt_pal.ksy
+
 scientific/nt_mdt/nt_mdt.ksy
+NT-MDT data
+scientific/nt_mdt/nt_mdt_pal.ksy
+NT-MDT palette format
 scientific/spectroscopy/
+
 scientific/spectroscopy/avantes_roh60.ksy
+Avantes USB spectrometer ROH file 6.0
 scientific/spectroscopy/specpr.ksy
+SPECtrum Processing Routines Data Format 3/4/88
 security/
+Security
 security/efivar_signature_list.ksy
+UEFI Variable with Signature List
 security/openpgp_message.ksy
+OpenPGP message
 security/ssh_public_key.ksy
+SSH public key
 serialization/
+Serialization Protocols
 serialization/asn1/
+
 serialization/asn1/asn1_der.ksy
+ASN.1 DER (Abstract Syntax Notation One, Distinguished Encoding Rules)
 serialization/bson.ksy
-serialization/google_protobuf.ksy
+
 serialization/chrome_pak.ksy
+Chrome PAK serialization format
+serialization/google_protobuf.ksy
+Google Protocol Buffers (protobuf)
 serialization/microsoft_cfb.ksy
+Microsoft Compound File Binary (CFB), AKA OLE (Object Linking and Embedding) file format
 serialization/msgpack.ksy
+MessagePack (msgpack) serialization format
 serialization/php_serialized_value.ksy
+Serialized PHP value
 serialization/python_pickle.ksy
+Python pickle serialization format
 serialization/ruby_marshal.ksy
+
 windows/
+Windows-specific
 windows/regf.ksy
+Windows registry database
 windows/windows_lnk_file.ksy
+Windows shell link file
 windows/windows_minidump.ksy
+Windows MiniDump
 windows/windows_resource_file.ksy
+Windows resource file
 windows/windows_shell_items.ksy
+Windows Shell Items
 windows/windows_systemtime.ksy
+Microsoft Windows SYSTEMTIME structure

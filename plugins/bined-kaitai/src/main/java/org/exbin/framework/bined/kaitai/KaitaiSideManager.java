@@ -33,6 +33,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
@@ -93,7 +94,7 @@ public class KaitaiSideManager {
         return processingMessage;
     }
 
-    public void loadFrom(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
+    public void loadFrom(DefinitionRecord definitionRecord, BinaryData sourceData) {
         if (sourceData.isEmpty()) {
             return;
         }
