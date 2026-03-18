@@ -28,9 +28,14 @@ import org.exbin.framework.bined.BinedModule;
 import org.exbin.framework.bined.inspector.BinEdInspectorManager;
 import org.exbin.framework.bined.inspector.BinedInspectorModule;
 import org.exbin.framework.bined.kaitai.inspector.KaitaiInspectorProvider;
+import org.exbin.framework.bined.kaitai.settings.KaitaiOptions;
+import org.exbin.framework.bined.kaitai.settings.KaitaiSettingsApplier;
 import org.exbin.framework.context.api.ContextChange;
 import org.exbin.framework.context.api.ContextChangeRegistration;
 import org.exbin.framework.language.api.LanguageModuleApi;
+import org.exbin.framework.options.settings.api.ApplySettingsContribution;
+import org.exbin.framework.options.settings.api.OptionsSettingsManagement;
+import org.exbin.framework.options.settings.api.OptionsSettingsModuleApi;
 import org.exbin.framework.sidebar.api.SideBarComponent;
 import org.exbin.framework.sidebar.api.SideBarDefinitionManagement;
 import org.exbin.framework.sidebar.api.SideBarModuleApi;
@@ -63,6 +68,7 @@ public class BinedKaitaiModule implements PluginModule {
 
             registerSideBar();
             registerInspector();
+            registerSettings();
             // registerMenuActions();
             // registerPopupMenuActions();
 
@@ -72,7 +78,6 @@ public class BinedKaitaiModule implements PluginModule {
 
             SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
             sideBarModule.setAutoShow(true);
-            sideBarComponent.setBuildInDefinition("image/png.ksy");
         });
     }
 
@@ -109,6 +114,16 @@ public class BinedKaitaiModule implements PluginModule {
         BinedInspectorModule binedInspectorModule = App.getModule(BinedInspectorModule.class);
         BinEdInspectorManager inspectorManager = binedInspectorModule.getBinEdInspectorManager();
         inspectorManager.addInspector(new KaitaiInspectorProvider(getResourceBundle()));
+    }
+    
+    public void registerSettings() {
+        getResourceBundle();
+        OptionsSettingsModuleApi settingsModule = App.getModule(OptionsSettingsModuleApi.class);
+        OptionsSettingsManagement settingsManagement = settingsModule.getMainSettingsManager();
+
+        settingsManagement.registerSettingsOptions(KaitaiOptions.class, (optionsStorage) -> new KaitaiOptions(optionsStorage));
+        settingsManagement.registerApplySetting(KaitaiOptions.class, new ApplySettingsContribution(KaitaiSettingsApplier.APPLIER_ID, new KaitaiSettingsApplier()));
+        settingsManagement.registerApplyContextSetting(ContextComponent.class, new ApplySettingsContribution(KaitaiSettingsApplier.APPLIER_ID, new KaitaiSettingsApplier()));
     }
 
     public void setBuildInDefinition(String ksyFilePath) {

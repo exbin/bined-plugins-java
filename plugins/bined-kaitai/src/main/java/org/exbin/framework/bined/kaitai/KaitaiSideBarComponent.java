@@ -34,9 +34,9 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -223,12 +223,12 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
                                 DefaultMutableTreeNode filteredFormats = new DefaultMutableTreeNode("Definitions");
                                 
-                                List<NodeFilterRecord> nodesToProcess = new ArrayList<>();
-                                List<DefaultMutableTreeNode> nodesToCheck = new ArrayList<>();
+                                LinkedList<NodeFilterRecord> nodesToProcess = new LinkedList<>();
+                                LinkedList<DefaultMutableTreeNode> nodesToCheck = new LinkedList<>();
                                 nodesToProcess.add(new NodeFilterRecord(formatsRootNode, filteredFormats));
 
                                 while (!nodesToProcess.isEmpty()) {
-                                    NodeFilterRecord filterRecord = nodesToProcess.remove(0);
+                                    NodeFilterRecord filterRecord = nodesToProcess.remove();
                                     DefaultMutableTreeNode currentNode = filterRecord.node;
                                     DefaultMutableTreeNode filteredNode = filterRecord.filteredNode;
                                     
@@ -245,13 +245,13 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                                             DefaultMutableTreeNode childFilteredNode = (DefaultMutableTreeNode) childNode.clone();
                                             filteredNode.add(childFilteredNode);
                                             nodesToProcess.add(new NodeFilterRecord(childNode, childFilteredNode));
-                                            nodesToCheck.add(childFilteredNode);
+                                            nodesToCheck.addFirst(childFilteredNode);
                                         }
                                     }
                                 }
                                 
-                                for (int i = nodesToCheck.size() - 1; i >= 0; i--) {
-                                    DefaultMutableTreeNode node = nodesToCheck.get(i);
+                                while (!nodesToCheck.isEmpty()) {
+                                    DefaultMutableTreeNode node = nodesToCheck.remove();
                                     if (node.isLeaf()) {
                                         DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) node.getParent();
                                         parentNode.remove(node);
