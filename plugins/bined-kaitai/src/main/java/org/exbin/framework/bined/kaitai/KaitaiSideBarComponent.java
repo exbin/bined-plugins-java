@@ -31,10 +31,6 @@ import java.io.Reader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +80,6 @@ import org.yaml.snakeyaml.Yaml;
 @ParametersAreNonnullByDefault
 public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
-    private static final String RESOURCE_FORMATS_PATH = "/org/exbin/framework/bined/kaitai/resources/formats/";
     protected KaitaiSideManager sideManager = new KaitaiSideManager();
     protected DefinitionRecord definitionRecord = null;
     protected BinaryDataComponent binaryDataComponent = null;
@@ -96,8 +91,8 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             @Override
             public void selectedDefinitionChanged() {
                 DefinitionRecord definitionRecord = sidePanel.getSelectedDefinition();
-                EditableBinaryData sourceData = binaryDataComponent != null ? (EditableBinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
-                sideManager.processDefinition(definitionRecord, sourceData);
+                BinaryData sourceData = binaryDataComponent != null ? binaryDataComponent.getCodeArea().getContentData() : null;
+                sideManager.processDefinition(definitionRecord, sourceData instanceof EditableBinaryData ? (EditableBinaryData) sourceData : new ByteArrayEditableData());
             }
 
             @Override
@@ -111,9 +106,9 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                             event.acceptDrop(DnDConstants.ACTION_COPY);
                             Object transferData = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                             List<?> droppedFiles = (List) transferData;
+                            BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
                             for (Object droppedFile : droppedFiles) {
-                                File file = (File) droppedFile;
-                                DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                                DefinitionRecord record = kaitaiModule.getDefinitionByPath(((File) droppedFile).toURI());
                                 definitionsPanel.addDefinition(record);
                             }
                         } catch (UnsupportedFlavorException | IOException ex) {
@@ -129,8 +124,9 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         FileDialogsProvider dialogsProvider = fileModule.getFileDialogsProvider();
                         OpenFileResult openFileResult = dialogsProvider.showOpenFileDialog(definitionsPanel, new DefaultFileTypes(new KsyFileType()), null, null, null);
                         if (openFileResult.getDialogResult() == JFileChooser.APPROVE_OPTION) {
+                            BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
                             File file = openFileResult.getSelectedFile().get();
-                            DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                            DefinitionRecord record = kaitaiModule.getDefinitionByPath(file.toURI());
                             definitionsPanel.addDefinition(record);
                         }
                     }
@@ -318,6 +314,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                                 Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
                             }                            
                             textArea.setText(builder.toString());
+                            textArea.setCaretPosition(0);
                         } catch (IOException ex) {
                             Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
                         } finally {
@@ -418,37 +415,16 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
     }
 
     public void setBuildInDefinition(String ksyFilePath) {
-        FileSystem fileSystem = null;
-        try {
-            URI fileUri = getClass().getResource(RESOURCE_FORMATS_PATH + ksyFilePath).toURI();
-            fileSystem = FileSystems.newFileSystem(fileUri, Collections.<String, Object>emptyMap());
-            Path filePath = fileSystem.getPath(RESOURCE_FORMATS_PATH + ksyFilePath);
-            String fileName = "";
-            if (filePath.getNameCount() > 0) {
-                fileName = filePath.getName(filePath.getNameCount() - 1).toString();
-            }
-            if (fileName.endsWith("/")) {
-                fileName = fileName.substring(0, fileName.length() - 1);
-            }
-            setDefinitionRecord(new DefinitionRecord(fileName, fileName, filePath.toUri()));
-        } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(KaitaiSideBarComponent.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (fileSystem != null) {
-                    fileSystem.close();
-                }
-            } catch (Throwable tw) {
-                // ignore
-            }
-        }
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        DefinitionRecord record = kaitaiModule.getBuildInDefinition(ksyFilePath);
+        setDefinitionRecord(record);
     }
 
     private void readAvailableFormats(DefaultMutableTreeNode formatsRootNode) {
         Map<String, DefaultMutableTreeNode> nodes = new HashMap<>();
 
         String listLine;
-        try (BufferedReader listReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(RESOURCE_FORMATS_PATH + "formats.txt")))) {
+        try (BufferedReader listReader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(BinedKaitaiModule.RESOURCE_FORMATS_PATH + "formats.txt")))) {
             do {
                 listLine = listReader.readLine();
                 if (listLine != null) {
@@ -481,7 +457,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         parentNode = formatsRootNode;
                         fileName = listLine;
                     }
-                    URI definitionUri = getClass().getResource(RESOURCE_FORMATS_PATH + listLine).toURI();
+                    URI definitionUri = getClass().getResource(BinedKaitaiModule.RESOURCE_FORMATS_PATH + listLine).toURI();
                     String defTitle = title.isEmpty() ? fileName.substring(0, fileName.length() - 4) : title;
                     DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(new DefinitionRecord(defTitle, fileName, definitionUri));
                     parentNode.add(childNode);

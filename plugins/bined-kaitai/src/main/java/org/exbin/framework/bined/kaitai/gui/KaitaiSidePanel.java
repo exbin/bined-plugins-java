@@ -95,6 +95,10 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         return (DefinitionRecord) comboBox.getSelectedItem();
     }
 
+    public int getSelectedDefinitionIndex() {
+        return comboBox.getSelectedIndex();
+    }
+
     public void setSelectedDefinition(int index) {
         comboBox.setSelectedIndex(index);
     }

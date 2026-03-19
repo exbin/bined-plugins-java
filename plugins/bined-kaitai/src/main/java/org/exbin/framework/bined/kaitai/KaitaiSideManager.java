@@ -74,7 +74,7 @@ public class KaitaiSideManager {
                     List<?> droppedFiles = (List) transferData;
                     for (Object droppedFile : droppedFiles) {
                         File file = (File) droppedFile;
-                        DefinitionRecord record = new DefinitionRecord(file.getName(), file.getName(), file.toURI());
+                        DefinitionRecord record = kaitaiModule.getDefinitionByPath(file.toURI());
                         sidePanel.addDefinition(record);
                     }
                 } catch (UnsupportedFlavorException | IOException ex) {

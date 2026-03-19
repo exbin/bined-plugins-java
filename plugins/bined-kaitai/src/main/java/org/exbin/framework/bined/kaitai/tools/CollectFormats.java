@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.exbin.framework.bined.kaitai.tools;
+/*package org.exbin.framework.bined.kaitai.tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.ParametersAreNonnullByDefault;
-
+*/
 /**
  * Kaitai settings options.
  */
-@ParametersAreNonnullByDefault
+/*@ParametersAreNonnullByDefault
 public class CollectFormats {
 
     public static final String ROOT_PATH = "src/main/resources/org/exbin/framework/bined/kaitai/resources/formats";
@@ -165,4 +165,4 @@ public class CollectFormats {
             out.write("\n");
         }
     }
-}
+} */

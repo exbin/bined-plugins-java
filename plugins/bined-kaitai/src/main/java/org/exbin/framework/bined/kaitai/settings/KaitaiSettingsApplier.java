@@ -15,15 +15,23 @@
  */
 package org.exbin.framework.bined.kaitai.settings;
 
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.ParametersAreNonnullByDefault;
+import org.exbin.framework.App;
 import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinaryDataComponent;
+import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
+import org.exbin.framework.bined.kaitai.DefinitionRecord;
+import org.exbin.framework.bined.kaitai.KaitaiSideManager;
+import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.context.api.ActiveContextProvider;
 import org.exbin.framework.options.settings.api.SettingsApplier;
 import org.exbin.framework.options.settings.api.SettingsOptionsProvider;
 
 /**
- * Binary editor settings applier.
+ * Kaitai settings applier.
  *
  * @author ExBin Project (https://exbin.org)
  */
@@ -39,8 +47,24 @@ public class KaitaiSettingsApplier implements SettingsApplier {
             return;
         }
 
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
         KaitaiOptions options = settingsProvider.getSettingsOptions(KaitaiOptions.class);
-        BinaryDataComponent component = (BinaryDataComponent) instance;
-        // TODO component.getComponentExtension(type)
+        KaitaiSidePanel sidePanel = kaitaiSideManager.getSidePanel();
+        List<DefinitionRecord> definitionRecords = new ArrayList<>();
+        int listSize = options.getListSize();
+        for (int i = 0; i < listSize; i++) {
+            String buildIn = options.getListItemBuildIn(i);
+            DefinitionRecord record;
+            if (buildIn.isEmpty()) {
+                String path = options.getListItemPath(i);
+                record = kaitaiModule.getDefinitionByPath(URI.create(path));
+            } else {
+                record = kaitaiModule.getBuildInDefinition(buildIn);
+            }
+            definitionRecords.add(record);
+        }
+        sidePanel.setDefinitions(definitionRecords);
+        sidePanel.setSelectedDefinition(options.getDefinition());
     }
 }

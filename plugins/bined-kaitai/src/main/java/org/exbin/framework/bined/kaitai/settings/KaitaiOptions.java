@@ -28,8 +28,9 @@ public class KaitaiOptions implements SettingsOptions {
 
     public static final String KEY_LIST_PREFIX = "kaitai.list.";
     public static final String KEY_LIST_SIZE = KEY_LIST_PREFIX + ".size";
-    public static final String KEY_NAME_PREFIX = KEY_LIST_PREFIX + "name.";
+    public static final String KEY_NAME_PREFIX = KEY_LIST_PREFIX + "buildin.";
     public static final String KEY_PATH_PREFIX = KEY_LIST_PREFIX + "path.";
+    public static final String KEY_DEFINITION = "kaitai.definition";
 
     private final OptionsStorage storage;
 
@@ -45,12 +46,20 @@ public class KaitaiOptions implements SettingsOptions {
         storage.putInt(KEY_LIST_SIZE, size);
     }
 
+    public int getDefinition() {
+        return storage.getInt(KEY_DEFINITION, -1);
+    }
+
+    public void setDefinition(int definitionIndex) {
+        storage.putInt(KEY_DEFINITION, definitionIndex);
+    }
+
     @Nonnull
-    public String getListItemName(int index) {
+    public String getListItemBuildIn(int index) {
         return storage.get(KEY_NAME_PREFIX + index, "");
     }
 
-    public void setListItemName(String value, int index) {
+    public void setListItemBuildIn(String value, int index) {
         storage.put(KEY_NAME_PREFIX + index, value);
     }
 
@@ -74,7 +83,7 @@ public class KaitaiOptions implements SettingsOptions {
         int listSize = getListSize();
         target.setListSize(listSize);
         for (int index = 0; index < listSize; index++) {
-            target.setListItemName(getListItemName(index), index);
+            target.setListItemBuildIn(getListItemBuildIn(index), index);
             target.setListItemPath(getListItemPath(index), index);
         }
     }

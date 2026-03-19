@@ -130,8 +130,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        filterLabel = new javax.swing.JLabel();
-        filterTextField = new javax.swing.JTextField();
         controlPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         buildInButton = new javax.swing.JButton();
@@ -143,10 +141,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         definitionsListScrollPane = new javax.swing.JScrollPane();
         definitionsList = new javax.swing.JList<>();
         previewPanel = new javax.swing.JPanel();
-
-        filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/open_icon_library/icons/png/16x16/view-filter.png"))); // NOI18N
-
-        filterTextField.setEnabled(false);
 
         addButton.setText(resourceBundle.getString("addButton.text")); // NOI18N
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -258,11 +252,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(filterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filterTextField))
-                    .addComponent(definitionsListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                    .addComponent(definitionsListScrollPane)
                     .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(controlPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -271,11 +261,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(filterTextField)
-                    .addComponent(filterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(definitionsListScrollPane)
+                .addComponent(definitionsListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(previewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -333,8 +319,8 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         int[] indices = definitionsList.getSelectedIndices();
         Arrays.sort(indices);
-        for (int i = indices.length - 1; i >= 0; i++) {
-            definitionsListModel.removeElementAt(i);
+        for (int i = 0; i < indices.length; i++) {
+            definitionsListModel.removeElementAt(indices[i]);
         }
         definitionsList.clearSelection();
         notifyModified();
@@ -362,8 +348,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane definitionsListScrollPane;
     private javax.swing.JButton downButton;
     private javax.swing.JButton editButton;
-    private javax.swing.JLabel filterLabel;
-    private javax.swing.JTextField filterTextField;
     private javax.swing.JPanel previewPanel;
     private javax.swing.JButton removeButton;
     private javax.swing.JButton selectAllButton;
