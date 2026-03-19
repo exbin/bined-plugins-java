@@ -14,6 +14,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Kaitai processing node.
+ */
 @ParametersAreNonnullByDefault
 public class DataNode extends DefaultMutableTreeNode {
 
@@ -61,33 +64,40 @@ public class DataNode extends DefaultMutableTreeNode {
         return name;
     }
 
+    @Nullable
     public Integer posStart() {
         return posStart;
     }
 
+    @Nullable
     public Integer posEnd() {
         return posEnd;
     }
 
     private void updateVisual() {
-        StringBuilder sb = new StringBuilder(name);
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        sb.append(name);
         if (value != null) {
             if (value instanceof byte[]) {
-                sb.append(" = ");
+                sb.append(" = <strong style=\"color: red\">");
                 byte[] bytes = (byte[]) value;
                 for (int i = 0; i < 10 && i < bytes.length; i++) {
                     sb.append(String.format("%02x ", bytes[i]));
                 }
+                sb.append("</strong>");
             } else if (value instanceof ArrayList) {
                 ArrayList list = (ArrayList) value;
                 sb.append(String.format(" (%d = 0x%x entries)", list.size(), list.size()));
             } else if (isStructType(value)) {
                 // do not expand
             } else {
-                sb.append(" = ");
+                sb.append(" = <strong style=\"color: red\">");
                 sb.append(value.toString());
+                sb.append("</strong>");
             }
         }
+        sb.append("</html>");
         setUserObject(sb.toString());
     }
 
@@ -117,12 +127,12 @@ public class DataNode extends DefaultMutableTreeNode {
                 setProgress(0);
                 final List<DataNode> children = new ArrayList<>();
 
-                System.out.println("exploring field " + name + ", value = " + value);
+                // System.out.println("exploring field " + name + ", value = " + value);
 
                 // Wasn't loaded yet?
                 if (value == null) {
                     DataNode parentNode = (DataNode) parent;
-                    System.out.println("parentNode: name = " + parentNode.name + "; value = " + parentNode.value);
+                    // System.out.println("parentNode: name = " + parentNode.name + "; value = " + parentNode.value);
                     value = method.invoke(parentNode.value);
                 }
 
@@ -134,7 +144,7 @@ public class DataNode extends DefaultMutableTreeNode {
                 }
 
                 Class<?> cl = value.getClass();
-                System.out.println("cl = " + cl);
+                // System.out.println("cl = " + cl);
 
                 if (isImmediate(value, cl)) {
                     updateVisual();
@@ -148,7 +158,7 @@ public class DataNode extends DefaultMutableTreeNode {
                         Object el = list.get(i);
                         String arrayIdxStr = String.format("%04d", i);
 
-                        children.add(new DataNode(depth + 1, el, arrayIdxStr));
+                        insertChild(children, new DataNode(depth + 1, el, arrayIdxStr));
                     }
                 } else if (isStructType(value)) {
                     AttrPositions debug = AttrPositions.fromStruct(value);
@@ -174,15 +184,30 @@ public class DataNode extends DefaultMutableTreeNode {
                             Integer posStart = debug.getStart(methodName);
                             Integer posEnd = debug.getEnd(methodName);
 
-                            DataNode dn = new DataNode(depth + 1, curValue, m, posStart, posEnd);
-                            children.add(dn);
+                            insertChild(children, new DataNode(depth + 1, curValue, m, posStart, posEnd));
                         } catch (NoSuchFieldException e) {
-                            System.out.println("no field, ignoring method " + methodName);
+                            // System.out.println("no field, ignoring method " + methodName);
                         }
                     }
                 }
+
                 setProgress(0);
                 return children;
+            }
+            
+            private void insertChild(List<DataNode> children, DataNode insertedChild) {
+                Integer position = insertedChild.posStart();
+                if (position != null) {
+                    for (int i = 0; i < children.size(); i++) {
+                        DataNode child = children.get(i);
+                        if (child.posStart() > position) {
+                            children.add(i, insertedChild);
+                            return;
+                        }
+                    }
+                }
+                
+                children.add(insertedChild);
             }
 
             @Override

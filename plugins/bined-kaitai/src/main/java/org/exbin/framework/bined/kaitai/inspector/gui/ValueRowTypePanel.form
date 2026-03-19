@@ -45,7 +45,7 @@
     <Component class="javax.swing.JLabel" name="rowsLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/inspector/table/settings/gui/resources/ValueRowTypePanel.properties" key="rowsLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/framework/bined/kaitai/inspector/gui/resources/ValueRowTypePanel.properties" key="rowsLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

@@ -32,7 +32,7 @@ public class DoubleValueRowType implements ValueRowType {
 
     protected String propertyName;
     protected long position;
-    protected ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+    protected ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
     public DoubleValueRowType(String propertyName, long position) {
         this.propertyName = propertyName;

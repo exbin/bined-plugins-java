@@ -32,7 +32,7 @@ public class IntegerValueRowType implements ValueRowType {
     protected String propertyName;
     protected long position;
     protected boolean signed = false;
-    protected ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
+    protected ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
     public IntegerValueRowType(String propertyName, long position) {
         this.propertyName = propertyName;

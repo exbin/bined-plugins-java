@@ -29,7 +29,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.exbin.auxiliary.binary_data.BinaryData;
-import org.exbin.bined.capability.CaretCapable;
 import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
@@ -154,32 +153,45 @@ public class ValuesTablePanel extends javax.swing.JPanel {
                     Object value = childNode.getValue();
                     ValueRowType rowType;
                     if (value == null) {
-                        rowType = new NullValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new NullValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof Byte) {
-                        rowType = new ByteValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof Integer) {
-                        rowType = new IntegerValueRowType(childNode.getName(), childNode.posStart());
-                    } else if (value instanceof Long) {
-                        int length = childNode.posEnd() - childNode.posStart();
-                        if (length == 4) {
-                            rowType = new IntegerValueRowType(childNode.getName(), childNode.posStart());
+                        int length = getLength(childNode);
+                        if (length == 1) {
+                            rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 2) {
+                            rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 4) {
+                            rowType = new IntegerValueRowType(childNode.getName(), getPosStart(childNode));
                         } else {
-                            rowType = new LongValueRowType(childNode.getName(), childNode.posStart());
+                            rowType = new LongValueRowType(childNode.getName(), getPosStart(childNode));
+                        }
+                    } else if (value instanceof Long) {
+                        int length = getLength(childNode);
+                        if (length == 1) {
+                            rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 2) {
+                            rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 4) {
+                            rowType = new IntegerValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else {
+                            rowType = new LongValueRowType(childNode.getName(), getPosStart(childNode));
                         }
                     } else if (value instanceof Float) {
-                        rowType = new FloatValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new FloatValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof Double) {
-                        rowType = new DoubleValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new DoubleValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof Short) {
-                        rowType = new WordValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof Boolean) {
-                        rowType = new BooleanValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new BooleanValueRowType(childNode.getName(), getPosStart(childNode));
                     } else if (value instanceof String) {
-                        rowType = new StringValueRowType(childNode.getName(), childNode.posStart(), childNode.posEnd() - childNode.posStart());
+                        rowType = new StringValueRowType(childNode.getName(), getPosStart(childNode), getLength(childNode));
                     } else if (value instanceof byte[]) {
-                        rowType = new ByteArrayValueRowType(childNode.getName(), childNode.posStart(), childNode.posEnd() - childNode.posStart());
+                        rowType = new ByteArrayValueRowType(childNode.getName(), getPosStart(childNode), getLength(childNode));
                     } else{
-                        rowType = new NullValueRowType(childNode.getName(), childNode.posStart());
+                        rowType = new NullValueRowType(childNode.getName(), getPosStart(childNode));
                     }
                     tableModel.addRow(rowType.createRowItem());
                 } else if (child instanceof DefaultMutableTreeNode) {
@@ -209,7 +221,18 @@ public class ValuesTablePanel extends javax.swing.JPanel {
         }
         tableModel.fireTableRowsUpdated(0, tableModel.getRowCount() - 1);
     }
+    
+    private static int getPosStart(DataNode childNode) {
+        Integer posStart = childNode.posStart();
+        return posStart == null ? 0 : (int) posStart;
+    }
 
+    private static int getLength(DataNode childNode) {
+        Integer posStart = childNode.posStart();
+        Integer posEnd = childNode.posEnd();
+        return (posEnd == null ? 0 : (int) posEnd) - (posStart == null ? 0 : (int) posStart);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

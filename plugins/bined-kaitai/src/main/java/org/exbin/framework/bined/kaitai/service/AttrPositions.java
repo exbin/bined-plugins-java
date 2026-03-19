@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+/**
+ * Kaitai processing attribute position.
+ */
 @ParametersAreNonnullByDefault
 public class AttrPositions {
 

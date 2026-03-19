@@ -15,7 +15,7 @@ import org.exbin.framework.bined.kaitai.KaitaiColorModifier;
 import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 
 /**
- * Kaitai parse tree listener
+ * Kaitai parse tree listener.
  */
 @ParametersAreNonnullByDefault
 public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelectionListener {
