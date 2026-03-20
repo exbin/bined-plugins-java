@@ -22,23 +22,19 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.exbin.framework.bined.kaitai.service.KaitaiCompiler;
-import org.exbin.framework.bined.kaitai.service.KaitaiParser;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 import org.exbin.auxiliary.binary_data.BinaryData;
-import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.framework.App;
+import org.exbin.framework.bined.BinaryFileDocument;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
 import org.exbin.framework.bined.kaitai.service.KaitaiTreeListener;
-import org.exbin.framework.bined.kaitai.service.KaitaiProcessingService;
 
 /**
  * Kaitai side manager.
@@ -48,27 +44,16 @@ import org.exbin.framework.bined.kaitai.service.KaitaiProcessingService;
 @ParametersAreNonnullByDefault
 public class KaitaiSideManager {
 
+    protected final Map<BinaryFileDocument, KaitaiSideRecord> records = new HashMap<>();
     protected KaitaiSidePanel sidePanel = new KaitaiSidePanel();
-    protected KaitaiProcessingService visualizer = new KaitaiProcessingService();
-    protected KaitaiCompiler compiler = new KaitaiCompiler();
-    protected KaitaiParser parser = null;
-    protected JTree parserTree;
-    protected String processingMessage = "";
-    protected KaitaiTreeListener treeListener;
 
     public KaitaiSideManager() {
-        parserTree = sidePanel.getParserTree();
-        DefaultTreeModel model = visualizer.getModel();
-        parserTree.setModel(model);
-        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
-        treeListener = new KaitaiTreeListener(parserTree, kaitaiModule.getKaitaiColorModifier());
-        parserTree.addTreeWillExpandListener(treeListener);
-        parserTree.addTreeSelectionListener(treeListener);
         sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
         sidePanel.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent event) {
                 try {
+                    BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
                     event.acceptDrop(DnDConstants.ACTION_COPY);
                     Object transferData = event.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     List<?> droppedFiles = (List) transferData;
@@ -89,66 +74,36 @@ public class KaitaiSideManager {
         return sidePanel;
     }
 
-    @Nonnull
-    public String getProcessingMessage() {
-        return processingMessage;
-    }
-
     public void loadFrom(DefinitionRecord definitionRecord, BinaryData sourceData) {
         if (sourceData.isEmpty()) {
             return;
         }
 
-        if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
-            sidePanel.addDefinition(definitionRecord);
+        // TODO
+//        if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
+//            sidePanel.addDefinition(definitionRecord);
+//        }
+    }
+
+    public void addNodeSelectionListener(CodeAreaCore codeArea, KaitaiTreeListener.SelectionListener listener) {
+        for (Map.Entry<BinaryFileDocument, KaitaiSideRecord> entry : records.entrySet()) {
+            BinaryFileDocument key = entry.getKey();
+            KaitaiSideRecord val = entry.getValue();
+            if (codeArea == key.getCodeArea()) {
+                val.addNodeSelectionListener(listener);
+                break;
+            }
         }
     }
 
-    public void processDefinition(DefinitionRecord definitionRecord, EditableBinaryData sourceData) {
-        clearParseTree();
-        sidePanel.setStatus(KaitaiStatusType.COMPILING);
-        KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
-        if (compileResult.getErrorMessage() != null) {
-            processingMessage += compileResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
-            this.parser = null;
-            return;
+    public void removeNodeSelectionListener(CodeAreaCore codeArea, KaitaiTreeListener.SelectionListener listener) {
+        for (Map.Entry<BinaryFileDocument, KaitaiSideRecord> entry : records.entrySet()) {
+            BinaryFileDocument key = entry.getKey();
+            KaitaiSideRecord val = entry.getValue();
+            if (codeArea == key.getCodeArea()) {
+                val.removeNodeSelectionListener(listener);
+                break;
+            }
         }
-        this.parser = compileResult.getParser();
-
-        sidePanel.setStatus(KaitaiStatusType.PARSING);
-        KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
-        if (parsingResult.getErrorMessage() != null) {
-            clearParseTree();
-            processingMessage += parsingResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.PARSE_FAILED);
-            return;
-        }
-
-        sidePanel.setStatus(KaitaiStatusType.OK);
-    }
-    
-    public void addNodeSelectionListener(NodeSelectionListener listener) {
-        treeListener.addNodeSelectionListener(listener);
-    }
-
-    public void removeNodeSelectionListener(NodeSelectionListener listener) {
-        treeListener.removeNodeSelectionListener(listener);
-    }
-    
-    @Nullable
-    public Object getSelectedNode() {
-        TreePath treePath = parserTree.getSelectionPath();
-        return treePath == null ? null : treePath.getLastPathComponent();
-    }
-
-    private void clearParseTree() {
-        DefaultTreeModel model = visualizer.getModel();
-        model.setRoot(null);
-    }
-
-    public interface NodeSelectionListener {
-
-        void selectionChanged();
     }
 }

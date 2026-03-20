@@ -17,7 +17,6 @@ package org.exbin.framework.bined.kaitai;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,6 +36,7 @@ import org.exbin.framework.ModuleUtils;
 import org.exbin.framework.PluginModule;
 import org.exbin.framework.action.api.ContextComponent;
 import org.exbin.framework.bined.BinEdFileManager;
+import org.exbin.framework.bined.BinaryFileDocument;
 import org.exbin.framework.bined.BinedModule;
 import org.exbin.framework.bined.inspector.BinEdInspectorManager;
 import org.exbin.framework.bined.inspector.BinedInspectorModule;
@@ -46,6 +46,7 @@ import org.exbin.framework.bined.kaitai.settings.KaitaiOptions;
 import org.exbin.framework.bined.kaitai.settings.KaitaiSettingsApplier;
 import org.exbin.framework.context.api.ContextChange;
 import org.exbin.framework.context.api.ContextChangeRegistration;
+import org.exbin.framework.document.api.ContextDocument;
 import org.exbin.framework.frame.api.FrameModuleApi;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.options.api.OptionsModuleApi;
@@ -126,8 +127,10 @@ public class BinedKaitaiModule implements PluginModule {
         sideBarComponent.putValue(SideBarComponent.KEY_CONTEXT_CHANGE, new ContextChange() {
             @Override
             public void register(ContextChangeRegistration registrar) {
-                registrar.registerListener(ContextComponent.class, (instance) -> {
-                    sideBarComponent.setActiveComponent(instance);
+                registrar.registerListener(ContextDocument.class, (instance) -> {
+                    if (instance instanceof BinaryFileDocument) {
+                        sideBarComponent.setActiveComponent(((BinaryFileDocument) instance).getDataComponent());
+                    }
                 });
             }
         });

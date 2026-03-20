@@ -37,6 +37,9 @@ public class KaitaiColorModifier implements CodeAreaColorAssessor {
     protected long position = -1;
     protected long length;
     protected Color color;
+    protected long outerPosition = -1;
+    protected long outerLength;
+    protected Color outerColor;
 
     public KaitaiColorModifier() {
         this(null);
@@ -53,6 +56,13 @@ public class KaitaiColorModifier implements CodeAreaColorAssessor {
             long dataPosition = rowDataPosition + byteOnRow;
             if (dataPosition >= position && dataPosition < position + length) {
                 return color;
+            }
+        }
+
+        if (outerPosition >= 0) {
+            long dataPosition = rowDataPosition + byteOnRow;
+            if (dataPosition >= outerPosition && dataPosition < outerPosition + outerLength) {
+                return outerColor;
             }
         }
 
@@ -74,6 +84,9 @@ public class KaitaiColorModifier implements CodeAreaColorAssessor {
     @Override
     public void startPaint(CodeAreaPaintState codeAreaPaintState) {
         color = UiUtils.isDarkUI() ? Color.GREEN.darker().darker() : Color.GREEN;
+        outerColor = UiUtils.isDarkUI()
+                ? new Color(color.getRed() / 2, color.getGreen() / 2, color.getBlue() / 2)
+                : new Color((511 + color.getRed()) / 3, (511 + color.getGreen()) / 3, (511 + color.getBlue()) / 3);
     }
 
     public void setRange(long position, long length) {
@@ -84,6 +97,16 @@ public class KaitaiColorModifier implements CodeAreaColorAssessor {
     public void clearRange() {
         this.position = -1;
         this.length = 0;
+    }
+
+    public void setOuterRange(long position, long length) {
+        this.outerPosition = position;
+        this.outerLength = length;
+    }
+
+    public void clearOuterRange() {
+        this.outerPosition = -1;
+        this.outerLength = 0;
     }
 
     /* TODO

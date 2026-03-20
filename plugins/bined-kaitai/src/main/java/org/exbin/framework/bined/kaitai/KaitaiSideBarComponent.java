@@ -84,6 +84,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
     protected DefinitionRecord definitionRecord = null;
     protected BinaryDataComponent binaryDataComponent = null;
 
+    @Nonnull
     @Override
     public JComponent createComponent() {
         KaitaiSidePanel sidePanel = sideManager.getSidePanel();
@@ -468,6 +469,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         }
     }
     
+    @ParametersAreNonnullByDefault
     private static class NodeFilterRecord {
         DefaultMutableTreeNode node;
         DefaultMutableTreeNode filteredNode;

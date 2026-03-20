@@ -27,6 +27,7 @@ import org.exbin.framework.bined.inspector.BinEdInspector;
 import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
 import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 import org.exbin.framework.bined.kaitai.inspector.gui.KaitaiInspectorPanel;
+import org.exbin.framework.bined.kaitai.service.KaitaiTreeListener;
 
 /**
  * Kaitai content inspector.
@@ -41,7 +42,7 @@ public class KaitaiInspector implements BinEdInspector {
 
     protected DataChangedListener dataChangedListener;
     protected CodeAreaCaretListener caretMovedListener;
-    protected KaitaiSideManager.NodeSelectionListener nodeSelectionListener;
+    protected KaitaiTreeListener.SelectionListener nodeSelectionListener;
 
     @Nonnull
     @Override
@@ -52,7 +53,7 @@ public class KaitaiInspector implements BinEdInspector {
             caretMovedListener = (caretPosition) -> {
                 component.requestUpdate();
             };
-            nodeSelectionListener = new KaitaiSideManager.NodeSelectionListener() {
+            nodeSelectionListener = new KaitaiTreeListener.SelectionListener() {
                 @Override
                 public void selectionChanged() {
                     component.requestUpdate();
@@ -72,7 +73,7 @@ public class KaitaiInspector implements BinEdInspector {
     public void activateSync() {
         BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
         KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
-        kaitaiSideManager.addNodeSelectionListener(nodeSelectionListener);
+        kaitaiSideManager.addNodeSelectionListener(codeArea, nodeSelectionListener);
 //        codeArea.addDataChangedListener(dataChangedListener);
 //        ((CaretCapable) codeArea).addCaretMovedListener(caretMovedListener);
     }
@@ -81,7 +82,7 @@ public class KaitaiInspector implements BinEdInspector {
     public void deactivateSync() {
         BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
         KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
-        kaitaiSideManager.removeNodeSelectionListener(nodeSelectionListener);
+        kaitaiSideManager.removeNodeSelectionListener(codeArea, nodeSelectionListener);
 //        codeArea.removeDataChangedListener(dataChangedListener);
 //        ((CaretCapable) codeArea).removeCaretMovedListener(caretMovedListener);
     }

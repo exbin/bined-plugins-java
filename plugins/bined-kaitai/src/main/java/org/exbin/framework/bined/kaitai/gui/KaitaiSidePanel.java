@@ -15,17 +15,15 @@
  */
 package org.exbin.framework.bined.kaitai.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreeSelectionModel;
 import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
@@ -41,6 +39,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiSidePanel.class);
     protected Controller controller;
+    protected Component currentParserComponent;
 
     public KaitaiSidePanel() {
         initComponents();
@@ -55,17 +54,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
                     value = ((DefinitionRecord) value).getTitle();
                 }
                 return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            }
-        });
-        parserTree.setShowsRootHandles(true);
-        parserTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        parserTree.setCellRenderer(new DefaultTreeCellRenderer() {
-            @Override
-            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                if (value instanceof TreeNode) {
-                    value = ((TreeNode) value).toString();
-                }
-                return super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
             }
         });
     }
@@ -147,9 +135,17 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         statusDetailButton.setEnabled(detailAvailable);
     }
 
-    @Nonnull
-    public JTree getParserTree() {
-        return parserTree;
+    public void setParserComponent(@Nullable Component component) {
+        if (currentParserComponent != null) {
+            parsePanel.remove(currentParserComponent);
+        }
+
+        if (component != null) {
+            parsePanel.add(component, BorderLayout.CENTER);
+        }
+
+        parsePanel.revalidate();
+        parsePanel.repaint();
     }
 
     /**
@@ -164,8 +160,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         comboBox = new javax.swing.JComboBox<>();
         selectButton = new javax.swing.JButton();
         parsePanel = new javax.swing.JPanel();
-        parserTreeScrollPane = new javax.swing.JScrollPane();
-        parserTree = new javax.swing.JTree();
         statusLabel = new javax.swing.JLabel();
         statusDetailButton = new javax.swing.JButton();
 
@@ -183,10 +177,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         });
 
         parsePanel.setLayout(new java.awt.BorderLayout());
-
-        parserTreeScrollPane.setViewportView(parserTree);
-
-        parsePanel.add(parserTreeScrollPane, java.awt.BorderLayout.CENTER);
 
         statusLabel.setText("Status");
 
@@ -248,8 +238,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<DefinitionRecord> comboBox;
     private javax.swing.JPanel parsePanel;
-    private javax.swing.JTree parserTree;
-    private javax.swing.JScrollPane parserTreeScrollPane;
     private javax.swing.JButton selectButton;
     private javax.swing.JButton statusDetailButton;
     private javax.swing.JLabel statusLabel;

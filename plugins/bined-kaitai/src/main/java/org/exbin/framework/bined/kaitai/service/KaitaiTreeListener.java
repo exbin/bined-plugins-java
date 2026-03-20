@@ -12,7 +12,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import org.exbin.framework.bined.kaitai.KaitaiColorModifier;
-import org.exbin.framework.bined.kaitai.KaitaiSideManager;
 
 /**
  * Kaitai parse tree listener.
@@ -22,7 +21,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
 
     protected final JTree tree;
     protected KaitaiColorModifier colorModifier = null;
-    protected List<KaitaiSideManager.NodeSelectionListener> nodeSelectionListeners = new ArrayList<>();
+    protected List<SelectionListener> nodeSelectionListeners = new ArrayList<>();
 
     public KaitaiTreeListener(JTree tree, KaitaiColorModifier colorModifier) {
         this.tree = tree;
@@ -36,7 +35,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
             DataNode node = (DataNode) path.getLastPathComponent();
             node.explore((DefaultTreeModel) tree.getModel(), null);
 
-            for (KaitaiSideManager.NodeSelectionListener nodeSelectionListener : nodeSelectionListeners) {
+            for (SelectionListener nodeSelectionListener : nodeSelectionListeners) {
                 nodeSelectionListener.selectionChanged();
             }
         }
@@ -48,7 +47,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
 
     @Override
     public void valueChanged(TreeSelectionEvent event) {
-        for (KaitaiSideManager.NodeSelectionListener nodeSelectionListener : nodeSelectionListeners) {
+        for (SelectionListener nodeSelectionListener : nodeSelectionListeners) {
             nodeSelectionListener.selectionChanged();
         }
 
@@ -67,18 +66,38 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
                     continue;
                 }
                 colorModifier.setRange(start, end - start);
+                
+                Integer outerStart = null;
+                DataNode parentNode = (DataNode) node.getParent();
+                outerStart = parentNode.posStart();
+                Integer outerEnd = parentNode.posEnd();
+                if (outerEnd == null) {
+                    outerStart = null;
+                }
+                if (outerStart != null) {
+                    colorModifier.setOuterRange(outerStart, outerEnd - outerStart);
+                } else {
+                    colorModifier.clearOuterRange();
+                }
+                
                 return;
             }
         }
 
         colorModifier.clearRange();
+        colorModifier.clearOuterRange();
     }
 
-    public void addNodeSelectionListener(KaitaiSideManager.NodeSelectionListener listener) {
+    public void addNodeSelectionListener(SelectionListener listener) {
         nodeSelectionListeners.add(listener);
     }
 
-    public void removeNodeSelectionListener(KaitaiSideManager.NodeSelectionListener listener) {
+    public void removeNodeSelectionListener(SelectionListener listener) {
         nodeSelectionListeners.remove(listener);
+    }
+
+    public interface SelectionListener {
+
+        void selectionChanged();
     }
 }
