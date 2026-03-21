@@ -16,6 +16,8 @@
 package org.exbin.framework.bined.kaitai.inspector.gui;
 
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -203,6 +205,10 @@ public class ValuesTablePanel extends javax.swing.JPanel {
                 } else {
                     tableModel.addRow(new NullValueRowType(((DataNode) node).getName(), ((DataNode) node).posStart()).createRowItem());
                 }
+            }
+
+            if (!((DataNode) node).isExplored()) {
+                ((DataNode) node).explore(() -> notifyChanged(), null);
             }
         }
 

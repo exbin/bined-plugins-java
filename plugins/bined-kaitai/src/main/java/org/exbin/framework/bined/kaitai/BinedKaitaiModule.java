@@ -249,7 +249,7 @@ public class BinedKaitaiModule implements PluginModule {
             }
 
             String defTitle = title.isEmpty() ? fileName.substring(0, fileName.length() - 4) : title;
-            return new DefinitionRecord(defTitle, fileName, filePath.toUri());
+            return new DefinitionRecord(defTitle, fileName, fileUri);
         } catch (URISyntaxException | IOException ex) {
             throw new RuntimeException("Failed to open build-in kaitai definition " + buildIn, ex);
         } finally {

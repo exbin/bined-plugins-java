@@ -32,6 +32,5 @@
     <library maven="org.dvare:dynamic-loader:3.2" />
     <library maven="org.slf4j:slf4j-api:2.0.16" />
     <library maven="com.fifesoft:rsyntaxtextarea:3.6.1" />
-    <library jar="tools-jdk1.8.0_351.jar" />
   </dependency>
 </module>

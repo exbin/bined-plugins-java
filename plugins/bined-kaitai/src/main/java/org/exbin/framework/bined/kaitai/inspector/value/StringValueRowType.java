@@ -15,10 +15,17 @@
  */
 package org.exbin.framework.bined.kaitai.inspector.value;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetDecoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
+import org.exbin.framework.bined.objectdata.source.CharBufferPageProvider;
 
 /**
  * Byte value type.
@@ -67,7 +74,13 @@ public class StringValueRowType implements ValueRowType {
                     return;
                 }
 
-                setValue("TODO");
+                String value;
+                try {
+                    value = new String(values, 0, length, "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    value = "";
+                }
+                setValue(String.valueOf(value));
             }
         };
     }

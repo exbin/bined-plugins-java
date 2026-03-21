@@ -33,7 +33,9 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
         TreePath path = event.getPath();
         if (path.getLastPathComponent() instanceof DataNode) {
             DataNode node = (DataNode) path.getLastPathComponent();
-            node.explore((DefaultTreeModel) tree.getModel(), null);
+            node.explore(() -> {
+                ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
+            }, null);
 
             for (SelectionListener nodeSelectionListener : nodeSelectionListeners) {
                 nodeSelectionListener.selectionChanged();
@@ -66,7 +68,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
                     continue;
                 }
                 colorModifier.setRange(start, end - start);
-                
+
                 Integer outerStart = null;
                 DataNode parentNode = (DataNode) node.getParent();
                 outerStart = parentNode.posStart();
@@ -79,7 +81,7 @@ public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelection
                 } else {
                     colorModifier.clearOuterRange();
                 }
-                
+
                 return;
             }
         }

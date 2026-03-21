@@ -115,7 +115,11 @@ public class DataNode extends DefaultMutableTreeNode {
         return false;
     }
 
-    public void explore(final DefaultTreeModel model, final PropertyChangeListener progressListener) {
+    public boolean isExplored() {
+        return explored;
+    }
+
+    public void explore(final FinishListener finishListener, @Nullable final PropertyChangeListener progressListener) {
         if (explored) {
             return;
         }
@@ -214,7 +218,9 @@ public class DataNode extends DefaultMutableTreeNode {
             protected void done() {
                 try {
                     setChildren(get());
-                    model.nodeStructureChanged(DataNode.this);
+                    if (finishListener != null) {
+                        finishListener.processingFinished();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     // Notify user of error.
@@ -248,5 +254,9 @@ public class DataNode extends DefaultMutableTreeNode {
                 || value instanceof String
                 || value instanceof Boolean
                 || value instanceof byte[];
+    }
+    
+    public interface FinishListener {
+        void processingFinished();
     }
 }

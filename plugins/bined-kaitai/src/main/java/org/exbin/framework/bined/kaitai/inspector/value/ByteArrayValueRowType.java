@@ -67,8 +67,12 @@ public class ByteArrayValueRowType implements ValueRowType {
                     return;
                 }
 
-                byte[] value = new byte[length];
-                System.arraycopy(values, 0, value, 0, length);
+                int capLength = available > length ? available : length;
+                if (values.length < capLength) {
+                    capLength = values.length;
+                }
+                byte[] value = new byte[capLength];
+                System.arraycopy(values, 0, value, 0, capLength);
                 setValue(value);
             }
         };

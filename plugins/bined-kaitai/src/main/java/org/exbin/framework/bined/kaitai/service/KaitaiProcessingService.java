@@ -47,6 +47,8 @@ public class KaitaiProcessingService {
     private void loadStruct() {
         final DataNode root = new DataNode(0, struct, "[root]");
         model.setRoot(root);
-        root.explore(model, null);
+        root.explore(() -> {
+            model.nodeStructureChanged(root);
+        }, null);
     }
 }
