@@ -50,8 +50,7 @@ import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.framework.App;
-import org.exbin.framework.action.api.ContextComponent;
-import org.exbin.framework.bined.BinaryDataComponent;
+import org.exbin.framework.bined.BinaryFileDocument;
 import org.exbin.framework.bined.kaitai.gui.KaitaiBuildInPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionPreviewPanel;
 import org.exbin.framework.bined.kaitai.gui.KaitaiDefinitionsPanel;
@@ -82,7 +81,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
     protected KaitaiSideManager sideManager = new KaitaiSideManager();
     protected DefinitionRecord definitionRecord = null;
-    protected BinaryDataComponent binaryDataComponent = null;
+    protected BinaryFileDocument activeDocument = null;
 
     @Nonnull
     @Override
@@ -91,9 +90,21 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         sidePanel.setController(new KaitaiSidePanel.Controller() {
             @Override
             public void selectedDefinitionChanged() {
+                if (activeDocument == null) {
+                    return;
+                }
+
                 DefinitionRecord definitionRecord = sidePanel.getSelectedDefinition();
-                BinaryData sourceData = binaryDataComponent != null ? binaryDataComponent.getCodeArea().getContentData() : null;
-                sideManager.processDefinition(definitionRecord, sourceData instanceof EditableBinaryData ? (EditableBinaryData) sourceData : new ByteArrayEditableData());
+                if (definitionRecord == null) {
+                    return;
+                }
+
+                KaitaiSideRecord record = sideManager.getRecord(activeDocument);
+                BinaryData sourceData = activeDocument.getCodeArea().getContentData();
+                record.setDefinitionRecord(definitionRecord);
+                if (sourceData instanceof EditableBinaryData) {
+                    record.processDefinition((EditableBinaryData) sourceData, sidePanel);
+                }
             }
 
             @Override
@@ -376,7 +387,8 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             public void showStatusDetail() {
                 WindowModuleApi windowModule = App.getModule(WindowModuleApi.class);
                 final KaitaiProcessingMessagePanel statusPanel = new KaitaiProcessingMessagePanel();
-                statusPanel.setProcessingMessage(sideManager.getProcessingMessage());
+                KaitaiSideRecord record = sideManager.getRecord(activeDocument);
+                statusPanel.setProcessingMessage(record.getProcessingMessage());
                 CloseControlPanel controlPanel = new CloseControlPanel(statusPanel.getResourceBundle());
                 final WindowHandler dialog = windowModule.createDialog(statusPanel, controlPanel);
                 windowModule.setWindowTitle(dialog, statusPanel.getResourceBundle());
@@ -396,7 +408,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
             return;
         }
 
-        BinaryData sourceData = binaryDataComponent != null ? (BinaryData) binaryDataComponent.getCodeArea().getContentData() : new ByteArrayEditableData();
+        BinaryData sourceData = activeDocument != null ? (BinaryData) activeDocument.getCodeArea().getContentData() : new ByteArrayEditableData();
         sideManager.loadFrom(definitionRecord, sourceData);
     }
 
@@ -405,8 +417,9 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         return sideManager;
     }
 
-    public void setActiveComponent(@Nullable ContextComponent contextComponent) {
-        binaryDataComponent = contextComponent instanceof BinaryDataComponent ? (BinaryDataComponent) contextComponent : null;
+    public void setActiveDocument(@Nullable BinaryFileDocument document) {
+        activeDocument = document;
+        sideManager.switchToDocument(document);
         update();
     }
 

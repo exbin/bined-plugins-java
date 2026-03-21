@@ -28,8 +28,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import org.exbin.auxiliary.binary_data.BinaryData;
+import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.BinaryFileDocument;
@@ -48,7 +51,6 @@ public class KaitaiSideManager {
     protected KaitaiSidePanel sidePanel = new KaitaiSidePanel();
 
     public KaitaiSideManager() {
-        sidePanel.setStatus(KaitaiStatusType.NO_DEFINITION);
         sidePanel.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent event) {
@@ -88,9 +90,8 @@ public class KaitaiSideManager {
     public void addNodeSelectionListener(CodeAreaCore codeArea, KaitaiTreeListener.SelectionListener listener) {
         for (Map.Entry<BinaryFileDocument, KaitaiSideRecord> entry : records.entrySet()) {
             BinaryFileDocument key = entry.getKey();
-            KaitaiSideRecord val = entry.getValue();
             if (codeArea == key.getCodeArea()) {
-                val.addNodeSelectionListener(listener);
+                entry.getValue().addNodeSelectionListener(listener);
                 break;
             }
         }
@@ -99,11 +100,70 @@ public class KaitaiSideManager {
     public void removeNodeSelectionListener(CodeAreaCore codeArea, KaitaiTreeListener.SelectionListener listener) {
         for (Map.Entry<BinaryFileDocument, KaitaiSideRecord> entry : records.entrySet()) {
             BinaryFileDocument key = entry.getKey();
-            KaitaiSideRecord val = entry.getValue();
             if (codeArea == key.getCodeArea()) {
-                val.removeNodeSelectionListener(listener);
+                entry.getValue().removeNodeSelectionListener(listener);
                 break;
             }
         }
+    }
+    
+    @Nullable
+    public KaitaiSideRecord findRecord(CodeAreaCore codeArea) {
+        for (Map.Entry<BinaryFileDocument, KaitaiSideRecord> entry : records.entrySet()) {
+            BinaryFileDocument key = entry.getKey();
+            if (codeArea == key.getCodeArea()) {
+                return entry.getValue();
+            }
+        }
+        
+        return null;
+    }
+
+    @Nonnull
+    public KaitaiSideRecord getRecord(BinaryFileDocument document) {
+        KaitaiSideRecord record = records.get(document);
+        if (record == null) {
+            record = new KaitaiSideRecord();
+            records.put(document, record);
+        }
+        
+        return record;
+    }
+
+    public void switchToDocument(@Nullable BinaryFileDocument document) {
+        if (document != null) {
+            KaitaiSideRecord record = records.get(document);
+            if (record == null) {
+                record = new KaitaiSideRecord();
+                sidePanel.setParserComponent(record.getParserComponent());
+                DefinitionRecord definition = sidePanel.getSelectedDefinition();
+                record.setDefinitionRecord(definition);
+                BinaryData sourceData = document.getCodeArea().getContentData();
+                if (sourceData instanceof EditableBinaryData) {
+                    record.processDefinition((EditableBinaryData) sourceData, sidePanel);
+                }
+                records.put(document, record);
+                return;
+            } else if (record.getStatus() == KaitaiStatusType.NO_FILE) {
+                BinaryData sourceData = document.getCodeArea().getContentData();
+                if (sourceData instanceof EditableBinaryData) {
+                    record.processDefinition((EditableBinaryData) sourceData, sidePanel);
+                }
+            }
+
+            int definitionIndex = sidePanel.getDefinitions().indexOf(record.getDefinitionRecord());
+            if (definitionIndex >= 0) {
+                sidePanel.setSelectedDefinition(definitionIndex);
+            }
+            sidePanel.setParserComponent(record.getParserComponent());
+            sidePanel.setStatus(record.getStatus());
+        } else {
+            sidePanel.setParserComponent(null);
+            sidePanel.setStatus(KaitaiStatusType.NO_FILE);
+        }
+    }
+
+    public void dropRecord(BinaryFileDocument document) {
+        records.remove(document);
     }
 }

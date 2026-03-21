@@ -23,7 +23,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.gui.KaitaiSidePanel;
@@ -43,9 +42,11 @@ public class KaitaiSideRecord {
     protected KaitaiProcessingService visualizer = new KaitaiProcessingService();
     protected KaitaiCompiler compiler = new KaitaiCompiler();
     protected KaitaiParser parser = null;
-    protected KaitaiStatusType status = KaitaiStatusType.NO_DEFINITION;
-    protected String processingMessage = "";
     protected KaitaiTreeListener treeListener;
+
+    protected DefinitionRecord definitionRecord;
+    protected KaitaiStatusType status = KaitaiStatusType.NO_FILE;
+    protected String processingMessage = "";
 
     public KaitaiSideRecord() {
         JTree parserTree = parserComponent.getParserTree();
@@ -57,45 +58,30 @@ public class KaitaiSideRecord {
         parserTree.addTreeSelectionListener(treeListener);
     }
 
-    @Nonnull
-    public String getProcessingMessage() {
-        return processingMessage;
-    }
-
-    public void loadFrom(DefinitionRecord definitionRecord, BinaryData sourceData) {
-        if (sourceData.isEmpty()) {
-            return;
-        }
-
-        if (parser == null || !definitionRecord.equals(parser.getDefinitionRecord())) {
-            // TODO sidePanel.addDefinition(definitionRecord);
-        }
-    }
-
-    public void processDefinition(DefinitionRecord definitionRecord, EditableBinaryData sourceData, KaitaiSidePanel sidePanel) {
+    public void processDefinition(EditableBinaryData sourceData, KaitaiSidePanel sidePanel) {
         clearParseTree();
-        sidePanel.setStatus(KaitaiStatusType.COMPILING);
+        updateStatus(sidePanel, KaitaiStatusType.COMPILING);
         KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
         if (compileResult.getErrorMessage() != null) {
             processingMessage += compileResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.COMPILE_FAILED);
+            updateStatus(sidePanel, KaitaiStatusType.COMPILE_FAILED);
             this.parser = null;
             return;
         }
         this.parser = compileResult.getParser();
 
-        sidePanel.setStatus(KaitaiStatusType.PARSING);
+        updateStatus(sidePanel, KaitaiStatusType.PARSING);
         KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
         if (parsingResult.getErrorMessage() != null) {
             clearParseTree();
             processingMessage += parsingResult.getErrorMessage();
-            sidePanel.setStatus(KaitaiStatusType.PARSE_FAILED);
+            updateStatus(sidePanel, KaitaiStatusType.PARSE_FAILED);
             return;
         }
 
-        sidePanel.setStatus(KaitaiStatusType.OK);
+        updateStatus(sidePanel, KaitaiStatusType.OK);
     }
-    
+
     public void addNodeSelectionListener(KaitaiTreeListener.SelectionListener listener) {
         treeListener.addNodeSelectionListener(listener);
     }
@@ -103,7 +89,7 @@ public class KaitaiSideRecord {
     public void removeNodeSelectionListener(KaitaiTreeListener.SelectionListener listener) {
         treeListener.removeNodeSelectionListener(listener);
     }
-    
+
     @Nullable
     public Object getSelectedNode() {
         TreePath treePath = parserComponent.getParserTree().getSelectionPath();
@@ -113,5 +99,34 @@ public class KaitaiSideRecord {
     private void clearParseTree() {
         DefaultTreeModel model = visualizer.getModel();
         model.setRoot(null);
+    }
+
+    @Nullable
+    public DefinitionRecord getDefinitionRecord() {
+        return definitionRecord;
+    }
+
+    public void setDefinitionRecord(DefinitionRecord definitionRecord) {
+        this.definitionRecord = definitionRecord;
+    }
+
+    @Nonnull
+    public ParserTreeComponent getParserComponent() {
+        return parserComponent;
+    }
+    
+    public void updateStatus(KaitaiSidePanel sidePanel, KaitaiStatusType status) {
+        this.status = status;
+        sidePanel.setStatus(status);
+    }
+
+    @Nonnull
+    public KaitaiStatusType getStatus() {
+        return status;
+    }
+
+    @Nonnull
+    public String getProcessingMessage() {
+        return processingMessage;
     }
 }

@@ -28,6 +28,7 @@ import org.exbin.framework.language.api.LanguageModuleApi;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.DefinitionRecord;
 import org.exbin.framework.bined.kaitai.KaitaiStatusType;
+import static org.exbin.framework.bined.kaitai.KaitaiStatusType.NO_DEFINITION;
 
 /**
  * Kaitai side panel.
@@ -78,7 +79,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         }
     }
 
-    @Nonnull
+    @Nullable
     public DefinitionRecord getSelectedDefinition() {
         return (DefinitionRecord) comboBox.getSelectedItem();
     }
@@ -104,6 +105,10 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
             case OK:
                 iconResource = resourceBundle.getString("statusType.ok.icon");
                 statusText = resourceBundle.getString("statusType.ok.text");
+                break;
+            case NO_FILE:
+                iconResource = resourceBundle.getString("statusType.noFile.icon");
+                statusText = resourceBundle.getString("statusType.noFile.text");
                 break;
             case NO_DEFINITION:
                 iconResource = resourceBundle.getString("statusType.noDefinition.icon");
@@ -141,6 +146,7 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         }
 
         if (component != null) {
+            currentParserComponent = component;
             parsePanel.add(component, BorderLayout.CENTER);
         }
 

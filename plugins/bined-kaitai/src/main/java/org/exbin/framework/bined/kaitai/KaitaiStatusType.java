@@ -22,6 +22,7 @@ package org.exbin.framework.bined.kaitai;
  */
 public enum KaitaiStatusType {
 
+    NO_FILE,
     NO_DEFINITION,
     OK,
     COMPILING,

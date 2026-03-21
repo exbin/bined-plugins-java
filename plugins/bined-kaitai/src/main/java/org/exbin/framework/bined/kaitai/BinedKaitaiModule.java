@@ -129,7 +129,7 @@ public class BinedKaitaiModule implements PluginModule {
             public void register(ContextChangeRegistration registrar) {
                 registrar.registerListener(ContextDocument.class, (instance) -> {
                     if (instance instanceof BinaryFileDocument) {
-                        sideBarComponent.setActiveComponent(((BinaryFileDocument) instance).getDataComponent());
+                        sideBarComponent.setActiveDocument((BinaryFileDocument) instance);
                     }
                 });
             }

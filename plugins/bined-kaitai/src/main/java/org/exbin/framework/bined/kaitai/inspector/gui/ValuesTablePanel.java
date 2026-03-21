@@ -33,6 +33,7 @@ import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.framework.App;
 import org.exbin.framework.bined.kaitai.BinedKaitaiModule;
 import org.exbin.framework.bined.kaitai.KaitaiSideManager;
+import org.exbin.framework.bined.kaitai.KaitaiSideRecord;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowItem;
 import org.exbin.framework.bined.kaitai.inspector.api.ValueRowType;
 import org.exbin.framework.bined.kaitai.inspector.value.BooleanValueRowType;
@@ -143,7 +144,8 @@ public class ValuesTablePanel extends javax.swing.JPanel {
         tableModel.removeAll();
         BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
         KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
-        Object node = kaitaiSideManager.getSelectedNode();
+        KaitaiSideRecord findRecord = kaitaiSideManager.findRecord(codeArea);
+        Object node = findRecord != null ? findRecord.getSelectedNode() : null;
         if (node instanceof DataNode) {
             Enumeration children = ((DataNode) node).children();
             while (children.hasMoreElements()) {
