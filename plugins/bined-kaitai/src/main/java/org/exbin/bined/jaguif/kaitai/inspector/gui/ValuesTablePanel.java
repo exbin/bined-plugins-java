@@ -1,0 +1,272 @@
+/*
+ * Copyright (C) ExBin Project, https://exbin.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.exbin.bined.jaguif.kaitai.inspector.gui;
+
+import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ResourceBundle;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
+import javax.swing.JComponent;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import org.exbin.auxiliary.binary_data.BinaryData;
+import org.exbin.bined.swing.CodeAreaCore;
+import org.exbin.jaguif.App;
+import org.exbin.bined.jaguif.kaitai.BinedKaitaiModule;
+import org.exbin.bined.jaguif.kaitai.KaitaiSideManager;
+import org.exbin.bined.jaguif.kaitai.KaitaiSideRecord;
+import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowItem;
+import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.BooleanValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.ByteArrayValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.ByteValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.DoubleValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.FloatValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.IntegerValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.LongValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.NullValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.StringValueRowType;
+import org.exbin.bined.jaguif.kaitai.inspector.value.WordValueRowType;
+import org.exbin.bined.jaguif.kaitai.service.DataNode;
+import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableCellEditor;
+import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableCellRenderer;
+import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableItem;
+import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableModel;
+import org.exbin.jaguif.language.api.LanguageModuleApi;
+
+/**
+ * Panel for table with values for Kaitai inspection.
+ */
+@ParametersAreNonnullByDefault
+public class ValuesTablePanel extends javax.swing.JPanel {
+
+    protected final ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(ValuesTablePanel.class);
+
+    protected static final int DATA_LIMIT = 250;
+    protected final byte[] values = new byte[DATA_LIMIT];
+
+    protected final PropertyTableModel tableModel;
+    protected final PropertyTableCellRenderer valueCellRenderer;
+    protected final TableCellRenderer nameCellRenderer;
+    protected final PropertyTableCellEditor valueCellEditor;
+
+    protected CodeAreaCore codeArea;
+
+    public ValuesTablePanel() {
+        tableModel = new PropertyTableModel();
+
+        initComponents();
+
+        TableColumnModel columns = valuesTable.getColumnModel();
+        columns.getColumn(0).setPreferredWidth(80);
+        columns.getColumn(1).setPreferredWidth(80);
+        columns.getColumn(0).setWidth(80);
+        columns.getColumn(1).setWidth(80);
+        nameCellRenderer = new DefaultTableCellRenderer() {
+            @Nonnull
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JComponent component = (JComponent) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                PropertyTableItem tableItem = ((PropertyTableModel) table.getModel()).getRow(row);
+                component.setToolTipText("(" + tableItem.getTypeName() + ") " + tableItem.getValueName());
+                return component;
+            }
+        };
+        columns.getColumn(0).setCellRenderer(nameCellRenderer);
+        valueCellRenderer = new PropertyTableCellRenderer();
+        columns.getColumn(1).setCellRenderer(valueCellRenderer);
+        valueCellEditor = new PropertyTableCellEditor();
+        columns.getColumn(1).setCellEditor(valueCellEditor);
+
+        valuesTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Nonnull
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (component instanceof JComponent) {
+                    ((JComponent) component).setBorder(noFocusBorder);
+                }
+
+                return component;
+            }
+        });
+    }
+
+    @Nonnull
+    public List<ValueRowItem> getValueRows() {
+        List<ValueRowItem> rowItems = new ArrayList<>();
+        int rowCount = tableModel.getRowCount();
+        for (int i = 0; i < rowCount; i++) {
+            rowItems.add((ValueRowItem) tableModel.getRow(i));
+        }
+        return rowItems;
+    }
+
+    public void setValueRows(List<ValueRowItem> rowItems) {
+        tableModel.removeAll();
+        for (ValueRowItem rowItem : rowItems) {
+            tableModel.addRow(rowItem);
+        }
+        notifyChanged();
+    }
+
+    public void setCodeArea(CodeAreaCore codeArea) {
+        this.codeArea = codeArea;
+        notifyChanged();
+    }
+
+    public void notifyChanged() {
+        if (codeArea == null) {
+            return;
+        }
+
+        tableModel.removeAll();
+        BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
+        KaitaiSideManager kaitaiSideManager = kaitaiModule.getKaitaiSideManager();
+        KaitaiSideRecord findRecord = kaitaiSideManager.findRecord(codeArea);
+        Object node = findRecord != null ? findRecord.getSelectedNode() : null;
+        if (node instanceof DataNode) {
+            Enumeration children = ((DataNode) node).children();
+            while (children.hasMoreElements()) {
+                Object child = children.nextElement();
+                if (child instanceof DataNode) {
+                    DataNode childNode = (DataNode) child;
+                    Object value = childNode.getValue();
+                    ValueRowType rowType;
+                    if (value == null) {
+                        rowType = new NullValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof Byte) {
+                        rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof Integer) {
+                        int length = getLength(childNode);
+                        if (length == 1) {
+                            rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 2) {
+                            rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 4) {
+                            rowType = new IntegerValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else {
+                            rowType = new LongValueRowType(childNode.getName(), getPosStart(childNode));
+                        }
+                    } else if (value instanceof Long) {
+                        int length = getLength(childNode);
+                        if (length == 1) {
+                            rowType = new ByteValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 2) {
+                            rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else if (length == 4) {
+                            rowType = new IntegerValueRowType(childNode.getName(), getPosStart(childNode));
+                        } else {
+                            rowType = new LongValueRowType(childNode.getName(), getPosStart(childNode));
+                        }
+                    } else if (value instanceof Float) {
+                        rowType = new FloatValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof Double) {
+                        rowType = new DoubleValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof Short) {
+                        rowType = new WordValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof Boolean) {
+                        rowType = new BooleanValueRowType(childNode.getName(), getPosStart(childNode));
+                    } else if (value instanceof String) {
+                        rowType = new StringValueRowType(childNode.getName(), getPosStart(childNode), getLength(childNode));
+                    } else if (value instanceof byte[]) {
+                        rowType = new ByteArrayValueRowType(childNode.getName(), getPosStart(childNode), getLength(childNode));
+                    } else{
+                        rowType = new NullValueRowType(childNode.getName(), getPosStart(childNode));
+                    }
+                    tableModel.addRow(rowType.createRowItem());
+                } else if (child instanceof DefaultMutableTreeNode) {
+                    DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) child;
+                    Object userObject = childNode.getUserObject();
+                    tableModel.addRow(new NullValueRowType((String) userObject, 0).createRowItem());
+                } else {
+                    tableModel.addRow(new NullValueRowType(((DataNode) node).getName(), ((DataNode) node).posStart()).createRowItem());
+                }
+            }
+
+            if (!((DataNode) node).isExplored()) {
+                ((DataNode) node).explore(() -> notifyChanged(), null);
+            }
+        }
+
+        BinaryData contentData = codeArea.getContentData();
+        long dataSize = codeArea.getDataSize();
+
+        if (valuesTable.isEditing()) {
+            valuesTable.getCellEditor().cancelCellEditing();
+        }
+
+        List<PropertyTableItem> items = tableModel.getItems();
+        for (PropertyTableItem item : items) {
+            long dataPosition = ((ValueRowItem) item).getPosition();
+            long available = dataSize - dataPosition;
+            int valuesAvailable = Math.min((int) available, DATA_LIMIT);
+            contentData.copyToArray(dataPosition, values, 0, valuesAvailable);
+            ((ValueRowItem) item).updateRow(values, valuesAvailable);
+        }
+        tableModel.fireTableRowsUpdated(0, tableModel.getRowCount() - 1);
+    }
+    
+    private static int getPosStart(DataNode childNode) {
+        Integer posStart = childNode.posStart();
+        return posStart == null ? 0 : (int) posStart;
+    }
+
+    private static int getLength(DataNode childNode) {
+        Integer posStart = childNode.posStart();
+        Integer posEnd = childNode.posEnd();
+        return (posEnd == null ? 0 : (int) posEnd) - (posStart == null ? 0 : (int) posStart);
+    }
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        mainScrollPane = new javax.swing.JScrollPane();
+        valuesTable = new javax.swing.JTable();
+
+        setName("Form"); // NOI18N
+        setLayout(new java.awt.BorderLayout());
+
+        mainScrollPane.setName("mainScrollPane"); // NOI18N
+
+        valuesTable.setModel(tableModel);
+        valuesTable.setName("valuesTable"); // NOI18N
+        valuesTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        mainScrollPane.setViewportView(valuesTable);
+
+        add(mainScrollPane, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane mainScrollPane;
+    private javax.swing.JTable valuesTable;
+    // End of variables declaration//GEN-END:variables
+
+}

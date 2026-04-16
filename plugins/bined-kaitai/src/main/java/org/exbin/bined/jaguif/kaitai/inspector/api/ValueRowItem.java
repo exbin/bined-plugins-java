@@ -13,23 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.kaitai.struct;
+package org.exbin.bined.jaguif.kaitai.inspector.api;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableItem;
 
 /**
- * TODO: Binary data kaitai sub stream.
+ * Values table row item.
  */
 @ParametersAreNonnullByDefault
-public class BinaryDataSubKaitaiStream extends BinaryDataKaitaiStream {
+public abstract class ValueRowItem extends PropertyTableItem {
 
-    protected long lengthLimit = -1;
-    protected long offset = 0;
+    protected final String typeId;
+    protected long position;
 
-    public BinaryDataSubKaitaiStream(EditableBinaryData binaryData, long position, long lengthLimit) {
-        super(binaryData);
+    public ValueRowItem(String typeId, String valueName, String typeName, long position, @Nullable Object value) {
+        super(valueName, typeName, value);
         this.position = position;
-        this.lengthLimit = lengthLimit;
+        this.typeId = typeId;
     }
+
+    @Nonnull
+    public String getTypeId() {
+        return typeId;
+    }
+
+    public long getPosition() {
+        return position;
+    }
+
+    public abstract void updateRow(byte[] values, int available);
 }

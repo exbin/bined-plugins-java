@@ -2,7 +2,7 @@ rootProject.name = 'bined-plugins-java'
 
 include ":deps"
 
-include ":plugins:bined-inspector-kaitai"
+include ":plugins:bined-kaitai"
 
 File placeholder = file("deps/.downloaded")
 if (placeholder.exists()) {

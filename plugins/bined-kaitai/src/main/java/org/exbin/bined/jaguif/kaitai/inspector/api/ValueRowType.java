@@ -13,23 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.kaitai.struct;
+package org.exbin.bined.jaguif.kaitai.inspector.api;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import org.exbin.auxiliary.binary_data.EditableBinaryData;
+import javax.annotation.Nonnull;
 
 /**
- * TODO: Binary data kaitai sub stream.
+ * Value type interface.
  */
-@ParametersAreNonnullByDefault
-public class BinaryDataSubKaitaiStream extends BinaryDataKaitaiStream {
+public interface ValueRowType {
 
-    protected long lengthLimit = -1;
-    protected long offset = 0;
+    /**
+     * Returns type id.
+     *
+     * @return id
+     */
+    @Nonnull
+    String getId();
 
-    public BinaryDataSubKaitaiStream(EditableBinaryData binaryData, long position, long lengthLimit) {
-        super(binaryData);
-        this.position = position;
-        this.lengthLimit = lengthLimit;
-    }
+    /**
+     * Returns type name.
+     *
+     * @return name
+     */
+    @Nonnull
+    String getName();
+
+    /**
+     * Returns property name.
+     *
+     * @return property name
+     */
+    @Nonnull
+    String getPropertyName();
+
+    /**
+     * Creates row item.
+     *
+     * @return row item
+     */
+    @Nonnull
+    ValueRowItem createRowItem();
 }

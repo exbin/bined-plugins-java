@@ -1,6 +1,6 @@
 // Shared plugins build
 
-version = '0.2.5'
+version = '0.3.0-SNAPSHOT'
 def repositoryName = "bined-plugins-java"
 def githubProfile = 'exbin'
 def libraryUrl = 'https://bined.exbin.org/'
@@ -16,12 +16,12 @@ ext.depsPluginsJava = [
 ext.depsBined = [
     githubProfile: 'exbin',
     githubRepo: 'bined',
-    version: '0.2.5-SNAPSHOT'
+    version: '0.3.0-SNAPSHOT'
 ]
 
-ext.depsExbinFrameworkJava = [
+ext.depsJaguif = [
     githubProfile: 'exbin',
-    githubRepo: 'exbin-framework-java',
+    githubRepo: 'jaguif',
     version: '0.3.0-SNAPSHOT'
 ]
 

@@ -13,23 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.kaitai.struct;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-import org.exbin.auxiliary.binary_data.EditableBinaryData;
+package org.exbin.bined.jaguif.kaitai;
 
 /**
- * TODO: Binary data kaitai sub stream.
+ * Kaitai status type.
  */
-@ParametersAreNonnullByDefault
-public class BinaryDataSubKaitaiStream extends BinaryDataKaitaiStream {
+public enum KaitaiStatusType {
 
-    protected long lengthLimit = -1;
-    protected long offset = 0;
-
-    public BinaryDataSubKaitaiStream(EditableBinaryData binaryData, long position, long lengthLimit) {
-        super(binaryData);
-        this.position = position;
-        this.lengthLimit = lengthLimit;
-    }
+    NO_FILE,
+    NO_DEFINITION,
+    OK,
+    COMPILING,
+    COMPILE_FAILED,
+    PARSING,
+    PARSE_FAILED
 }
