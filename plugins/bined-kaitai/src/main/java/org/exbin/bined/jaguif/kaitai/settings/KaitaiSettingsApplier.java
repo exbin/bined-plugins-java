@@ -18,28 +18,28 @@ package org.exbin.bined.jaguif.kaitai.settings;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.jaguif.App;
-import org.exbin.jaguif.action.api.ContextComponent;
+import org.exbin.jaguif.context.api.ContextComponent;
+import org.exbin.jaguif.context.api.ContextStateProvider;
 import org.exbin.bined.jaguif.component.BinaryDataComponent;
 import org.exbin.bined.jaguif.kaitai.BinedKaitaiModule;
 import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
 import org.exbin.bined.jaguif.kaitai.KaitaiSideManager;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiSidePanel;
-import org.exbin.jaguif.context.api.ActiveContextProvider;
 import org.exbin.jaguif.options.settings.api.SettingsApplier;
 import org.exbin.jaguif.options.settings.api.SettingsOptionsProvider;
 
 /**
  * Kaitai settings applier.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiSettingsApplier implements SettingsApplier {
 
     public static final String APPLIER_ID = "kaitai";
 
     @Override
-    public void applySettings(ActiveContextProvider contextProvider, SettingsOptionsProvider settingsProvider) {
+    public void applySettings(ContextStateProvider contextProvider, SettingsOptionsProvider settingsProvider) {
         ContextComponent instance = contextProvider.getActiveState(ContextComponent.class);
         if (!(instance instanceof BinaryDataComponent)) {
             return;

@@ -16,16 +16,15 @@
 package org.exbin.bined.jaguif.kaitai;
 
 import java.io.File;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.filechooser.FileFilter;
 import org.exbin.jaguif.file.api.FileType;
 
 /**
  * Kaitai definition file type.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KsyFileType extends FileFilter implements FileType {
 
     public static final String KSY_FILE_TYPE = "KaitaiModule.KsyFileType";
@@ -42,13 +41,11 @@ public class KsyFileType extends FileFilter implements FileType {
         return false;
     }
 
-    @Nonnull
     @Override
     public String getDescription() {
         return "Kaitai Definition (*.ksy)";
     }
 
-    @Nonnull
     @Override
     public String getFileTypeId() {
         return KSY_FILE_TYPE;

@@ -21,8 +21,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowItem;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowType;
 import org.exbin.bined.jaguif.objectdata.source.CharBufferPageProvider;
@@ -30,7 +29,7 @@ import org.exbin.bined.jaguif.objectdata.source.CharBufferPageProvider;
 /**
  * Byte value type.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class StringValueRowType implements ValueRowType {
 
     protected String propertyName;
@@ -43,25 +42,21 @@ public class StringValueRowType implements ValueRowType {
         this.length = length;
     }
 
-    @Nonnull
     @Override
     public String getId() {
         return "string";
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "String";
     }
 
-    @Nonnull
     @Override
     public String getPropertyName() {
         return propertyName;
     }
 
-    @Nonnull
     @Override
     public ValueRowItem createRowItem() {
         return new ValueRowItem(getId(), propertyName, String.class.getTypeName(), position, null) {

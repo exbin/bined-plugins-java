@@ -15,15 +15,14 @@
  */
 package org.exbin.bined.jaguif.kaitai.inspector.value;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowItem;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowType;
 
 /**
  * Byte array value type.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class ByteArrayValueRowType implements ValueRowType {
 
     protected String propertyName;
@@ -36,25 +35,21 @@ public class ByteArrayValueRowType implements ValueRowType {
         this.length = length;
     }
 
-    @Nonnull
     @Override
     public String getId() {
         return "byteArray";
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "byte[]";
     }
 
-    @Nonnull
     @Override
     public String getPropertyName() {
         return propertyName;
     }
 
-    @Nonnull
     @Override
     public ValueRowItem createRowItem() {
         return new ValueRowItem(getId(), propertyName, byte[].class.getTypeName(), position, null) {

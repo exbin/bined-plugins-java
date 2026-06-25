@@ -15,13 +15,13 @@
  */
 package io.kaitai.struct;
 
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 
 /**
  * TODO: Binary data kaitai sub stream.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class BinaryDataSubKaitaiStream extends BinaryDataKaitaiStream {
 
     protected long lengthLimit = -1;

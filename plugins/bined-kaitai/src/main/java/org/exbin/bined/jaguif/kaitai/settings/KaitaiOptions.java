@@ -15,15 +15,14 @@
  */
 package org.exbin.bined.jaguif.kaitai.settings;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.jaguif.options.settings.api.SettingsOptions;
 import org.exbin.jaguif.options.api.OptionsStorage;
 
 /**
  * Kaitai settings options.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiOptions implements SettingsOptions {
 
     public static final String KEY_LIST_PREFIX = "kaitai.list.";
@@ -54,7 +53,6 @@ public class KaitaiOptions implements SettingsOptions {
         storage.putInt(KEY_DEFINITION, definitionIndex);
     }
 
-    @Nonnull
     public String getListItemBuildIn(int index) {
         return storage.get(KEY_NAME_PREFIX + index, "");
     }
@@ -63,7 +61,6 @@ public class KaitaiOptions implements SettingsOptions {
         storage.put(KEY_NAME_PREFIX + index, value);
     }
 
-    @Nonnull
     public String getListItemPath(int index) {
         return storage.get(KEY_PATH_PREFIX + index, "");
     }

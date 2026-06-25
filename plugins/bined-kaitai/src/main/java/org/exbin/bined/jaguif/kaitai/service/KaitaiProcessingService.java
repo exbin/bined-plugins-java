@@ -2,8 +2,7 @@ package org.exbin.bined.jaguif.kaitai.service;
 
 import io.kaitai.struct.Version;
 import io.kaitai.struct.format.KSVersion;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
@@ -11,7 +10,7 @@ import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
 /**
  * Kaitai processing service.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiProcessingService {
 
     protected Object struct;
@@ -21,17 +20,14 @@ public class KaitaiProcessingService {
         KSVersion.current_$eq(Version.version());
     }
 
-    @Nonnull
     public DefaultTreeModel getModel() {
         return model;
     }
 
-    @Nonnull
     public KaitaiCompiler.CompileResult compileDefinition(KaitaiCompiler compiler, DefinitionRecord definitionRecord) {
         return compiler.compileDefinition(definitionRecord);
     }
     
-    @Nonnull
     public KaitaiParser.ParsingResult parseData(KaitaiParser parser, EditableBinaryData sourceData) {
         KaitaiParser.ParsingResult result = parser.parse(sourceData);
         if (result.getErrorMessage() == null) {

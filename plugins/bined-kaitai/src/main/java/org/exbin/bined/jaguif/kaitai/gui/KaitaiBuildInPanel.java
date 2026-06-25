@@ -18,8 +18,7 @@ package org.exbin.bined.jaguif.kaitai.gui;
 import java.awt.Component;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JTree;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -37,7 +36,7 @@ import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
 /**
  * Kaitai build-in definitions panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiBuildInPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiBuildInPanel.class);
@@ -103,7 +102,6 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
         this.controller = controller;
     }
 
-    @Nonnull
     public Optional<DefaultMutableTreeNode> getSelectedNode() {
         TreePath[] selectionPaths = definitionsTree.getSelectionPaths();
         if (selectionPaths == null || selectionPaths.length == 0) {
@@ -112,7 +110,6 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
         return Optional.of((DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent());
     }
 
-    @Nonnull
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }

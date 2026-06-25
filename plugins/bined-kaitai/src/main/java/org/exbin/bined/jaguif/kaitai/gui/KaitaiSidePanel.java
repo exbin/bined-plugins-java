@@ -19,9 +19,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import org.exbin.jaguif.language.api.LanguageModuleApi;
@@ -33,7 +32,7 @@ import static org.exbin.bined.jaguif.kaitai.KaitaiStatusType.NO_DEFINITION;
 /**
  * Kaitai side panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiSidePanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiSidePanel.class);
@@ -61,7 +60,6 @@ public class KaitaiSidePanel extends javax.swing.JPanel {
         this.controller = controller;
     }
 
-    @Nonnull
     public List<DefinitionRecord> getDefinitions() {
         List<DefinitionRecord> result = new ArrayList<>();
         for (int i = 0; i < comboBox.getItemCount(); i++) {

@@ -20,14 +20,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 
 /**
  * Binary data kaitai stream.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class BinaryDataKaitaiStream extends KaitaiStream {
 
     protected final EditableBinaryData binaryData;
@@ -378,7 +377,6 @@ public class BinaryDataKaitaiStream extends KaitaiStream {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Nonnull
     @Override
     public KaitaiStream substream(long length) {
         throw new UnsupportedOperationException("Not supported yet.");

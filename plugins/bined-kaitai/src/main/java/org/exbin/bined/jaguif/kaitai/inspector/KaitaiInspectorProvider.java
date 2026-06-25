@@ -16,15 +16,14 @@
 package org.exbin.bined.jaguif.kaitai.inspector;
 
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.inspector.BinEdInspector;
 import org.exbin.bined.jaguif.inspector.BinEdInspectorProvider;
 
 /**
  * Kaitai content inspector provider.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiInspectorProvider implements BinEdInspectorProvider {
 
     public static final String INSPECTOR_ID = "kaitai";
@@ -36,19 +35,16 @@ public class KaitaiInspectorProvider implements BinEdInspectorProvider {
         this.resourceBundle = resourceBundle;
     }
 
-    @Nonnull
     @Override
     public String getId() {
         return INSPECTOR_ID;
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return resourceBundle.getString("kaitaiInspector.name");
     }
 
-    @Nonnull
     @Override
     public BinEdInspector createInspector() {
         if (inspector == null) {

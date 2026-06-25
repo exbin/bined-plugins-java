@@ -54,11 +54,15 @@ dependencies {
     implementation moduleDep('Jaguif', 'org.exbin.jaguif', 'modules', 'jaguif-window-api')
     implementation moduleDep('Jaguif', 'org.exbin.jaguif', 'modules', 'jaguif-utils')
     implementation moduleDep('Jaguif', 'org.exbin.jaguif', 'modules', 'jaguif-document-text')
-    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-component')
-    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-search')
-    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-objectdata')
-    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-inspector')
+    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-jaguif-component')
+    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-jaguif-document')
+    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-jaguif-search')
+    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-jaguif-objectdata')
+    implementation moduleDep('Bined', 'org.exbin.bined.jaguif', 'modules', 'bined-jaguif-inspector')
     implementation 'com.fifesoft:rsyntaxtextarea:3.6.1'
+    compileOnly group: 'org.jspecify', name: 'jspecify', version: '1.0.0'
     compileOnly group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+
     testImplementation group : 'junit', name: 'junit', version: '4.13.2'
+    testCompileOnly group: 'org.jspecify', name: 'jspecify', version: '1.0.0'
 }

@@ -3,12 +3,12 @@ package org.exbin.bined.jaguif.kaitai.service;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Kaitai processing attribute position.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class AttrPositions {
 
     private Map<String, Integer> attrStart;

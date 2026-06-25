@@ -10,14 +10,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Kaitai processing node.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class DataNode extends DefaultMutableTreeNode {
 
     private boolean explored = false;
@@ -59,7 +58,6 @@ public class DataNode extends DefaultMutableTreeNode {
         return value;
     }
 
-    @Nonnull
     public String getName() {
         return name;
     }

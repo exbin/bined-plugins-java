@@ -2,7 +2,7 @@ package org.exbin.bined.jaguif.kaitai.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -16,7 +16,7 @@ import org.exbin.bined.jaguif.kaitai.KaitaiColorModifier;
 /**
  * Kaitai parse tree listener.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelectionListener {
 
     protected final JTree tree;

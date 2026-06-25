@@ -16,15 +16,14 @@
 package org.exbin.bined.jaguif.kaitai.gui;
 
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.jaguif.language.api.LanguageModuleApi;
 import org.exbin.jaguif.App;
 
 /**
  * Kaitai processing message panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiProcessingMessagePanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiProcessingMessagePanel.class);
@@ -37,7 +36,6 @@ public class KaitaiProcessingMessagePanel extends javax.swing.JPanel {
     private void init() {
     }
 
-    @Nonnull
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }

@@ -15,15 +15,14 @@
  */
 package org.exbin.bined.jaguif.kaitai.inspector.api;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.objectdata.property.gui.PropertyTableItem;
 
 /**
  * Values table row item.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public abstract class ValueRowItem extends PropertyTableItem {
 
     protected final String typeId;
@@ -35,7 +34,6 @@ public abstract class ValueRowItem extends PropertyTableItem {
         this.typeId = typeId;
     }
 
-    @Nonnull
     public String getTypeId() {
         return typeId;
     }

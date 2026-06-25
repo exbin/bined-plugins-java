@@ -27,22 +27,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.jaguif.App;
-import org.exbin.bined.jaguif.component.BinaryFileDocument;
+import org.exbin.bined.jaguif.document.BinaryFileDocument;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiSidePanel;
 import org.exbin.bined.jaguif.kaitai.service.KaitaiTreeListener;
 
 /**
  * Kaitai side manager.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiSideManager {
 
     protected final Map<BinaryFileDocument, KaitaiSideRecord> records = new HashMap<>();
@@ -69,7 +68,6 @@ public class KaitaiSideManager {
         });
     }
 
-    @Nonnull
     public KaitaiSidePanel getSidePanel() {
         return sidePanel;
     }
@@ -117,7 +115,6 @@ public class KaitaiSideManager {
         return null;
     }
 
-    @Nonnull
     public KaitaiSideRecord getRecord(BinaryFileDocument document) {
         KaitaiSideRecord record = records.get(document);
         if (record == null) {

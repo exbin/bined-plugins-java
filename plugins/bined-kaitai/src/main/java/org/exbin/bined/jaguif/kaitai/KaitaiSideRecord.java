@@ -17,9 +17,8 @@ package org.exbin.bined.jaguif.kaitai;
 
 import org.exbin.bined.jaguif.kaitai.service.KaitaiCompiler;
 import org.exbin.bined.jaguif.kaitai.service.KaitaiParser;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -33,7 +32,7 @@ import org.exbin.bined.jaguif.kaitai.service.KaitaiProcessingService;
 /**
  * Kaitai side record.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiSideRecord {
 
     protected ParserTreeComponent parserComponent = new ParserTreeComponent();
@@ -108,7 +107,6 @@ public class KaitaiSideRecord {
         this.definitionRecord = definitionRecord;
     }
 
-    @Nonnull
     public ParserTreeComponent getParserComponent() {
         return parserComponent;
     }
@@ -118,12 +116,10 @@ public class KaitaiSideRecord {
         sidePanel.setStatus(status);
     }
 
-    @Nonnull
     public KaitaiStatusType getStatus() {
         return status;
     }
 
-    @Nonnull
     public String getProcessingMessage() {
         return processingMessage;
     }

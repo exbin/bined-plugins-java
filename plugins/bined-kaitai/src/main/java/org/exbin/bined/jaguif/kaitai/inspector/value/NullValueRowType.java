@@ -15,15 +15,14 @@
  */
 package org.exbin.bined.jaguif.kaitai.inspector.value;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowItem;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowType;
 
 /**
  * Null value type.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class NullValueRowType implements ValueRowType {
 
     protected String propertyName;
@@ -34,25 +33,21 @@ public class NullValueRowType implements ValueRowType {
         this.position = position;
     }
 
-    @Nonnull
     @Override
     public String getId() {
         return "null";
     }
 
-    @Nonnull
     @Override
     public String getName() {
         return "Null";
     }
 
-    @Nonnull
     @Override
     public String getPropertyName() {
         return propertyName;
     }
 
-    @Nonnull
     @Override
     public ValueRowItem createRowItem() {
         return new ValueRowItem(getId(), propertyName, String.class.getTypeName(), position, null) {

@@ -15,8 +15,7 @@
  */
 package org.exbin.bined.jaguif.kaitai.inspector;
 
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JComponent;
 import org.exbin.bined.CodeAreaCaretListener;
 import org.exbin.bined.DataChangedListener;
@@ -32,7 +31,7 @@ import org.exbin.bined.jaguif.kaitai.service.KaitaiTreeListener;
 /**
  * Kaitai content inspector.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiInspector implements BinEdInspector {
 
     protected KaitaiInspectorPanel component;
@@ -42,7 +41,6 @@ public class KaitaiInspector implements BinEdInspector {
     protected CodeAreaCaretListener caretMovedListener;
     protected KaitaiTreeListener.SelectionListener nodeSelectionListener;
 
-    @Nonnull
     @Override
     public JComponent getComponent() {
         if (component == null) {

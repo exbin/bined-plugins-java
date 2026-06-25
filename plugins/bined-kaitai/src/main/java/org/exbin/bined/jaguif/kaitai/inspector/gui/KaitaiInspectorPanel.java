@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JScrollPane;
 import org.exbin.bined.swing.CodeAreaCore;
 import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowItem;
@@ -31,7 +30,7 @@ import org.exbin.bined.jaguif.kaitai.inspector.api.ValueRowType;
 /**
  * Values side inspector panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiInspectorPanel extends javax.swing.JPanel {
 
     protected JScrollPane scrollPane;
@@ -66,7 +65,6 @@ public class KaitaiInspectorPanel extends javax.swing.JPanel {
         component.notifyChanged();
     }
 
-    @Nonnull
     public List<ValueRowItem> getValueRows() {
         return component.getValueRows();
     }

@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -35,7 +34,7 @@ import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
 /**
  * Kaitai definitions list panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(KaitaiDefinitionsPanel.class);
@@ -64,7 +63,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         definitionsList.addListSelectionListener((ListSelectionEvent e) -> updateState());
     }
 
-    @Nonnull
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
@@ -73,7 +71,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         this.controller = controller;
     }
 
-    @Nonnull
     public List<DefinitionRecord> getDefinitions() {
         List<DefinitionRecord> definitions = new ArrayList<>();
         for (int i = 0; i < definitionsListModel.getSize(); i++) {
@@ -89,7 +86,6 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
         }
     }
     
-    @Nonnull
     public Optional<DefinitionRecord> getSelectedDefinition() {
         return Optional.ofNullable(definitionsList.getSelectedValue());
     }
@@ -352,7 +348,7 @@ public class KaitaiDefinitionsPanel extends javax.swing.JPanel {
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 
-    @ParametersAreNonnullByDefault
+    @NullMarked
     public interface Controller {
 
         void addDefinition();

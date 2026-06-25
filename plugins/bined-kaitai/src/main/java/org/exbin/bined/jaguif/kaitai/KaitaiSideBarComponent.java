@@ -38,9 +38,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -50,7 +49,7 @@ import org.exbin.auxiliary.binary_data.BinaryData;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.auxiliary.binary_data.array.ByteArrayEditableData;
 import org.exbin.jaguif.App;
-import org.exbin.bined.jaguif.component.BinaryFileDocument;
+import org.exbin.bined.jaguif.document.BinaryFileDocument;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiBuildInPanel;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiDefinitionPreviewPanel;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiDefinitionsPanel;
@@ -74,14 +73,13 @@ import org.yaml.snakeyaml.Yaml;
 /**
  * Kaitai sidebar component.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiSideBarComponent extends AbstractSideBarComponent {
 
     protected KaitaiSideManager sideManager = new KaitaiSideManager();
     protected DefinitionRecord definitionRecord = null;
     protected BinaryFileDocument activeDocument = null;
 
-    @Nonnull
     @Override
     public JComponent getComponent() {
         KaitaiSidePanel sidePanel = sideManager.getSidePanel();
@@ -133,7 +131,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                         FileModuleApi fileModule = App.getModule(FileModuleApi.class);
                         FileDialogsProvider dialogsProvider = fileModule.getFileDialogsProvider();
                         OpenFileResult openFileResult = dialogsProvider.showOpenFileDialog(definitionsPanel, new DefaultFileTypes(new KsyFileType()), null, null, null);
-                        if (openFileResult.getDialogResult() == JFileChooser.APPROVE_OPTION) {
+                        if (openFileResult.getResultType() == OpenFileResult.ResultType.APPROVED) {
                             BinedKaitaiModule kaitaiModule = App.getModule(BinedKaitaiModule.class);
                             File file = openFileResult.getSelectedFile().get();
                             DefinitionRecord record = kaitaiModule.getDefinitionByPath(file.toURI());
@@ -410,7 +408,6 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         sideManager.loadFrom(definitionRecord, sourceData);
     }
 
-    @Nonnull
     public KaitaiSideManager getSideManager() {
         return sideManager;
     }
@@ -480,7 +477,7 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
         }
     }
     
-    @ParametersAreNonnullByDefault
+    @NullMarked
     private static class NodeFilterRecord {
         DefaultMutableTreeNode node;
         DefaultMutableTreeNode filteredNode;

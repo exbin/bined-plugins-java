@@ -22,9 +22,8 @@ import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.annotation.concurrent.Immutable;
 import org.exbin.auxiliary.binary_data.EditableBinaryData;
 import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
@@ -32,7 +31,7 @@ import org.exbin.bined.jaguif.kaitai.DefinitionRecord;
 /**
  * Kaitai parser.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiParser {
 
     protected final DefinitionRecord definitionRecord;
@@ -47,27 +46,22 @@ public class KaitaiParser {
         this.paramNames = paramNames;
     }
 
-    @Nonnull
     public DefinitionRecord getDefinitionRecord() {
         return definitionRecord;
     }
 
-    @Nonnull
     public Class<?> getKsyClass() {
         return ksyClass;
     }
 
-    @Nonnull
     public Class<?> getStreamClass() {
         return streamClass;
     }
 
-    @Nonnull
     public List<String> getParamNames() {
         return paramNames;
     }
     
-    @Nonnull
     public ParsingResult parse(EditableBinaryData sourceData) {
         try {
             final Constructor<?> streamConstructor = streamClass.getDeclaredConstructors()[0];
@@ -97,7 +91,6 @@ public class KaitaiParser {
         }
     }
 
-    @Nonnull
     private static <T> Constructor<T> findKsyConstructor(Class<T> ksyClass) {
         for (final Constructor c : ksyClass.getDeclaredConstructors()) {
             final Class<?>[] types = c.getParameterTypes();
@@ -141,7 +134,7 @@ public class KaitaiParser {
     }
 
     @Immutable
-    @ParametersAreNonnullByDefault
+    @NullMarked
     public static class ParsingResult {
         
         private final Object struct;

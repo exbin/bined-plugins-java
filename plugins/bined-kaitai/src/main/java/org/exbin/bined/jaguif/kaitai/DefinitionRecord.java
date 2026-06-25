@@ -17,14 +17,13 @@ package org.exbin.bined.jaguif.kaitai;
 
 import java.net.URI;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Definition record.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class DefinitionRecord {
 
     protected final String title;
@@ -37,17 +36,14 @@ public class DefinitionRecord {
         this.uri = uri;
     }
 
-    @Nonnull
     public String getTitle() {
         return title;
     }
 
-    @Nonnull
     public String getFileName() {
         return fileName;
     }
 
-    @Nonnull
     public URI getUri() {
         return uri;
     }

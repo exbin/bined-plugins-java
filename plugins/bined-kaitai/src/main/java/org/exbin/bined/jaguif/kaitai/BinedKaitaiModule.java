@@ -28,16 +28,15 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import org.exbin.jaguif.App;
 import org.exbin.jaguif.ModuleUtils;
 import org.exbin.jaguif.PluginModule;
-import org.exbin.jaguif.action.api.ContextComponent;
-import org.exbin.bined.jaguif.component.BinEdFileManager;
-import org.exbin.bined.jaguif.component.BinaryFileDocument;
-import org.exbin.bined.jaguif.component.BinedComponentModule;
+import org.exbin.jaguif.context.api.ContextComponent;
+import org.exbin.bined.jaguif.document.BinEdFileManager;
+import org.exbin.bined.jaguif.document.BinedDocumentModule;
+import org.exbin.bined.jaguif.document.BinaryFileDocument;
 import org.exbin.bined.jaguif.inspector.BinEdInspectorManager;
 import org.exbin.bined.jaguif.inspector.BinedInspectorModule;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiSidePanel;
@@ -63,7 +62,7 @@ import org.exbin.jaguif.ui.api.UiModuleApi;
 /**
  * Binary editor plugin for Kaitai analyzer support.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class BinedKaitaiModule implements PluginModule {
 
     public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedKaitaiModule.class);
@@ -90,7 +89,7 @@ public class BinedKaitaiModule implements PluginModule {
             // registerMenuActions();
             // registerPopupMenuActions();
 
-            BinedComponentModule binedComponentModule = App.getModule(BinedComponentModule.class);
+            BinedDocumentModule binedComponentModule = App.getModule(BinedDocumentModule.class);
             BinEdFileManager fileManager = binedComponentModule.getFileManager();
             fileManager.addPainterColorModifier(kaitaiColorModifier);
 
@@ -105,7 +104,6 @@ public class BinedKaitaiModule implements PluginModule {
         });
     }
 
-    @Nonnull
     public ResourceBundle getResourceBundle() {
         if (resourceBundle == null) {
             resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(BinedKaitaiModule.class);
@@ -117,14 +115,12 @@ public class BinedKaitaiModule implements PluginModule {
     public void registerSideBar() {
         getResourceBundle();
         SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
-        SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarManager(SideBarModuleApi.MODULE_ID);
+        SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarDefinition(SideBarModuleApi.MODULE_ID);
         sideBarManager.registerSideBarContribution(new ComponentSideBarContribution() {
-            @Nonnull
             public String getContributionId() {
                 return SIDEBAR_COMPONENT_ID;
             }
             
-            @Nonnull
             public SideBarComponent createComponent() {
                 sideBarComponent = new KaitaiSideBarComponent();
                 sideBarComponent.putValue(SideBarComponent.KEY_ID, SIDEBAR_COMPONENT_ID);
@@ -197,18 +193,15 @@ public class BinedKaitaiModule implements PluginModule {
         return kaitaiColorModifier;
     }
 
-    @Nonnull
     public KaitaiSideManager getKaitaiSideManager() {
         return sideBarComponent.getSideManager();
     }
 
-    @Nonnull
     public DefinitionRecord getDefinitionByPath(URI fileUri) {
         File file = new File(fileUri);
         return new DefinitionRecord(file.getName(), file.getName(), fileUri);
     }
 
-    @Nonnull
     public DefinitionRecord getBuildInDefinition(String buildIn) {
         FileSystem fileSystem = null;
         try {

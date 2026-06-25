@@ -16,8 +16,7 @@
 package org.exbin.bined.jaguif.kaitai.gui;
 
 import java.awt.Component;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -27,7 +26,7 @@ import javax.swing.tree.TreeSelectionModel;
 /**
  * Kaitai parser component.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class ParserTreeComponent extends JScrollPane {
 
     protected final JTree parserTree = new JTree();
@@ -47,7 +46,6 @@ public class ParserTreeComponent extends JScrollPane {
         setViewportView(parserTree);
     }
 
-    @Nonnull
     public JTree getParserTree() {
         return parserTree;
     }

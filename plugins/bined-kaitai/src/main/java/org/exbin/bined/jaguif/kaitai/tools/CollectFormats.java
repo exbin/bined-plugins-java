@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 */
 /**
  * Kaitai settings options.
  */
-/*@ParametersAreNonnullByDefault
+/*@NullMarked
 public class CollectFormats {
 
     public static final String ROOT_PATH = "src/main/resources/org/exbin/framework/bined/kaitai/resources/formats";

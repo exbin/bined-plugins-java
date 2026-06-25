@@ -34,9 +34,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 import javax.annotation.concurrent.Immutable;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -47,7 +46,7 @@ import scala.Some;
 /**
  * Kaitai compiler.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiCompiler {
 
     public static final String DEST_PACKAGE = "io.kaitai.struct.visualized";
@@ -65,7 +64,6 @@ public class KaitaiCompiler {
      */
     private static final Pattern PARAMETER_NAME = Pattern.compile(", \\S+ ([^,\\s]+)");
 
-    @Nonnull
     public CompileResult compileDefinition(DefinitionRecord definitionRecord) {
         InputStream input = null;
         Reader inputReader = null;
@@ -160,7 +158,7 @@ public class KaitaiCompiler {
     }
 
     @Immutable
-    @ParametersAreNonnullByDefault
+    @NullMarked
     public static class CompileResult {
 
         private final KaitaiParser parser;

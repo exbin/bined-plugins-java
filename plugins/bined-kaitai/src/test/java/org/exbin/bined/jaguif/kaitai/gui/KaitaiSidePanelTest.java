@@ -15,7 +15,6 @@
  */
 package org.exbin.bined.jaguif.kaitai.gui;
 
-import org.exbin.bined.jaguif.kaitai.gui.KaitaiSidePanel;
 import org.exbin.jaguif.utils.TestApplication;
 import org.exbin.jaguif.utils.UtilsModule;
 import org.exbin.jaguif.utils.WindowUtils;
@@ -33,7 +32,7 @@ public class KaitaiSidePanelTest {
     public void testPanel() {
         TestApplication testApplication = UtilsModule.createTestApplication();
         testApplication.launch(() -> {
-            testApplication.addModule(org.exbin.jaguif.language.api.LanguageModuleApi.MODULE_ID, new org.exbin.jaguif.language.api.utils.TestLanguageModule());
+            testApplication.addModule(org.exbin.jaguif.language.api.LanguageModuleApi.MODULE_ID, new org.exbin.jaguif.language.api.TestLanguageModule());
             WindowUtils.invokeWindow(new KaitaiSidePanel());
         });
 

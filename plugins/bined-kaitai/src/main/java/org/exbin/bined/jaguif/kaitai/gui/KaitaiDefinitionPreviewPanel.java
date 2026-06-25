@@ -18,8 +18,7 @@ package org.exbin.bined.jaguif.kaitai.gui;
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.util.ResourceBundle;
-import javax.annotation.Nonnull;
-import javax.annotation.ParametersAreNonnullByDefault;
+import org.jspecify.annotations.NullMarked;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultTreeModel;
 import org.exbin.jaguif.language.api.LanguageModuleApi;
@@ -30,7 +29,7 @@ import org.exbin.jaguif.utils.DesktopUtils;
 /**
  * Kaitai definitions preview panel.
  */
-@ParametersAreNonnullByDefault
+@NullMarked
 public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
 
     public static final String GALLERY_LINK = "https://formats.kaitai.io/%s/";
@@ -55,7 +54,6 @@ public class KaitaiDefinitionPreviewPanel extends javax.swing.JPanel {
         });
     }
 
-    @Nonnull
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
     }
