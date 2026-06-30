@@ -1,13 +1,13 @@
-// Shared modules build
+// Shared core build
 
 version = '0.3.0-SNAPSHOT'
-def repositoryName = "exbin-framework-java"
+def repositoryName = "jaguif"
 def githubProfile = 'exbin'
-def libraryUrl = 'https://framework.exbin.org'
+def libraryUrl = 'https://jaguif.exbin.org'
 
-ext.depsThis = 'ExbinFrameworkJava'
+ext.depsThis = 'Jaguif'
 
-ext.depsExbinFrameworkJava = [
+ext.depsJaguif = [
     githubProfile: githubProfile,
     githubRepo   : repositoryName,
     version      : version
@@ -78,8 +78,8 @@ publishing {
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name libraryName
-                    description libraryDescription
+                    name 'ExBin Framework'
+                    description 'Library for ExBin Framework'
                     url libraryUrl
                     scm {
                         url "https://github.com/${githubProfile}/${repositoryName}"
