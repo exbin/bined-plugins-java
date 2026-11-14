@@ -142,7 +142,7 @@ public class KaitaiBuildInPanel extends javax.swing.JPanel {
         definitionsScrollPane = new javax.swing.JScrollPane();
         definitionsTree = new javax.swing.JTree();
 
-        filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/framework/bined/kaitai/resources/icons/22px/view-filter.png"))); // NOI18N
+        filterLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/exbin/bined/jaguif/kaitai/resources/icons/22px/view-filter.png"))); // NOI18N
 
         definitionsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {

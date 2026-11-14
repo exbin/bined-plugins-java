@@ -4,7 +4,7 @@ plugins {
     id 'signing'
 }
 
-group = 'org.exbin.framework'
+group = 'org.exbin.bined.jaguif'
 ext.libraryName = 'BinEd Kaitai Support Plugin'
 ext.libraryDescription = 'BinEd Kaitai plugin'
 

@@ -75,7 +75,7 @@
     <Component class="javax.swing.JLabel" name="titleLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="titleLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/bined/jaguif/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="titleLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -87,7 +87,7 @@
     <Component class="javax.swing.JLabel" name="galleryLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="galleryLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/bined/jaguif/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="galleryLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -105,7 +105,7 @@
     <Component class="javax.swing.JLabel" name="idLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="idLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/bined/jaguif/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="idLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -117,7 +117,7 @@
     <Component class="javax.swing.JLabel" name="extensionLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="extensionLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/bined/jaguif/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="extensionLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>
@@ -129,7 +129,7 @@
     <Component class="javax.swing.JLabel" name="mimeTypeLabel">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="org/exbin/framework/bined/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="mimeTypeLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+          <ResourceString bundle="org/exbin/bined/jaguif/kaitai/gui/resources/KaitaiDefinitionPreviewPanel.properties" key="mimeTypeLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
         </Property>
       </Properties>
     </Component>

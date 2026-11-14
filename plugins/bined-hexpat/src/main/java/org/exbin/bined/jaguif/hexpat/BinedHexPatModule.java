@@ -1,0 +1,267 @@
+/*
+ * Copyright (C) ExBin Project, https://exbin.org
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.exbin.bined.jaguif.hexpat;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.ResourceBundle;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.exbin.jaguif.App;
+import org.exbin.jaguif.ModuleUtils;
+import org.exbin.jaguif.PluginModule;
+import org.exbin.jaguif.context.api.ContextComponent;
+import org.exbin.bined.jaguif.document.BinEdFileManager;
+import org.exbin.bined.jaguif.document.BinedDocumentModule;
+import org.exbin.bined.jaguif.document.BinaryFileDocument;
+import org.exbin.bined.jaguif.inspector.BinEdInspectorManager;
+import org.exbin.bined.jaguif.inspector.BinedInspectorModule;
+import org.exbin.bined.jaguif.hexpat.gui.HexPatSidePanel;
+import org.exbin.bined.jaguif.hexpat.inspector.HexPatInspectorProvider;
+import org.exbin.bined.jaguif.hexpat.settings.HexPatOptions;
+import org.exbin.bined.jaguif.hexpat.settings.HexPatSettingsApplier;
+import org.exbin.jaguif.context.api.ContextChange;
+import org.exbin.jaguif.context.api.ContextChangeRegistration;
+import org.exbin.jaguif.document.api.ContextDocument;
+import org.exbin.jaguif.frame.api.FrameModuleApi;
+import org.exbin.jaguif.language.api.LanguageModuleApi;
+import org.exbin.jaguif.options.api.OptionsModuleApi;
+import org.exbin.jaguif.options.api.OptionsStorage;
+import org.exbin.jaguif.options.settings.api.ApplySettingsContribution;
+import org.exbin.jaguif.options.settings.api.OptionsSettingsManagement;
+import org.exbin.jaguif.options.settings.api.OptionsSettingsModuleApi;
+import org.exbin.jaguif.sidebar.api.ComponentSideBarContribution;
+import org.exbin.jaguif.sidebar.api.SideBarComponent;
+import org.exbin.jaguif.sidebar.api.SideBarDefinitionManagement;
+import org.exbin.jaguif.sidebar.api.SideBarModuleApi;
+import org.exbin.jaguif.ui.api.UiModuleApi;
+
+/**
+ * Binary editor plugin for HexPat analyzer support.
+ */
+@NullMarked
+public class BinedHexPatModule implements PluginModule {
+
+    public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedHexPatModule.class);
+    public static final String SIDEBAR_COMPONENT_ID = "hexpat";
+    public static final String RESOURCE_FORMATS_PATH = "/org/exbin/bined/jaguif/hexpat/resources/formats/";
+
+    private java.util.ResourceBundle resourceBundle = null;
+
+    private HexPatColorModifier hexPatColorModifier;
+    private HexPatSideBarComponent sideBarComponent;
+
+    public BinedHexPatModule() {
+    }
+
+    @Override
+    public void register() {
+        UiModuleApi uiModule = App.getModule(UiModuleApi.class);
+        uiModule.addPostInitAction(() -> {
+            hexPatColorModifier = new HexPatColorModifier();
+
+            registerSideBar();
+            registerInspector();
+            registerSettings();
+            // registerMenuActions();
+            // registerPopupMenuActions();
+
+            BinedDocumentModule binedComponentModule = App.getModule(BinedDocumentModule.class);
+            BinEdFileManager fileManager = binedComponentModule.getFileManager();
+            fileManager.addPainterColorModifier(hexPatColorModifier);
+
+            SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
+            sideBarModule.setAutoShow(true);
+        });
+
+        FrameModuleApi frameModule = App.getModule(FrameModuleApi.class);
+        frameModule.addClosingListener(() -> {
+            saveState();
+            return true;
+        });
+    }
+
+    public ResourceBundle getResourceBundle() {
+        if (resourceBundle == null) {
+            resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(BinedHexPatModule.class);
+        }
+
+        return resourceBundle;
+    }
+
+    public void registerSideBar() {
+        getResourceBundle();
+        SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
+        SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarDefinition(SideBarModuleApi.MODULE_ID);
+        sideBarManager.registerSideBarContribution(new ComponentSideBarContribution() {
+            public String getContributionId() {
+                return SIDEBAR_COMPONENT_ID;
+            }
+            
+            public SideBarComponent createComponent() {
+                sideBarComponent = new HexPatSideBarComponent();
+                sideBarComponent.putValue(SideBarComponent.KEY_ID, SIDEBAR_COMPONENT_ID);
+                //sideBarComponent.putValue(SideBarComponent.KEY_NAME, "KT");
+                sideBarComponent.putValue(SideBarComponent.KEY_ICON, new javax.swing.ImageIcon(getClass().getResource(resourceBundle.getString("hexPatSideBarComponent.icon"))));
+                sideBarComponent.putValue(SideBarComponent.KEY_TOOLTIP, resourceBundle.getString("hexPatSideBarComponent.toolTip"));
+                sideBarComponent.putValue(SideBarComponent.KEY_CONTEXT_CHANGE, new ContextChange() {
+                    @Override
+                    public void register(ContextChangeRegistration registrar) {
+                        registrar.registerChangeListener(ContextDocument.class, (instance) -> {
+                            if (instance instanceof BinaryFileDocument) {
+                                sideBarComponent.setActiveDocument((BinaryFileDocument) instance);
+                            }
+                        });
+                    }
+                });
+                return sideBarComponent;
+            }
+        });
+    }
+
+    public void registerInspector() {
+        BinedInspectorModule binedInspectorModule = App.getModule(BinedInspectorModule.class);
+        BinEdInspectorManager inspectorManager = binedInspectorModule.getBinEdInspectorManager();
+        inspectorManager.addInspector(new HexPatInspectorProvider(getResourceBundle()));
+    }
+    
+    public void registerSettings() {
+        getResourceBundle();
+        OptionsSettingsModuleApi settingsModule = App.getModule(OptionsSettingsModuleApi.class);
+        OptionsSettingsManagement settingsManagement = settingsModule.getMainSettingsManager();
+
+        settingsManagement.registerSettingsOptions(HexPatOptions.class, (optionsStorage) -> new HexPatOptions(optionsStorage));
+        settingsManagement.registerApplySetting(HexPatOptions.class, new ApplySettingsContribution(HexPatSettingsApplier.APPLIER_ID, new HexPatSettingsApplier()));
+        settingsManagement.registerApplyContextSetting(ContextComponent.class, new ApplySettingsContribution(HexPatSettingsApplier.APPLIER_ID, new HexPatSettingsApplier()));
+    }
+    
+    public void saveState() {
+        OptionsModuleApi optionsModule = App.getModule(OptionsModuleApi.class);
+        OptionsStorage optionsStorage = optionsModule.getAppOptions();
+        HexPatOptions options = new HexPatOptions(optionsStorage);
+        HexPatSidePanel sidePanel = getHexPatSideManager().getSidePanel();
+        List<DefinitionRecord> definitions = sidePanel.getDefinitions();
+        int listSize = definitions.size();
+        options.setListSize(listSize);
+        for (int i = 0; i < listSize; i++) {
+            DefinitionRecord record = definitions.get(i);
+            URI uri = record.getUri();
+            int pathLength = BinedHexPatModule.RESOURCE_FORMATS_PATH.length();
+            if ("jar".equals(uri.getScheme())) {
+                String path = uri.toString();
+                int lastPos = path.lastIndexOf(BinedHexPatModule.RESOURCE_FORMATS_PATH);
+                options.setListItemBuildIn(path.substring(lastPos + pathLength), i);
+                options.setListItemPath("", i);
+            } else {
+                options.setListItemBuildIn("", i);
+                options.setListItemPath(uri.toString(), i);
+            }
+        }
+        options.setDefinition(sidePanel.getSelectedDefinitionIndex());
+        optionsStorage.flush();
+    }
+
+    public void setBuildInDefinition(String ksyFilePath) {
+        sideBarComponent.setBuildInDefinition(ksyFilePath);
+    }
+
+    @Nullable
+    public HexPatColorModifier getHexPatColorModifier() {
+        return hexPatColorModifier;
+    }
+
+    public HexPatSideManager getHexPatSideManager() {
+        return sideBarComponent.getSideManager();
+    }
+
+    public DefinitionRecord getDefinitionByPath(URI fileUri) {
+        File file = new File(fileUri);
+        return new DefinitionRecord(file.getName(), file.getName(), fileUri);
+    }
+
+    public DefinitionRecord getBuildInDefinition(String buildIn) {
+        FileSystem fileSystem = null;
+        try {
+            URI fileUri = getClass().getResource(RESOURCE_FORMATS_PATH + buildIn).toURI();
+            fileSystem = FileSystems.newFileSystem(fileUri, Collections.<String, Object>emptyMap());
+            Path filePath = fileSystem.getPath(RESOURCE_FORMATS_PATH + buildIn);
+            String fileName = "";
+            if (filePath.getNameCount() > 0) {
+                fileName = filePath.getName(filePath.getNameCount() - 1).toString();
+            }
+            if (fileName.endsWith("/")) {
+                fileName = fileName.substring(0, fileName.length() - 1);
+            }
+
+            String title = null;
+            InputStream stream = null;
+            BufferedReader reader = null;
+            try {
+                stream = fileUri.toURL().openStream();
+                reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+                String read;
+                while ((read = reader.readLine()) != null) {
+                    int pos = read.indexOf("title:");
+                    if (pos >= 0) {
+                        title = read.substring(pos + 6).trim();
+                        if ('\"' == title.charAt(0)) {
+                            title = title.substring(1, title.length() - 1);
+                        }
+                        break;
+                    }
+                }
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                }
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                }
+            }
+
+            String defTitle = title.isEmpty() ? fileName.substring(0, fileName.length() - 4) : title;
+            return new DefinitionRecord(defTitle, fileName, fileUri);
+        } catch (URISyntaxException | IOException ex) {
+            throw new RuntimeException("Failed to open build-in HexPat definition " + buildIn, ex);
+        } finally {
+            try {
+                if (fileSystem != null) {
+                    fileSystem.close();
+                }
+            } catch (Throwable tw) {
+                // ignore
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+emblem-default.png
+  Open Icon Library
+  link: openiconlibrary.sourceforge.net
+  license: various
+
+emblem-important-3.png
+  Open Icon Library
+  link: openiconlibrary.sourceforge.net
+  license: various
+
+emblem-important-4.png
+  Open Icon Library
+  link: openiconlibrary.sourceforge.net
+  license: various
+
+emblem-notice.png
+  Open Icon Library
+  link: openiconlibrary.sourceforge.net
+  license: various
+
+emblem-system-3.png
+  Open Icon Library
+  link: openiconlibrary.sourceforge.net
+  license: various

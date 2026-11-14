@@ -41,7 +41,6 @@ import java.util.logging.Logger;
 import org.jspecify.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -55,10 +54,14 @@ import org.exbin.bined.jaguif.kaitai.gui.KaitaiDefinitionPreviewPanel;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiDefinitionsPanel;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiSidePanel;
 import org.exbin.bined.jaguif.kaitai.gui.KaitaiProcessingMessagePanel;
+import org.exbin.bined.jaguif.kaitai.settings.KaitaiOptions;
 import org.exbin.jaguif.file.api.DefaultFileTypes;
 import org.exbin.jaguif.file.api.FileDialogsProvider;
 import org.exbin.jaguif.file.api.FileModuleApi;
 import org.exbin.jaguif.file.api.OpenFileResult;
+import org.exbin.jaguif.options.api.OptionsModuleApi;
+import org.exbin.jaguif.options.api.OptionsStorage;
+import org.exbin.jaguif.options.settings.api.OptionsSettingsModuleApi;
 import org.exbin.jaguif.sidebar.api.AbstractSideBarComponent;
 import org.exbin.jaguif.window.api.WindowHandler;
 import org.exbin.jaguif.window.api.WindowModuleApi;
@@ -371,7 +374,20 @@ public class KaitaiSideBarComponent extends AbstractSideBarComponent {
                 windowModule.addHeaderPanel(dialog.getWindow(), definitionsPanel.getClass(), definitionsPanel.getResourceBundle());
                 controlPanel.setController((DefaultControlController.ControlActionType actionType) -> {
                     if (actionType == DefaultControlController.ControlActionType.OK) {
-                        sidePanel.setDefinitions(definitionsPanel.getDefinitions());
+                        List<DefinitionRecord> definitions = definitionsPanel.getDefinitions();
+                        sidePanel.setDefinitions(definitions);
+                        OptionsModuleApi optionsModule = App.getModule(OptionsModuleApi.class);
+                        KaitaiOptions options = new KaitaiOptions(optionsModule.getAppOptions());
+                        options.setListSize(definitions.size());
+                        int index = 0;
+                        for (DefinitionRecord definition : definitions) {
+                            if ("jar".equals(definition.getUri().getScheme())) {
+                                options.setListItemBuildIn(definition.getFileName(), index);
+                            } else {
+                                options.setListItemPath(definition.getUri().toString(), index);
+                            }
+                            index++;
+                        }
                     }
                     dialog.close();
                     dialog.dispose();

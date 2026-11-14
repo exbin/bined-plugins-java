@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<module>
+  <plugin>org.exbin.bined.jaguif.hexpat.BinedHexPatModule</plugin>
+  <name>BinEd HexPat Module</name>
+  <provider>ExBin Project</provider>
+  <homepage>https://bined.exbin.org</homepage>
+  <description>Binary editor plugin supporting HexPat patterns</description>
+  <license spdx="GPL-3.0-or-later">GNU General Public License v3.0 or later</license>
+  <dependency>
+    <module id="org.exbin.bined.jaguif.document.BinedDocumentModule" />
+    <module id="org.exbin.bined.jaguif.inspector.BinedInspectorModule" />
+    <module id="org.exbin.bined.jaguif.objectdata.BinedObjectDataModule" />
+    <module id="org.exbin.jaguif.ui.api.UiModuleApi" />
+    <module id="org.exbin.jaguif.frame.api.FrameModuleApi" />
+    <module id="org.exbin.jaguif.window.api.WindowModuleApi" />
+    <module id="org.exbin.jaguif.docking.api.DockingModuleApi" />
+    <module id="org.exbin.jaguif.sidebar.api.SideBarModuleApi" />
+    <module id="org.exbin.jaguif.file.api.FileModuleApi" />
+    <module id="org.exbin.jaguif.menu.popup.api.MenuPopupModuleApi" />
+    <module id="org.exbin.jaguif.action.api.ActionModuleApi" />
+    <module id="org.exbin.jaguif.operation.undo.api.OperationUndoModuleApi" />
+    <module id="org.exbin.jaguif.options.api.OptionsModuleApi" />
+    <module id="org.exbin.jaguif.options.settings.api.OptionsSettingsModuleApi" />
+    <module id="org.exbin.jaguif.language.api.LanguageModuleApi" />
+    <module id="org.exbin.jaguif.utils.UtilsModule" />
+    <library maven="io.kaitai:kaitai-struct-runtime:0.11" />
+    <library maven="io.kaitai:kaitai-struct-compiler_2.13:0.11" />
+    <library maven="org.scala-lang:scala-library:2.13.13" />
+    <library maven="com.github.scopt:scopt_2.13:4.1.0" />
+    <library maven="com.lihaoyi:fastparse_2.13:2.3.3" />
+    <library maven="org.yaml:snakeyaml:2.0" />
+    <library maven="org.dvare:dynamic-loader:3.2" />
+    <library maven="org.slf4j:slf4j-api:2.0.16" />
+    <library maven="com.fifesoft:rsyntaxtextarea:3.6.1" />
+  </dependency>
+</module>

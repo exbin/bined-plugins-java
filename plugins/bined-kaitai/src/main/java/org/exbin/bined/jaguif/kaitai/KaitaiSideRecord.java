@@ -57,6 +57,10 @@ public class KaitaiSideRecord {
 
     public void processDefinition(EditableBinaryData sourceData, KaitaiSidePanel sidePanel) {
         clearParseTree();
+        if (definitionRecord == null) {
+            updateStatus(sidePanel, KaitaiStatusType.NO_DEFINITION);
+        }
+
         updateStatus(sidePanel, KaitaiStatusType.COMPILING);
         KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
         if (compileResult.getErrorMessage() != null) {
@@ -103,7 +107,7 @@ public class KaitaiSideRecord {
         return definitionRecord;
     }
 
-    public void setDefinitionRecord(DefinitionRecord definitionRecord) {
+    public void setDefinitionRecord(@Nullable DefinitionRecord definitionRecord) {
         this.definitionRecord = definitionRecord;
     }
 

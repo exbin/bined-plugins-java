@@ -67,7 +67,7 @@ public class BinedKaitaiModule implements PluginModule {
 
     public static final String MODULE_ID = ModuleUtils.getModuleIdByApi(BinedKaitaiModule.class);
     public static final String SIDEBAR_COMPONENT_ID = "kaitai";
-    public static final String RESOURCE_FORMATS_PATH = "/org/exbin/framework/bined/kaitai/resources/formats/";
+    public static final String RESOURCE_FORMATS_PATH = "/org/exbin/bined/jaguif/kaitai/resources/formats/";
 
     private java.util.ResourceBundle resourceBundle = null;
 
@@ -117,10 +117,12 @@ public class BinedKaitaiModule implements PluginModule {
         SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
         SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarDefinition(SideBarModuleApi.MODULE_ID);
         sideBarManager.registerSideBarContribution(new ComponentSideBarContribution() {
+            @Override
             public String getContributionId() {
                 return SIDEBAR_COMPONENT_ID;
             }
             
+            @Override
             public SideBarComponent createComponent() {
                 sideBarComponent = new KaitaiSideBarComponent();
                 sideBarComponent.putValue(SideBarComponent.KEY_ID, SIDEBAR_COMPONENT_ID);

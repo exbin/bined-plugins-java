@@ -40,7 +40,7 @@ import org.jspecify.annotations.NullMarked;
 /*@NullMarked
 public class CollectFormats {
 
-    public static final String ROOT_PATH = "src/main/resources/org/exbin/framework/bined/kaitai/resources/formats";
+    public static final String ROOT_PATH = "src/main/resources/org/exbin/bined/jaguif/kaitai/resources/formats";
     public static final Map<String, String> dirDetails = new HashMap<>();
 
     static {

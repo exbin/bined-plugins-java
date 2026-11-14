@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.inspector.BinEdInspector;
 import org.exbin.bined.jaguif.inspector.BinEdInspectorProvider;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Kaitai content inspector provider.
@@ -28,7 +29,7 @@ public class KaitaiInspectorProvider implements BinEdInspectorProvider {
 
     public static final String INSPECTOR_ID = "kaitai";
 
-    protected KaitaiInspector inspector;
+    protected @Nullable KaitaiInspector inspector;
     protected final ResourceBundle resourceBundle;
 
     public KaitaiInspectorProvider(ResourceBundle resourceBundle) {

@@ -1,0 +1,6 @@
+rootProject.name = 'bined-hexpat'
+
+if (rootProject.path == ':') {
+}
+
+apply from: '../plugins-settings.gradle'
