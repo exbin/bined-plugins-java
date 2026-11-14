@@ -15,8 +15,6 @@
  */
 package org.exbin.bined.jaguif.hexpat;
 
-import org.exbin.bined.jaguif.hexpat.service.KaitaiCompiler;
-import org.exbin.bined.jaguif.hexpat.service.KaitaiParser;
 import org.jspecify.annotations.Nullable;
 import org.jspecify.annotations.NullMarked;
 import javax.swing.JTree;
@@ -27,7 +25,7 @@ import org.exbin.jaguif.App;
 import org.exbin.bined.jaguif.hexpat.gui.HexPatSidePanel;
 import org.exbin.bined.jaguif.hexpat.gui.ParserTreeComponent;
 import org.exbin.bined.jaguif.hexpat.service.HexPatTreeListener;
-import org.exbin.bined.jaguif.hexpat.service.KaitaiProcessingService;
+import org.exbin.bined.jaguif.hexpat.service.HexPatProcessingService;
 
 /**
  * Kaitai side record.
@@ -36,9 +34,7 @@ import org.exbin.bined.jaguif.hexpat.service.KaitaiProcessingService;
 public class HexPatSideRecord {
 
     protected ParserTreeComponent parserComponent = new ParserTreeComponent();
-    protected KaitaiProcessingService visualizer = new KaitaiProcessingService();
-    protected KaitaiCompiler compiler = new KaitaiCompiler();
-    protected KaitaiParser parser = null;
+    protected HexPatProcessingService visualizer = new HexPatProcessingService();
     protected HexPatTreeListener treeListener;
 
     protected DefinitionRecord definitionRecord;
@@ -57,25 +53,7 @@ public class HexPatSideRecord {
 
     public void processDefinition(EditableBinaryData sourceData, HexPatSidePanel sidePanel) {
         clearParseTree();
-        updateStatus(sidePanel, HexPatStatusType.COMPILING);
-        KaitaiCompiler.CompileResult compileResult = visualizer.compileDefinition(compiler, definitionRecord);
-        if (compileResult.getErrorMessage() != null) {
-            processingMessage += compileResult.getErrorMessage();
-            updateStatus(sidePanel, HexPatStatusType.COMPILE_FAILED);
-            this.parser = null;
-            return;
-        }
-        this.parser = compileResult.getParser();
-
-        updateStatus(sidePanel, HexPatStatusType.PARSING);
-        KaitaiParser.ParsingResult parsingResult = visualizer.parseData(parser, sourceData);
-        if (parsingResult.getErrorMessage() != null) {
-            clearParseTree();
-            processingMessage += parsingResult.getErrorMessage();
-            updateStatus(sidePanel, HexPatStatusType.PARSE_FAILED);
-            return;
-        }
-
+        // TODO
         updateStatus(sidePanel, HexPatStatusType.OK);
     }
 

@@ -23,14 +23,7 @@
     <module id="org.exbin.jaguif.options.settings.api.OptionsSettingsModuleApi" />
     <module id="org.exbin.jaguif.language.api.LanguageModuleApi" />
     <module id="org.exbin.jaguif.utils.UtilsModule" />
-    <library maven="io.kaitai:kaitai-struct-runtime:0.11" />
-    <library maven="io.kaitai:kaitai-struct-compiler_2.13:0.11" />
-    <library maven="org.scala-lang:scala-library:2.13.13" />
-    <library maven="com.github.scopt:scopt_2.13:4.1.0" />
-    <library maven="com.lihaoyi:fastparse_2.13:2.3.3" />
     <library maven="org.yaml:snakeyaml:2.0" />
-    <library maven="org.dvare:dynamic-loader:3.2" />
-    <library maven="org.slf4j:slf4j-api:2.0.16" />
     <library maven="com.fifesoft:rsyntaxtextarea:3.6.1" />
   </dependency>
 </module>
