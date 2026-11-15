@@ -36,8 +36,8 @@ import static org.exbin.bined.jaguif.hexpat.HexPatStatusType.NO_DEFINITION;
 public class HexPatSidePanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(HexPatSidePanel.class);
-    protected Controller controller;
-    protected Component currentParserComponent;
+    protected @Nullable Controller controller;
+    protected @Nullable Component currentParserComponent;
 
     public HexPatSidePanel() {
         initComponents();

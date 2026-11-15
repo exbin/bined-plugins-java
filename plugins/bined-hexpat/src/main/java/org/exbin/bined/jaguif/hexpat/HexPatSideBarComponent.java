@@ -78,8 +78,8 @@ import org.yaml.snakeyaml.Yaml;
 public class HexPatSideBarComponent extends AbstractSideBarComponent {
 
     protected HexPatSideManager sideManager = new HexPatSideManager();
-    protected DefinitionRecord definitionRecord = null;
-    protected BinaryFileDocument activeDocument = null;
+    protected @Nullable DefinitionRecord definitionRecord = null;
+    protected @Nullable BinaryFileDocument activeDocument = null;
 
     @Override
     public JComponent getComponent() {

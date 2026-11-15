@@ -19,6 +19,7 @@ import java.util.ResourceBundle;
 import org.jspecify.annotations.NullMarked;
 import org.exbin.bined.jaguif.inspector.BinEdInspector;
 import org.exbin.bined.jaguif.inspector.BinEdInspectorProvider;
+import org.jspecify.annotations.Nullable;
 
 /**
  * HexPat content inspector provider.
@@ -28,7 +29,7 @@ public class HexPatInspectorProvider implements BinEdInspectorProvider {
 
     public static final String INSPECTOR_ID = "hexpat";
 
-    protected HexPatInspector inspector;
+    protected @Nullable HexPatInspector inspector;
     protected final ResourceBundle resourceBundle;
 
     public HexPatInspectorProvider(ResourceBundle resourceBundle) {

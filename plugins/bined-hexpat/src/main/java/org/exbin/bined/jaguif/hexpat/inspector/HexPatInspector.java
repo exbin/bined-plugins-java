@@ -27,6 +27,7 @@ import org.exbin.bined.jaguif.hexpat.BinedHexPatModule;
 import org.exbin.bined.jaguif.hexpat.HexPatSideManager;
 import org.exbin.bined.jaguif.hexpat.inspector.gui.HexPatInspectorPanel;
 import org.exbin.bined.jaguif.hexpat.service.HexPatTreeListener;
+import org.jspecify.annotations.Nullable;
 
 /**
  * HexPat content inspector.
@@ -34,12 +35,12 @@ import org.exbin.bined.jaguif.hexpat.service.HexPatTreeListener;
 @NullMarked
 public class HexPatInspector implements BinEdInspector {
 
-    protected HexPatInspectorPanel component;
-    protected CodeAreaCore codeArea;
+    protected @Nullable HexPatInspectorPanel component;
+    protected @Nullable CodeAreaCore codeArea;
 
-    protected DataChangedListener dataChangedListener;
-    protected CodeAreaCaretListener caretMovedListener;
-    protected HexPatTreeListener.SelectionListener nodeSelectionListener;
+    protected @Nullable DataChangedListener dataChangedListener;
+    protected @Nullable CodeAreaCaretListener caretMovedListener;
+    protected HexPatTreeListener.@Nullable SelectionListener nodeSelectionListener;
 
     @Override
     public JComponent getComponent() {

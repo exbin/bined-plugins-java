@@ -30,6 +30,7 @@ import javax.swing.event.ListSelectionEvent;
 import org.exbin.jaguif.language.api.LanguageModuleApi;
 import org.exbin.jaguif.App;
 import org.exbin.bined.jaguif.hexpat.DefinitionRecord;
+import org.jspecify.annotations.Nullable;
 
 /**
  * HexPat definitions list panel.
@@ -38,7 +39,7 @@ import org.exbin.bined.jaguif.hexpat.DefinitionRecord;
 public class HexPatDefinitionsPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(HexPatDefinitionsPanel.class);
-    protected Controller controller;
+    protected @Nullable Controller controller;
     protected DefaultListModel<DefinitionRecord> definitionsListModel;
 
     public HexPatDefinitionsPanel() {

@@ -32,6 +32,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.exbin.jaguif.language.api.LanguageModuleApi;
 import org.exbin.jaguif.App;
 import org.exbin.bined.jaguif.hexpat.DefinitionRecord;
+import org.jspecify.annotations.Nullable;
 
 /**
  * HexPat build-in definitions panel.
@@ -40,8 +41,8 @@ import org.exbin.bined.jaguif.hexpat.DefinitionRecord;
 public class HexPatBuildInPanel extends javax.swing.JPanel {
 
     protected final java.util.ResourceBundle resourceBundle = App.getModule(LanguageModuleApi.class).getBundle(HexPatBuildInPanel.class);
-    protected DefaultTreeModel definitionsTreeModel;
-    protected Controller controller;
+    protected @Nullable DefaultTreeModel definitionsTreeModel;
+    protected @Nullable Controller controller;
 
     public HexPatBuildInPanel() {
         initComponents();
@@ -190,6 +191,7 @@ public class HexPatBuildInPanel extends javax.swing.JPanel {
     private javax.swing.JTextField filterTextField;
     // End of variables declaration//GEN-END:variables
 
+    @NullMarked
     public interface Controller {
 
         void selectedDefinitionChanged();

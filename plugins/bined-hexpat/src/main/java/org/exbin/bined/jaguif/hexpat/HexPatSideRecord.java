@@ -37,7 +37,7 @@ public class HexPatSideRecord {
     protected HexPatProcessingService visualizer = new HexPatProcessingService();
     protected HexPatTreeListener treeListener;
 
-    protected DefinitionRecord definitionRecord;
+    protected @Nullable DefinitionRecord definitionRecord;
     protected HexPatStatusType status = HexPatStatusType.NO_FILE;
     protected String processingMessage = "";
 

@@ -117,10 +117,12 @@ public class BinedHexPatModule implements PluginModule {
         SideBarModuleApi sideBarModule = App.getModule(SideBarModuleApi.class);
         SideBarDefinitionManagement sideBarManager = sideBarModule.getMainSideBarDefinition(SideBarModuleApi.MODULE_ID);
         sideBarManager.registerSideBarContribution(new ComponentSideBarContribution() {
+            @Override
             public String getContributionId() {
                 return SIDEBAR_COMPONENT_ID;
             }
             
+            @Override
             public SideBarComponent createComponent() {
                 sideBarComponent = new HexPatSideBarComponent();
                 sideBarComponent.putValue(SideBarComponent.KEY_ID, SIDEBAR_COMPONENT_ID);
