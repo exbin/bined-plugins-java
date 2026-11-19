@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 import org.jspecify.annotations.NullMarked;
 */
 /**
- * Kaitai settings options.
+ * HexPat formats.
  */
 /*@NullMarked
 public class CollectFormats {

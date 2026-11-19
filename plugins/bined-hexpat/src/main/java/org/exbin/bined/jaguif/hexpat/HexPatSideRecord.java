@@ -47,7 +47,6 @@ public class HexPatSideRecord {
         parserTree.setModel(model);
         BinedHexPatModule hexPatModule = App.getModule(BinedHexPatModule.class);
         treeListener = new HexPatTreeListener(parserTree, hexPatModule.getHexPatColorModifier());
-        parserTree.addTreeWillExpandListener(treeListener);
         parserTree.addTreeSelectionListener(treeListener);
     }
 

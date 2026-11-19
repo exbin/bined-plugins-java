@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
 import javax.swing.JTree;
-import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeWillExpandListener;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import org.exbin.bined.jaguif.hexpat.HexPatColorModifier;
 
@@ -17,34 +13,15 @@ import org.exbin.bined.jaguif.hexpat.HexPatColorModifier;
  * HexPat parse tree listener.
  */
 @NullMarked
-public class HexPatTreeListener implements TreeWillExpandListener, TreeSelectionListener {
+public class HexPatTreeListener implements TreeSelectionListener {
 
     protected final JTree tree;
-    protected HexPatColorModifier colorModifier = null;
+    protected final HexPatColorModifier colorModifier;
     protected List<SelectionListener> nodeSelectionListeners = new ArrayList<>();
 
     public HexPatTreeListener(JTree tree, HexPatColorModifier colorModifier) {
         this.tree = tree;
         this.colorModifier = colorModifier;
-    }
-
-    @Override
-    public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-        TreePath path = event.getPath();
-        if (path.getLastPathComponent() instanceof DataNode) {
-            DataNode node = (DataNode) path.getLastPathComponent();
-            node.explore(() -> {
-                ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
-            }, null);
-
-            for (SelectionListener nodeSelectionListener : nodeSelectionListeners) {
-                nodeSelectionListener.selectionChanged();
-            }
-        }
-    }
-
-    @Override
-    public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
     }
 
     @Override

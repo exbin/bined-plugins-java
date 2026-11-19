@@ -20,7 +20,7 @@ import org.exbin.bined.jaguif.kaitai.KaitaiColorModifier;
 public class KaitaiTreeListener implements TreeWillExpandListener, TreeSelectionListener {
 
     protected final JTree tree;
-    protected KaitaiColorModifier colorModifier = null;
+    protected final KaitaiColorModifier colorModifier;
     protected List<SelectionListener> nodeSelectionListeners = new ArrayList<>();
 
     public KaitaiTreeListener(JTree tree, KaitaiColorModifier colorModifier) {
